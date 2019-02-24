@@ -1,0 +1,38 @@
+
+{% extends "base_blank.html" %}
+
+
+{% block content %}
+
+    <div class="medium-container margin-top">
+      <div class="card">
+        <h5 class="card-header no-margin-top">Login</h5>
+        <div class="card-body">
+          {% if form.errors %}
+          <h5 class="card-title">Your username and password didn't match. Please try again.</h5>
+          {% endif %}
+            {% if next %}
+              {% if user.is_authenticated %}
+              <p>Your account doesn't have access to this page. To proceed,
+              please login with an account that has access.</p>
+              {% else %}
+              <p>Please login to see this page.</p>
+              {% endif %}
+              {% endif %}
+
+              <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                {{ form.username.label_tag }}
+                {{ form.username }}
+
+                {{ form.password.label_tag }}
+                {{ form.password }}
+                <input type="submit" value="Login">
+                <input type="hidden" name="next" value="{{ next }}">
+            </form>
+          </div>
+        </div>
+    </div>
+
+
+{% endblock %}

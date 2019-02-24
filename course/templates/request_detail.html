@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+
+
+{% block content %}
+<div class="medium-container">
+
+<h1>Request Detail</h1>
+
+
+
+{% for key, value in request.items %}
+  <p>  {{ key }}: {{ value }}</p>
+{% endfor %}
+
+
+
+
+
+
+</div>
+{% endblock %}

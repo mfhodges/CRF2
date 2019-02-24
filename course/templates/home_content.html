@@ -1,0 +1,136 @@
+
+{% extends "base_generic.html" %}
+
+{% block home %}active{% endblock %}
+
+{% block content %}
+
+<!-- this page is populated with the content from the UserSerializer -->
+
+<div class="medium-container homepage">
+
+
+
+{% if notice %}
+<div class="small-container" style="border: none;box-shadow: none !important;">
+
+
+<blockquote class="show">
+
+  <pre class="message">{{ data.notice.notice_heading }}
+{% autoescape off %}{{ data.notice.notice_text }}{% endautoescape %}
+  </pre>
+  <pre class="default" style="display:none;">expand to see message</pre>
+  <div class='close-notification'>
+    <i class="fas fa-times"></i>
+  </div>
+</blockquote>
+</div>
+{% endif %}
+
+<p> Welcome {{data.username}} ... remove this later </p>
+<div class="small-container">
+  <dt>Request site on behalf of user:</dt>
+<form class="form-inline">
+
+  <label for="name">User's Pennkey</label>
+    <input type="text" id="name" placeholder="pennkey">
+    <input type="submit" value="Submit">
+</form>
+</div>
+
+
+<!-- have all of these tables be collapsible -->
+<div class="small-container">
+<dl>
+ <dt>Site Requests</dt>
+ <dd> < descriptive text ></dd>
+</dl>
+ <table class="striped-table">
+   <thead>
+     <tr>
+       <th>No.</th>
+       <th>Requestor</th>
+       <th>Date Requested</th>
+       <th>Status</th>
+     </tr>
+   </thead>
+   <tbody>
+     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+   </tbody>
+ </table>
+ <div class="vertical-center"><a href="/">see more </a></div>
+</div>
+
+<div class="small-container">
+<dl>
+  	<dt>Courses</dt>
+  	<dd>SRS course assignments</dd>
+ </dl>
+   <table class="striped-table">
+     <thead>
+       <tr>
+         <th>SIS ID</th>
+         <th>Name</th>
+         <th>???</th>
+         <th>???</th>
+         <th>???</th>
+       </tr>
+     </thead>
+     <tbody>
+       <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+       <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+       <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+       <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+       <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+       <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+       <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+     </tbody>
+   </table>
+   <div class="vertical-center"><a href="/">see more </a></div>
+</div>
+
+
+
+<div class="small-container">
+ <dl>
+ 	<dt>Canvas Sites</dt>
+ 	<dd>Existing Canvas Sites</dd>
+</dl>
+
+  <table class="striped-table">
+    <thead>
+      <tr>
+        <th>SIS ID </th>
+        <th>Title</th>
+        <th>Content</th>
+        <th>Workflow State</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+      <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+      <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+      <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+      <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+      <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+      <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+      <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+
+    </tbody>
+  </table>
+  <div class="vertical-center"><a href="/">see more </a></div>
+</div>
+
+
+</div>
+ {% endblock %}

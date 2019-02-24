@@ -1,0 +1,74 @@
+{% extends "base_generic.html" %}
+
+{% block requests %}active{% endblock %}
+
+{% block content %}
+<div class="medium-container">
+
+
+<h1> Requests</h1>
+
+<p> Results({{ data.count }}) </p>
+<!--<p> previous{{ data.previous }} </p>
+<p> next{{ data.next}} </p>
+<p> num_pages{{ data.total_pages}} </p> -->
+
+<p>&ltFiltering goes here&gt</p>
+
+  <table class="striped-table">
+    <thead>
+      <tr>
+        <th>Request ID</th>
+        <th>Course</th>
+        <th>Requestor</th>
+        <th>Date Requested</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for request in data.results %}
+      <tr>
+        <td><a href='{{forloop.counter}}/'> {{forloop.counter}} </a></td>
+        <td>{{request.course_requested}}</td>
+        <td>{{request.owner}}</td>
+        <td>{{request.created }}</td>
+        <td>{{request.status}}</td>
+      </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+
+<!-- PAGINATION -->
+<nav aria-label="Page navigation example" style="padding-top:0px;">
+  <ul class="pagination justify-content-center">
+
+      {% if data.previous %}
+    <li class="page-item">
+      <a class="page-link" href="{{data.previous}}" tabindex="-1">Previous</a>
+      {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="" tabindex="-1">Previous</a>
+      {% endif %}
+    </li>
+<!-- fix these links-->
+    <li class="page-item disabled"><a class="page-link" href="#">1</a></li>
+    <li class="page-item disabled"><a class="page-link" href="#">2</a></li>
+    <li class="page-item disabled"><a class="page-link" href="#">3</a></li>
+    {% if data.next %}
+    <li class="page-item">
+      <a class="page-link" href={{data.next}}>Next</a>
+
+    {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="" tabindex="-1">Next</a>
+
+    {% endif %}
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+{% endblock %}

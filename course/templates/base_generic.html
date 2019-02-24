@@ -1,0 +1,136 @@
+{% load rest_framework %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Canvas Site Automation for UPenn">
+    <meta name="keywords" content="">
+
+    <title>Course Request Form</title>
+    <!-- bootstap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- boostrap css -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <!-- fonts -->
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'images/favicon_book.ico' %}">
+</head>
+  <body>
+    <!-- logout / login info goes in header-->
+    <header >
+      <div class="text-right" >
+        {% if user.is_authenticated %}
+        <a href="accounts/logout" style="padding-right:15px;">
+          {{ user.username }},  logout
+          <i class="fas fa-sign-out-alt"></i></a>
+        {% else %}
+        <a href="accounts/login" style="padding-right:15px;">
+          login
+          <i class="fas fa-sign-in-alt"></i></a>
+        {% endif %}
+      </div>
+     </header>
+
+    <div class="primitive">
+    <div class="flex-container">
+      <aside class="fixed">
+        <div class="toggle-nav"></div>
+        <h1> <a href="/"> CRF</a></h1>
+        <nav style="display: none;" >
+          <ul>
+              <li class="title">Main</li>
+              <li><a class="{% block home %}{% endblock %}" href="/">Home</a></li>
+              <li><a class="{% block requests %}{% endblock %}" href="/requests">Requests</a></li>
+              <li class="title">Browse</li>
+              <li><a class="{% block courses %}{% endblock %}" href="/courses">Courses</a></li>
+              <li><a class="{% block schools %}{% endblock %}" href="/schools">Schools</a></li>
+              <li><a class="{% block subjects %}{% endblock %}" href="/subjects">Subjects</a></li>
+
+              <li class="title">Admin</li>
+              <li><a href="/admin">Admin Portal</a></li>
+              <li><a href="/autoadds">Manage Auto-Adds</a></li>
+          </ul>
+
+        </nav>
+        <!-- need to find a way to push this to the bottom -->
+          <div id="references" class="medium-container vertical-center" style="padding-bottom:25px;">
+
+              <a href="https://crf-doc.readthedocs.io/en/latest/?#">Docs </a>&nbsp;//&nbsp;
+              <a href="/contact"> Contact</a>
+
+          </div>
+
+
+      </aside>
+
+      <main class="content margin" id="main-content">
+
+
+          <!--<blockquote>
+	           <p>Note: should go here</p>
+
+           </blockquote> -->
+           {% block content %}{% endblock %}
+
+        <!--  <footer class="footer text-center">
+					       <div class="medium-container" >
+
+                         <i>footer content</i>
+					</div>
+				</footer>-->
+      </main>
+    </div>
+</div>
+</body>
+<script src="https://taniarascia.github.io/primitive/js/prism.js"></script>
+
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<!--<script src="https://taniarascia.github.io/primitive/js/example.js"></script>-->
+<script>
+// Toggle nav
+$('.toggle-nav').click(function (e) {
+  if ($('.toggle-nav').hasClass('active')) {
+    $('.toggle-nav').removeClass('active');
+  } else {
+    $('.toggle-nav').addClass('active');
+    $('#references').hide();
+  }
+  $('aside nav').toggle();
+  e.stopPropagation();
+
+});
+$('html').click(function () {
+  $('aside nav').hide();
+  $('.toggle-nav').removeClass('active');
+  $('#references').show();
+});
+
+$('.close-notification i').click(function (e) {
+  if ($('blockquote').hasClass('show')) {
+    $('blockquote').removeClass('show'); // removing the show class adds the expand icon
+    $('.message').hide();
+    $('.default').show();
+    $('.close-notification i').removeClass('fa-times');
+    $('.close-notification i').addClass('fa-plus');
+  } else {
+    $('blockquote').addClass('show');
+    $('.message').show();
+    $('.default').hide();
+    $('.close-notification i').removeClass('fa-plus');
+    $('.close-notification i').addClass('fa-times');
+  }
+});
+</script>
+<script async="" defer="" src="https://buttons.github.io/buttons.js"></script>
+
+</html>

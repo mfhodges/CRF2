@@ -1,0 +1,155 @@
+{% extends "base_generic.html" %}
+
+{% block courses %}active{% endblock %}
+<!-- see for date format info https://docs.djangoproject.com/en/2.1/ref/settings/#date-input-formats -->
+{% block content %}
+<div class="medium-container">
+
+  <!-- add filtering bit -->
+
+<h1>Courses</h1>
+
+<p> Results({{ data.count }}) </p>
+<!--<p> previous{{ data.previous }} </p>
+<p> next{{ data.next}} </p>
+<p> num_pages{{ data.total_pages}} </p> -->
+
+<p>&ltFiltering goes here&gt</p>
+
+  <table class="striped-table">
+    <thead>
+      <tr>
+        <th>Section</th>
+        <th>Title</th>
+        <th>Activity</th>
+        <th>Instructor</th>
+        <th>Created Date</th>
+        <th>Request Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for course in data.results %}
+      <tr>
+
+        <td><a href='/courses/{{course.course_SRS_Title}}'>{{course.course_SRS_Title}} </a></td>
+        <td>{{course.course_name}}</td>
+        <td>{{course.course_activity}}</td>
+
+        <td>
+          {% for instructor in course.instructors %}
+              {% if forloop.last %}
+                {{instructor}}
+              {% else %}
+                {{instructor}},
+              {% endif %}
+          {% endfor %}
+        </td>
+        <td>{{course.created}} </td>
+        <!--<td>{{course.created|date:'m/d/Y'}} {{course.created|time:'h:i' }}</td> -->
+        <td>
+          <!-- REQUEST MODAL -->
+          {{course.requested}}
+          {% if course.requested == True %}
+              <!-- this button should pull up the submitted request! -->
+              <button type="submit" class="muted-button" >Requested</button>
+          {% else %}
+            <!--  <input type="hidden" name="requested" value="true">
+              <button type="submit" class="button" >Request</button>-->
+
+              <!-- Button trigger modal -->
+              <button class="button" data-toggle="modal" data-target="#exampleModalCenter">
+                Request
+              </button>
+
+              <!-- Modal -->
+              <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLongTitle">Basic Request</h5>
+                      <div class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                      </div>
+                    </div>
+                    <div class="modal-body">
+
+                      <form action="{% url 'request-list' %}" method="POST">
+                        {% csrf_token %}
+
+                          <label for="inputCanvasID">Copy From Canvas Site </label>
+                          <input type="text" id="inputCanvasID" name="copy_from_course" class="form-control mx-sm-3" placeholder="CANVAS SITE ID" aria-describedby="textHelpInline">
+                          <small id="passwordHelpInline" class="text-muted">
+                            Canvas Site ID is found in `https://canvas.upenn.edu/courses/&lt;CANVAS_ID&gt;`
+                            If left blank, the course created will have no content copied.
+                          </small>
+
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <small> Hide these values later </small>
+                        <input name="course_requested" class="form-control" type="text" value="1">
+
+
+                        <input name="status" class="form-control" type="hidden" value="SUBMITTED">
+                        <input name="view_type" class="form-control" type="hidden" value="UI">
+                      <button type="button" class="accent-button" style="font-weight: 600;">Custom Request</button> <!-- Custom Request takes you to the full page form -->
+                      <button type="submit" value="save" style="font-weight: 600;">Submit request</button>
+                    </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+          {% endif %}
+
+
+
+        <!--  {
+              "course_requested": null,
+              "copy_from_course": "",
+              "canvas_link": "",
+              "status": null
+          }-->
+
+
+
+
+        </td>
+      </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+
+<!-- PAGINATION -->
+<nav aria-label="Page navigation example" style="padding-top:0px;">
+  <ul class="pagination justify-content-center">
+
+      {% if data.previous %}
+    <li class="page-item">
+      <a class="page-link" href="{{data.previous}}" tabindex="-1">Previous</a>
+      {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="" tabindex="-1">Previous</a>
+      {% endif %}
+    </li>
+<!-- fix these links-->
+    <li class="page-item disabled"><a class="page-link" href="#">1</a></li>
+    <li class="page-item disabled"><a class="page-link" href="#">2</a></li>
+    <li class="page-item disabled"><a class="page-link" href="#">3</a></li>
+    {% if data.next %}
+    <li class="page-item">
+      <a class="page-link" href={{data.next}}>Next</a>
+
+    {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="" tabindex="-1">Next</a>
+
+    {% endif %}
+  </li>
+  </ul>
+</nav>
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "base_generic.html" %}
+
+{% block schools %}active{% endblock %}
+{% block content %}
+<div class="medium-container">
+
+  <h1> Schools</h1>
+
+  <p> Results({{ data.count }}) </p>
+  <!--<p> previous{{ data.previous }} </p>
+  <p> next{{ data.next}} </p>
+  <p> num_pages{{ data.total_pages}} </p> -->
+
+  <p> &lt each name should link to Courses filtered by that variable &gt </p>
+    <p> &lt need to handle authentication of last column &gt </p>
+    <table class="striped-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Abbr.</th>
+          <th>Visibility</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for request in data.results %}
+        <tr>
+          <td>{{request.name}}</td>
+          <td>{{request.abbreviation}}</td>
+          <td>
+            <form action="/api/schools/1/" data-method="PUT"  novalidate="">
+            <!-- <form action="{% url 'school-detail' pk=1 %}" method="POST"> -->
+              {% csrf_token %}
+
+
+                {% if request.visible == True %}
+
+
+                <button type="submit" class="button" > <b>REMOVE</b> <i class="fas fa-minus-square"></i></button>
+              TRUE (click button to remove)
+                {% else %}
+
+                <button class="button" > <b>ADD</b> <i class="fas fa-plus-square"></i></button>
+                FALSE (click button to add)
+              {% endif %}
+          </form>
+          </td>
+        </tr>
+          {% endfor %}
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+  <!-- PAGINATION -->
+  <nav aria-label="Page navigation example" style="padding-top:0px;">
+    <ul class="pagination justify-content-center">
+
+        {% if data.previous %}
+      <li class="page-item">
+        <a class="page-link" href="{{data.previous}}" tabindex="-1">Previous</a>
+        {% else %}
+      <li class="page-item disabled">
+        <a class="page-link" href="" tabindex="-1">Previous</a>
+        {% endif %}
+      </li>
+  <!-- fix these links-->
+      <li class="page-item disabled"><a class="page-link" href="#">1</a></li>
+      <li class="page-item disabled"><a class="page-link" href="#">2</a></li>
+      <li class="page-item disabled"><a class="page-link" href="#">3</a></li>
+      {% if data.next %}
+      <li class="page-item">
+        <a class="page-link" href={{data.next}}>Next</a>
+
+      {% else %}
+      <li class="page-item disabled">
+        <a class="page-link" href="" tabindex="-1">Next</a>
+
+      {% endif %}
+    </li>
+    </ul>
+  </nav>
+
+
+</div>
+{% endblock %}
