@@ -214,7 +214,7 @@ class Request(models.Model):
         """
         some text
         """
-        print("self.pk",self.pk)
+        print("Request self.pk",self.pk)
         super(Request, self).save(*args,**kwargs)
 
 

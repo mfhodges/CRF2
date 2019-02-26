@@ -169,8 +169,10 @@ class RequestViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
 
 
-        #course = Course.objects.get(course_SRS_Title='SRS_XX')# get Course instance
-        #print(course.course_SRS_Title)
+        course = Course.objects.get(course_SRS_Title=request.data['course_requested'])# get Course instance
+        course.requested = True
+        course.save()
+        print(course.course_SRS_Title, course.requested)
         # update course instance
 
         # this allow for the redirect to the UI and not the API endpoint. 'view_type' should be defined in the form that submits this request
