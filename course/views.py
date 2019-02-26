@@ -85,6 +85,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 
     def perform_create(self, serializer):
+        print('CourseViewSet.perform_create lookup field', self.lookup_field)
         print("CourseViewSet.perform_create", self.request.data)
         serializer.save(owner=self.request.user)
 
@@ -105,13 +106,14 @@ class CourseViewSet(viewsets.ModelViewSet):
         return response
 
     def retrieve(self, request, *args, **kwargs):
+        print('CourseViewSet.retreive lookup field', self.lookup_field)
+
         response = super(CourseViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
             print("bye george(detail)!\n",response.data)
             return Response({'course': response.data}, template_name='course_detail.html')
 
         return response
-
 
 
 
@@ -150,11 +152,14 @@ class RequestViewSet(viewsets.ModelViewSet):
         print('jjj', self.lookup_field)
         #print("args",args)
         #print("kwargs",kwargs)
-        print("in create: request.data", request.data)
+        print("views.py in create: request.data", request.data)
+
+
         #print("in create: request.POST", request.POST)
         #print("in create: request.meta", request.META) # could use 'HTTP_REFERER': 'http://127.0.0.1:8000/courses/'
         #print("in create: request.query_params", request.query_params)
         print("in create: request.accepted_renderer.format", request.accepted_renderer.format)
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         print("howy")
@@ -164,10 +169,11 @@ class RequestViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
 
 
-        course = Course.objects.get(course_SRS_Title='SRS_XX')# get Course instance
-        print(course.course_SRS_Title)
+        #course = Course.objects.get(course_SRS_Title='SRS_XX')# get Course instance
+        #print(course.course_SRS_Title)
         # update course instance
 
+        # this allow for the redirect to the UI and not the API endpoint. 'view_type' should be defined in the form that submits this request
         if 'view_type' in request.data:
             if request.data['view_type'] == 'UI':
                 return redirect('UI-course-list')

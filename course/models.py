@@ -104,13 +104,10 @@ class Course(models.Model):
 
     """
     course_section = models.CharField(max_length=250) # need a validator on this
-
     course_activity = models.CharField(max_length=250)# need a validator on this
-
     course_instructor = models.ForeignKey('auth.User', related_name='courses', on_delete=models.CASCADE) # this is not correct!
     course_ = models.CharField(max_length=250)# need a validator on this
     """
-
 
     """
     course_section = //i.e. AFRC050 402 2019A - must be unique
@@ -139,12 +136,24 @@ class Course(models.Model):
         """
         some text
         """
-
+        print("saving Course instance")
+        print("self.pk",self.pk)
         super(Course, self).save(*args,**kwargs)
 
     def __str__(self):
         return self.course_SRS_Title # this should be changed to the SRS name
 
+    def __unicode__(self):
+        return self.course_SRS_Title # this should be changed to the SRS name
+
+    #def get_absolute_url(self):
+    #    """
+    #    get_absolute_url should return a string of the url that is
+    #    associated with that particular model instance. This is
+    #    especially useful in templates and redirect responses.
+    #    """
+    #    # determine which view?
+    #    return reverse('vegetable', pks={pk: self.pk})
 
 
 class Notice(models.Model):
@@ -184,8 +193,8 @@ class Request(models.Model):
 
     course_requested = models.OneToOneField(
         Course,
-        on_delete=models.CASCADE)
-        #primary_key=True) # once the course is deleted the request will be deleted too.
+        on_delete=models.CASCADE,
+        primary_key=True) # once the course is deleted the request will be deleted too.
 
     copy_from_course =models.CharField(max_length=100, null=True)
     # this should be a list of courses they have rights too
@@ -194,7 +203,7 @@ class Request(models.Model):
 
 
     status = models.CharField(max_length=20, choices=REQUEST_PROCESS_CHOICES,default='SUBMITTED' )
-
+    updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey('auth.User', related_name='requests', on_delete=models.CASCADE , default=None)#should not delete when user is deleted
 
@@ -205,7 +214,7 @@ class Request(models.Model):
         """
         some text
         """
-
+        print("self.pk",self.pk)
         super(Request, self).save(*args,**kwargs)
 
 

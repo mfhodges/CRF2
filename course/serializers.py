@@ -24,10 +24,15 @@ class CourseSerializer(serializers.HyperlinkedModelSerializer):
     # [ ] make sure that course_SRS_Title is unique ! -- it is used to link later
 
     #this adds a field that is not defined in the model
+
     owner = serializers.ReadOnlyField(source='owner.username')
 
-    #request_status = serializers.HyperlinkedIdentityField(view_name='course-request', format='html')
+    # cant uncomment following line without resolving lookup for Request
     course_SRS_Title = serializers.CharField()
+    request_info = serializers.HyperlinkedRelatedField(many=False, lookup_field='course_requested',view_name='request-detail',read_only=True)
+
+    #request_status = serializers.HyperlinkedIdentityField(view_name='course-request', format='html')
+
 
     # Eventually the queryset should also filter by Group = Instructors
     instructors = serializers.SlugRelatedField(many=True,queryset=User.objects.all(), slug_field='username')
@@ -113,12 +118,16 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 class RequestSerializer(serializers.HyperlinkedModelSerializer):
     #this adds a field that is not defined in the model
+    #url = serializers.HyperlinkedIdentityField(view_name='UI-requests', looku
+    print("how???")
     owner = serializers.ReadOnlyField(source='owner.username')
+    course_info = CourseSerializer(source='course_requested', read_only=True)
 
-
-#    course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.exclude(requested=True), slug_field='course_SRS_Title')
+    #course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.exclude(requested=True), slug_field='course_SRS_Title')
 
     # the following line is needed to create the drop down
+
+    #test = CourseSerializer()
     course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='course_SRS_Title')
 
     # IF REQUEST STATUS IS CHANGED TO CANCELED IT SHOULD BE DISASSOCIATED FROM COURSE INSTANCE
@@ -127,6 +136,8 @@ class RequestSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Request
         fields = '__all__' # or a list of field from model like ('','')
+        #exclude = ('course_requested',)
+        #depth=2
 
     def create(self, validated_data):
         """

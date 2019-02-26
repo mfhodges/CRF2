@@ -1,0 +1,2 @@
+will probably be copied largely from https://github.com/ucfopen/canvasapi
+enable the switch from Dev (test environment) to Production (... prod environ)

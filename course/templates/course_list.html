@@ -31,7 +31,7 @@
       {% for course in data.results %}
       <tr>
 
-        <td><a href='/courses/{{course.course_SRS_Title}}'>{{course.course_SRS_Title}} </a></td>
+        <td><a href='{% url "UI-course-detail" pk=course.course_SRS_Title %}'>{{course.course_SRS_Title}} </a></td>
         <td>{{course.course_name}}</td>
         <td>{{course.course_activity}}</td>
 

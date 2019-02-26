@@ -28,7 +28,7 @@
     <tbody>
       {% for request in data.results %}
       <tr>
-        <td><a href='{{forloop.counter}}/'> {{forloop.counter}} </a></td>
+        <td><a href='{% url "UI-request-detail" pk=request.course_info.course_SRS_Title %}'> {{forloop.counter}} </a></td>
         <td>{{request.course_requested}}</td>
         <td>{{request.owner}}</td>
         <td>{{request.created }}</td>
