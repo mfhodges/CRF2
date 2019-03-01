@@ -15,7 +15,7 @@ router.register(r'users', views.UserViewSet)
 router.register(r'notices', views.NoticeViewSet)
 router.register(r'requests', views.RequestViewSet)
 router.register(r'schools', views.SchoolViewSet)
-router.register(r'schools', views.SubjectViewSet)
+router.register(r'subjects', views.SubjectViewSet)
 """
 The example above would generate the following URL patterns:
 

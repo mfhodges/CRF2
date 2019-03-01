@@ -4,6 +4,8 @@ from rest_framework import permissions
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
     Custom permission to only allow owners of an object to edit it.
+    TODO: Expand this so it can check if requesting on behalf of another user
+    with on_behalf_of = request.session.get['user'] 
     """
 
     def has_object_permission(self, request, view, obj):

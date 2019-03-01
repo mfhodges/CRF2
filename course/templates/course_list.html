@@ -51,17 +51,19 @@
           {{course.requested}}
           {% if course.requested == True %}
               <!-- this button should pull up the submitted request! -->
-              <button type="submit" class="muted-button" >Requested</button>
+              <button type="submit" class="muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</button>
           {% else %}
             <!--  <input type="hidden" name="requested" value="true">
               <button type="submit" class="button" >Request</button>-->
 
               <!-- Button trigger modal -->
-              <button class="button" data-toggle="modal" data-target="#exampleModalCenter">
+              <button class="button" data-toggle="modal" data-target="#exampleModalCenter" >
                 Request
               </button>
 
               <!-- Modal -->
+              <!-- simplify with this https://getbootstrap.com/docs/4.0/components/modal/#varying-modal-content -->
+
               <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                   <div class="modal-content">
@@ -71,32 +73,25 @@
                         <i class="fas fa-times"></i>
                       </div>
                     </div>
-                    <div class="modal-body">
-
-                      <form action="{% url 'request-list' %}" method="POST">
-                        {% csrf_token %}
-
+                    <form action="{% url 'request-list' %}" method="POST">
+                      {% csrf_token %}
+                        <div class="modal-body">
                           <label for="inputCanvasID">Copy From Canvas Site </label>
                           <input type="text" id="inputCanvasID" name="copy_from_course" class="form-control mx-sm-3" placeholder="CANVAS SITE ID" aria-describedby="textHelpInline">
                           <small id="passwordHelpInline" class="text-muted">
                             Canvas Site ID is found in `https://canvas.upenn.edu/courses/&lt;CANVAS_ID&gt;`
                             If left blank, the course created will have no content copied.
                           </small>
-
-
-
-                    </div>
-                    <div class="modal-footer">
-                        <small> Hide these values later </small>
-                        <input name="course_requested" class="form-control" type="text" value="1">
-
-
-                        <input name="status" class="form-control" type="hidden" value="SUBMITTED">
-                        <input name="view_type" class="form-control" type="hidden" value="UI">
-                      <button type="button" class="accent-button" style="font-weight: 600;">Custom Request</button> <!-- Custom Request takes you to the full page form -->
-                      <button type="submit" value="save" style="font-weight: 600;">Submit request</button>
+                        </div>
+                        <div class="modal-footer">
+                          <small> Hide these values later </small>
+                          <input name="course_requested" class="form-control" type="text" value="1">
+                          <input name="status" class="form-control" type="hidden" value="SUBMITTED">
+                          <input name="view_type" class="form-control" type="hidden" value="UI">
+                          <button type="button" class="accent-button" style="font-weight: 600;">Custom Request</button> <!-- Custom Request takes you to the full page form -->
+                          <button type="submit" value="save" style="font-weight: 600;">Submit request</button>
+                        </div>
                     </form>
-                    </div>
                   </div>
                 </div>
               </div>

@@ -6,12 +6,13 @@ from rest_framework import generics
 from django.contrib.auth.models import User
 from rest_framework import permissions
 from course.permissions import IsOwnerOrReadOnly
+
 from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
+
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.response import Response
+
 from django.shortcuts import get_object_or_404
 
 from rest_framework.renderers import TemplateHTMLRenderer
@@ -85,6 +86,9 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 
     def perform_create(self, serializer):
+        print("CourseViewSet.perform_create: request.POST", self.request.POST)
+        print("CourseViewSet.perform_create: request.meta", self.request.META) # could use 'HTTP_REFERER': 'http://127.0.0.1:8000/courses/'
+        print("CourseViewSet.perform_create: request.query_params", self.request.query_params)
         print('CourseViewSet.perform_create lookup field', self.lookup_field)
         print("CourseViewSet.perform_create", self.request.data)
         serializer.save(owner=self.request.user)
@@ -94,8 +98,6 @@ class CourseViewSet(viewsets.ModelViewSet):
     # I AM NOT SURE IF THIS IS OKAY WITH AUTHENTICATION
     def list(self, request, *args, **kwargs):
         print('request',request.data)
-        print('args',args)
-        print('kwargs',kwargs)
         response = super(CourseViewSet, self).list(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
             num_pages = -(-response.data['count']//10) # this should get 10 from settings.py
@@ -107,7 +109,6 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         print('CourseViewSet.retreive lookup field', self.lookup_field)
-
         response = super(CourseViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
             print("bye george(detail)!\n",response.data)
@@ -225,12 +226,16 @@ class RequestViewSet(viewsets.ModelViewSet):
 
 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list` and `detail` actions. (READONLY)
     """
+    # only admins ( user.is_staff ) can do anything with this data
+    permission_classes = (permissions.IsAdminUser,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
 
 
 class SchoolViewSet(viewsets.ModelViewSet):
@@ -307,6 +312,7 @@ class HomePage(APIView):
     # TODO
     # [ ] add table for site_request and srs_course
     # [x] add base case of empty responses
+    # [ ] add method for setting session info
 
 
     renderer_classes = [TemplateHTMLRenderer]
@@ -314,8 +320,9 @@ class HomePage(APIView):
 
 
     def get(self, request, *args, **kwargs):
-
-        # handles if there are no notice instances in the db
+        # # TODO:
+        # [ ] Check that valid pennkey
+        # [ ] handles if there are no notice instances in the db
         try:
             notice = Notice.objects.latest()
             print(Notice.notice_text)
@@ -332,9 +339,47 @@ class HomePage(APIView):
     # 2. SRS Courses
     # 3. Canvas Sites
 
+    def post(self, request,*args, **kwargs):
+        print("home request.data",request.data)
+        set_session(request)
 
-    #return Response({''})
+        return redirect(request.path)
 
+
+def post( request,*args, **kwargs):
+    print("home request.data",request.data)
+    set_session(request)
+    print(redirect("/"))
+    return redirect("/")
+
+def set_session(request):
+    # Get a session value, setting a default if it is not present (None)
+    # check if existing
+    if request.session.get('on_behalf_of','None'):
+        on_behalf_of = request.session.get('on_behalf_of','None')
+    else:
+        on_behalf_of = 'None'
+    # see if session['on_behalf_of'] is set in request
+    # this means they have just set it but it also may have already been set
+    print("should be set to None ",on_behalf_of)
+    try:
+        on_behalf_of = request.data['on_behalf_of']
+        print("found on_behalf_of in request.data ", on_behalf_of)
+    except KeyError:
+        # already set
+        pass
+    # setting to either None or value from try statement
+    request.session['on_behalf_of'] = on_behalf_of
+    print("fun!", request.session['on_behalf_of'])
+
+
+
+def validate_pennkey(pennkey):
+    try:
+        user = Users.objects.get(username=pennkey)
+    except Notice.DoesNotExist:
+        user = None
+    return user
 
 def send_email(request):
     subject = request.POST.get('subject', '')

@@ -18,8 +18,8 @@
   <table class="striped-table">
     <thead>
       <tr>
-        <th>Request ID</th>
-        <th>Course</th>
+        <th>Section</th>
+        <th>Title</th>
         <th>Requestor</th>
         <th>Date Requested</th>
         <th>Status</th>
@@ -28,8 +28,8 @@
     <tbody>
       {% for request in data.results %}
       <tr>
-        <td><a href='{% url "UI-request-detail" pk=request.course_info.course_SRS_Title %}'> {{forloop.counter}} </a></td>
-        <td>{{request.course_requested}}</td>
+        <td><a href='{% url "UI-request-detail" pk=request.course_info.course_SRS_Title %}'> {{request.course_requested}} </a></td>
+        <td>{{request.course_info.course_name}}</td>
         <td>{{request.owner}}</td>
         <td>{{request.created }}</td>
         <td>{{request.status}}</td>

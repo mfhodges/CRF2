@@ -43,12 +43,9 @@ class CourseSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Course
         fields = '__all__' # or a list of field from model like ('','')
-        extra_kwargs = {
-            #'url' : {'view_name':'UI-course-detail', 'lookup_field':'course_SRS_Title',
-            #        'view_name':'courses-detail', 'lookup_field':'course_SRS_Title'}
-
-        }
-
+        #read_only_fields = ('requested',)
+        # Ideally the requested field would be forced to be the default on creation
+        # or rather just not on the form but available in the -detail
 
 
     def create(self, validated_data):
@@ -73,7 +70,7 @@ class CourseSerializer(serializers.HyperlinkedModelSerializer):
 
         for subject_data in subjects_data:
             print("subject data", subject_data)
-
+            course.course_subjects.add(subject_data)
         #print(course.data)
         return course
 
@@ -109,10 +106,27 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'courses','requests')#,'course_list')
+        fields = ('id', 'username', 'courses','requests', 'email')#,'course_list')
+        read_only_fields = ('courses',)
         # because courses is a REVERSE relationship on the User model,
         # it will not be included by default when using the ModelSerializer class
         # so we needed to add an explicit field for it.
+
+    def create(self,validated_data):
+        """
+        Create and return a new 'User' instance, given the validated data.
+        """
+        return User.objects.create(**validated_data)
+
+
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing 'User' instance given the validated_data.
+        """
+        instance.name = validated_data.get('username', instance.username)
+        instance.save()
+
+        return instance
 
 
 

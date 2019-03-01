@@ -23,9 +23,35 @@
     <link rel="icon" href="{% static 'images/favicon_book.ico' %}">
 </head>
   <body>
-    <!-- logout / login info goes in header-->
-    <header >
-      <div class="text-right" >
+
+    <header class="flex-row" style="margin-left:0px;margin-right:0px;">
+
+
+      <!-- REQUEST ON BEHALF OF // MASQUERADE -->
+      {% if request.session.on_behalf_of %}
+        <div class="flex-small" id="masquerade" style="background:#f7d6a2">
+          <form method="POST" action="/">
+            {% csrf_token %}
+          <small> Requesting on behalf of '{{ request.session.on_behalf_of }}' </small>
+          <input type="hidden" id="name" value='' name="on_behalf_of" >
+          <button>
+            <i class="fas fa-user-times" data-toggle="tooltip" data-placement="bottom" title="click to stop requesting on behalf of {{ request.session.on_behalf_of }}"></i>
+          </button>
+        </form>
+      </div>
+      {% else %}
+
+        <div class="flex-small" id="masquerade">
+            <small> Request on behalf of user </small>
+            <!-- Button trigger modal -->
+            <button data-toggle="modal" data-target="#AddOnBehalf">
+              <i class="fas fa-user-plus" data-toggle="tooltip" data-placement="bottom" title="click to request on behalf of a user"></i>
+            </button>
+        </div>
+      {% endif %}
+
+      <!-- logout / login info -->
+      <div class="flex-small text-right" id="sign_in">
         {% if user.is_authenticated %}
         <a href="accounts/logout" style="padding-right:15px;">
           {{ user.username }},  logout
@@ -36,7 +62,33 @@
           <i class="fas fa-sign-in-alt"></i></a>
         {% endif %}
       </div>
+
+
+
      </header>
+
+     <!-- Modal -->
+     <div class="modal fade" id="AddOnBehalf" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+       <div class="modal-dialog modal-dialog-centered" role="document">
+         <div class="modal-content">
+           <div class="modal-header">
+             <h5 class="modal-title" id="exampleModalLongTitle">Request On Behalf Of User</h5>
+             <div class="close" data-dismiss="modal" aria-label="Close">
+               <i class="fas fa-times"></i>
+             </div>
+           </div>
+           <div class="modal-body">
+             <form class="form-inline" method="POST" action="{% url 'home' %}">
+               {% csrf_token %}
+               <label for="name">User's Pennkey</label>
+                 <input type="text" id="name" placeholder="pennkey" name="on_behalf_of" required>
+                 <input type="submit" value="save">
+             </form>
+           </div>
+
+         </div>
+       </div>
+     </div>
 
     <div class="primitive">
     <div class="flex-container">
@@ -56,7 +108,23 @@
               <li class="title">Admin</li>
               <li><a href="/admin">Admin Portal</a></li>
               <li><a href="/autoadds">Manage Auto-Adds</a></li>
+              <!-- logout / login info -->
+
+
+              <li id="side_sign_in">
+                {% if user.is_authenticated %}
+                <a href="accounts/logout">
+                  {{ user.username }},  logout
+                  <i class="fas fa-sign-out-alt"></i></a>
+                {% else %}
+                <a href="accounts/login">
+                  login
+                  <i class="fas fa-sign-in-alt"></i></a>
+                {% endif %}
+              </li>
           </ul>
+
+
 
         </nav>
         <!-- need to find a way to push this to the bottom -->
@@ -73,18 +141,8 @@
       <main class="content margin" id="main-content">
 
 
-          <!--<blockquote>
-	           <p>Note: should go here</p>
 
-           </blockquote> -->
            {% block content %}{% endblock %}
-
-        <!--  <footer class="footer text-center">
-					       <div class="medium-container" >
-
-                         <i>footer content</i>
-					</div>
-				</footer>-->
       </main>
     </div>
 </div>
@@ -97,7 +155,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <!--<script src="https://taniarascia.github.io/primitive/js/example.js"></script>-->
 <script>
-// Toggle nav
+///// Toggle nav /////
 $('.toggle-nav').click(function (e) {
   if ($('.toggle-nav').hasClass('active')) {
     $('.toggle-nav').removeClass('active');
@@ -114,7 +172,7 @@ $('html').click(function () {
   $('.toggle-nav').removeClass('active');
   $('#references').show();
 });
-
+///// Toggle Notices /////
 $('.close-notification i').click(function (e) {
   if ($('blockquote').hasClass('show')) {
     $('blockquote').removeClass('show'); // removing the show class adds the expand icon
@@ -130,6 +188,12 @@ $('.close-notification i').click(function (e) {
     $('.close-notification i').addClass('fa-times');
   }
 });
+
+//// Enable Tooltips ////
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
 </script>
 <script async="" defer="" src="https://buttons.github.io/buttons.js"></script>
 

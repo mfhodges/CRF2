@@ -679,6 +679,81 @@ textarea.has-error:active {
 :-ms-input-placeholder {
   color: #9a9a9a; }
 
+/* masquerade */
+header .flex-small {
+  margin: 0px;
+  flex: 1 1 0;
+}
+
+#sign_in{
+    min-width: fit-content;
+}
+
+
+#masquerade {
+  z-index: 99;
+  max-width:fit-content;
+  min-width:fit-content !important;
+  background: #0366ee1a;
+
+  margin-left: 27%;
+  padding: 0px;
+  padding-left: 5px;
+
+}
+#masquerade > button,
+#masquerade > form > button {
+  font-family: 'FontAwesome';
+  background: none;
+  padding: .5rem;
+  border: none;
+  color: #404040;
+}
+
+
+#side_sign_in {
+  text-align: center;
+}
+
+
+/* when the screen width is bigger than 600px */
+@media (min-width: 600px) {
+  #masquerade {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    /*color: pink;*/
+    margin-left: 33%;
+  }
+  #sign_in{
+      min-width: fit-content;
+  }
+}
+/* when the screen width is bigger than 800px */
+
+@media screen and (min-width: 800px) {
+/*  header > div:nth-child(1){
+    margin-left: 220px;
+  }*/
+
+  #masquerade {
+    margin-top:-15px;
+    /*color: orange;*/
+    margin-left: 45%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  #sign_in{
+      min-width: fit-content;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+  }
+  #side_sign_in {
+    display: none;
+  }
+
+}
+
+
 /* Tables
   =============== */
 table {
@@ -717,6 +792,8 @@ caption {
 @media (min-width: 600px) {
   .contain-table {
     width: 100%; } }
+
+
 
 /* Navigation
   =============== */

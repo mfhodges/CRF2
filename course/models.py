@@ -42,8 +42,8 @@ class School(models.Model):
     requires list_asView but not individual object view
     """
 
-    name = models.CharField(max_length=50)
-    abbreviation = models.CharField(max_length=10)
+    name = models.CharField(max_length=50,unique=True)
+    abbreviation = models.CharField(max_length=10,unique=True)
     visible = models.BooleanField(default=True)
 
     def __str__(self):
@@ -55,8 +55,8 @@ class Subject(models.Model):
     requires list_asView but not individual object view
     """
 
-    name = models.CharField(max_length=50)
-    abbreviation = models.CharField(max_length=10)
+    name = models.CharField(max_length=50, unique=True)
+    abbreviation = models.CharField(max_length=10,unique=True)
     visible = models.BooleanField(default=True)
 
     def __str__(self):
