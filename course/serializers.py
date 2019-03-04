@@ -136,7 +136,7 @@ class RequestSerializer(serializers.HyperlinkedModelSerializer):
     print("how???")
     owner = serializers.ReadOnlyField(source='owner.username')
     course_info = CourseSerializer(source='course_requested', read_only=True)
-
+    masquerade = serializers.ReadOnlyField()
     #course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.exclude(requested=True), slug_field='course_SRS_Title')
 
     # the following line is needed to create the drop down
@@ -150,7 +150,7 @@ class RequestSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Request
         fields = '__all__' # or a list of field from model like ('','')
-        #exclude = ('course_requested',)
+        #exclude = ('masquerade',)
         #depth=2
 
     def create(self, validated_data):
@@ -168,8 +168,8 @@ class RequestSerializer(serializers.HyperlinkedModelSerializer):
         #course_requested_data = validated_data.pop('course_requested')
         # check that this course.requested==False
         #print("course_requested_data", course_requested_data)
-        print(validated_data)
-
+        print("validated_Data",validated_data)
+        #validated_data['masquerade'] = "fucku"
         request_object = Request.objects.create(**validated_data)
         #validated_data['course_requested'].requested = False
 

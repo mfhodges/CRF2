@@ -101,7 +101,6 @@ class Course(models.Model):
 
     requested =  models.BooleanField(default=False)# False -> not requested
 
-
     """
     course_section = models.CharField(max_length=250) # need a validator on this
     course_activity = models.CharField(max_length=250)# need a validator on this
@@ -205,7 +204,8 @@ class Request(models.Model):
     status = models.CharField(max_length=20, choices=REQUEST_PROCESS_CHOICES,default='SUBMITTED' )
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
-    owner = models.ForeignKey('auth.User', related_name='requests', on_delete=models.CASCADE , default=None)#should not delete when user is deleted
+    owner = models.ForeignKey('auth.User', related_name='requests', on_delete=models.CASCADE)#should not delete when user is deleted
+    masquerade = models.CharField(max_length=20)
 
     class Meta:
         ordering = ('created',)
@@ -214,7 +214,8 @@ class Request(models.Model):
         """
         some text
         """
-        print("Request self.pk",self.pk)
+        
+        print("(Model.py) Request self.pk",self.pk)
         super(Request, self).save(*args,**kwargs)
 
 

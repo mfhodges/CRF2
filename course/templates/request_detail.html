@@ -3,12 +3,18 @@
 
 {% block content %}
 <div class="medium-container">
-
 <h1>Request Detail</h1>
 
 
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
 
-{% for key, value in request.items %}
+{% for key, value in data.items %}
   <p>  {{ key }}: {{ value }}</p>
 {% endfor %}
 

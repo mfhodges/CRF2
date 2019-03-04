@@ -62,7 +62,6 @@ urlpatterns = [
     path('subjects/', views.SubjectViewSet.as_view({'get':'list'},renderer_classes=[renderers.TemplateHTMLRenderer]), name='UI-subject-list'),
     # --------------- HOMEPAGE view -------------------
     path('', views.HomePage.as_view(), name='home')
-
     #path('users/<?:pennkey>/', UserDetail.asview(),name='user-detail'),
 ]
 #path('course', views.CourseViewSet.as_view({'get': 'list'})),

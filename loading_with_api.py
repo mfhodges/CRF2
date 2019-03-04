@@ -229,7 +229,7 @@ def bulk_create_courses():
     terms = ['A','B','C']
     activity = ['LEC','SEM','LAB']
 
-    for i in range(100,101):
+    for i in range(0,101):
         instructor_size = random.choice([1,1,2,3])
         subject_size = random.choice([1,1,2,3])
         school_size = random.choice([1,2,1])
@@ -258,6 +258,10 @@ print("Courses\n", get_courses(),"\n" )
 #print("Subjects\n", get_subjects(),"\n")
 #print("Schools\n", get_schools(),"\n")
 
+print("~~~~~CREATING USERS~~~~~\n")
+print(bulk_create_users())
+print("~~~~~CREATING SCHOOLS & SUBJECTS ~~~~~\n")
+print(bulk_create_sub_sch())
 
 bulk_create_courses()
 

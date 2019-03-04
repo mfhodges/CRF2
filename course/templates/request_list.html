@@ -26,7 +26,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for request in data.results %}
+      {% for request in data %}
       <tr>
         <td><a href='{% url "UI-request-detail" pk=request.course_info.course_SRS_Title %}'> {{request.course_requested}} </a></td>
         <td>{{request.course_info.course_name}}</td>
