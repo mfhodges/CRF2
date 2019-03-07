@@ -16,6 +16,7 @@ router.register(r'notices', views.NoticeViewSet)
 router.register(r'requests', views.RequestViewSet)
 router.register(r'schools', views.SchoolViewSet)
 router.register(r'subjects', views.SubjectViewSet)
+router.register(r'autoadds', views.AutoAddViewSet)
 """
 The example above would generate the following URL patterns:
 
@@ -61,7 +62,9 @@ urlpatterns = [
     # --------------- Subject list view -------------------
     path('subjects/', views.SubjectViewSet.as_view({'get':'list'},renderer_classes=[renderers.TemplateHTMLRenderer]), name='UI-subject-list'),
     # --------------- HOMEPAGE view -------------------
-    path('', views.HomePage.as_view(), name='home')
+    path('', views.HomePage.as_view(), name='home'),
+    # --------------- AUTOADDS view -------------------
+    path('autoadds/', views.AutoAddViewSet.as_view({'get':'list'},template_name='autoadd_list.html'), name='UI-autoadd-list'),
     #path('users/<?:pennkey>/', UserDetail.asview(),name='user-detail'),
 ]
 #path('course', views.CourseViewSet.as_view({'get': 'list'})),

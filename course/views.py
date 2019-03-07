@@ -1,6 +1,6 @@
 
-from course.models import Course, Notice, Request, School, Subject
-from course.serializers import CourseSerializer, UserSerializer, NoticeSerializer, RequestSerializer, SchoolSerializer, SubjectSerializer
+from course.models import Course, Notice, Request, School, Subject, AutoAdd
+from course.serializers import CourseSerializer, UserSerializer, NoticeSerializer, RequestSerializer, SchoolSerializer, SubjectSerializer, AutoAddSerializer
 from rest_framework import generics, permissions
 from django.contrib.auth.models import User
 from course.permissions import IsOwnerOrReadOnly
@@ -42,26 +42,6 @@ of Django REST Framework's class-based views and serializers'see: http://www.cdr
 
 #self.request.QUERY_PARAMS.get('appKey', None)
 
-
-
-"""
-# below is not needed now that a router is being used
-@api_view(['GET'])
-#@renderer_classes((JSONRenderer,))
-def api_root(request, format=None):
-    response = Response({
-        'users': reverse('user-list', request=request, format=format),
-        'courses': reverse('course-list', request=request, format=format),
-        'notices': reverse('notice-list', request=request, format=format)
-    })
-    return response
-
-    #'courses': reverse('course-list', request=request, format=format)
-
-    # reverse(viewname, *args, **kwargs)
-    # 1. using reverse function to return fully qualified URLs
-    # 2. URL patterns are identified by convenience names that we will declare in urls.py
-"""
 
 
 # for more on viewsets see: https://www.django-rest-framework.org/api-guide/viewsets/
@@ -129,6 +109,7 @@ def set_session(request):
 
 
 
+
 class CourseViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
@@ -146,7 +127,10 @@ class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
-
+    #filter_backends = (DjangoFilterBackend,)
+    filter_fields = ('course_SRS_Title','course_name', 'course_activity','instructors','course_schools','course_subjects',)
+    #template_name='course_list.html'
+    #renderer_classes = [TemplateHTMLRenderer]
 
     def perform_create(self, serializer):
         print("CourseViewSet.perform_create: request.POST", self.request.POST)
@@ -160,25 +144,50 @@ class CourseViewSet(viewsets.ModelViewSet):
     # below allows for it to be passed to the template !!!!
     # I AM NOT SURE IF THIS IS OKAY WITH AUTHENTICATION
     def list(self, request, *args, **kwargs):
-        print('request',request.data)
-        response = super(CourseViewSet, self).list(request, *args, **kwargs)
-        if request.accepted_renderer.format == 'html':
-            #num_pages = -(-response.data['count']//10) # this should get 10 from settings.py
-            #response.data.update({'total_pages': num_pages})
-            print("bye george(list)!\n",response.data)
-            #parsed_links, last_page = get_last_page_number(response)
-            last_page = None
-            parsed_links = get_links(response,request)
-            print("last_page", last_page)
-            print("parsed_links", parsed_links)
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        print("1")
+        if page is not None:
 
-            return Response({'data': response.data, 'pagination':parsed_links}, template_name='course_list.html')
-        print("Coursviewset", response.data)
-        print(response)
-        print(response.data)
-        print(response.items())
-        print(request.content_type)
+            serializer = self.get_serializer(page, many=True)
+            response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
+
+            print("template_name",response.template_name)
+            if request.accepted_renderer.format == 'html':
+                response.template_name = 'course_list.html'
+                print("template_name",response.template_name)
+                
+                response.data = {'results': response.data,'paginator':self.paginator}
+
+            print("request.accepted_renderer.format",request.accepted_renderer.format)
+
+            return response
+        print("2")
+        serializer = self.get_serializer(queryset, many=True)
+        response = Response(serializer.data)
+        if request.accepted_renderer.format == 'html':
+            print("template_name",response.template_name)
+            response.template_name = 'course_list.html'
+            print("template_name",response.template_name)
+            response.data = {'results': response.data}
         return response
+
+
+        #response = get_paginated_response(selfsuper(CourseViewSet, self).list(request, *args, **kwargs))
+        ##if request.accepted_renderer.format == 'html':
+
+
+            #{'data': response.data, 'pagination':parsed_links,'paginator':response['Link']}
+            ##return Response({'data': response.data}, template_name='course_list.html')
+        #print("Coursviewset", response.data)
+        #print(response)
+        #print(response.data)
+        #print(response.items())
+        #print(request.content_type)
+
+        #return response
+
+    # FOR PAGINATION: https://github.com/tbeadle/django-rest-framework-link-header-pagination/blob/master/drf_link_header_pagination/__init__.py
 
     def retrieve(self, request, *args, **kwargs):
         print('CourseViewSet.retreive lookup field', self.lookup_field)
@@ -210,6 +219,7 @@ class RequestViewSet(viewsets.ModelViewSet):
 
     queryset = Request.objects.all()#.order_by() # order by
     serializer_class = RequestSerializer
+    filter_fields = ('copy_from_course','status','owner','course_requested',)
     #permission_classes = (permissions.IsAuthenticatedOrReadOnly,
     #                      IsOwnerOrReadOnly,)
     def create(self, request, *args, **kwargs):
@@ -415,6 +425,7 @@ class HomePage(APIView):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'home_content.html'
 
+
     def get(self, request, *args, **kwargs):
         # # TODO:
         # [ ] Check that valid pennkey
@@ -455,9 +466,18 @@ class HomePage(APIView):
 
 
 
+class AutoAddViewSet(viewsets.ModelViewSet):
+    """
+    THIS IS A TEMPORARY COPY
+    This viewset automatically provides `list` and `detail` actions.
+    """
+    queryset = AutoAdd.objects.all()
+    serializer_class = AutoAddSerializer
+    template_name = 'autoadd_list.html'
 
-
-
+    def get(self, request, *args, **kwargs):
+        context = super().get_renderer_context()
+        print(context)
 
 def send_email(request):
     subject = request.POST.get('subject', '')

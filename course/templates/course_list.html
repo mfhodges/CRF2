@@ -1,10 +1,12 @@
 {% extends "base_generic.html" %}
-
+{% load crispy_forms_tags %}
+{% load rest_framework %}
 <!-- this sets the nav li to active -->
 {% block courses %}active{% endblock %}
 <!-- see for date format info https://docs.djangoproject.com/en/2.1/ref/settings/#date-input-formats -->
 
 {% block content %}
+
 <div class="medium-container">
 
   <!-- add filtering bit -->
@@ -15,7 +17,11 @@
 <!--<p> previous{{ data.previous }} </p>
 <p> next{{ data.next}} </p> -->
 
-
+{% if paginator %}
+  <nav style="float: right">
+    {% get_pagination_html paginator %}
+  </nav>
+{% endif %}
 
 <p>&ltFiltering goes here&gt</p>
 
@@ -31,7 +37,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for course in data %}
+      {% for course in results %}
       <tr>
 
         <td><a href='{% url "UI-course-detail" pk=course.course_SRS_Title %}'>{{course.course_SRS_Title}} </a></td>
@@ -58,55 +64,58 @@
           {% else %}
             <!--  <input type="hidden" name="requested" value="true">
               <button type="submit" class="button" >Request</button>-->
-
               <!-- Button trigger modal -->
-              <button class="button" data-toggle="modal" data-target="#exampleModalCenter" >
+              <button class="button" data-toggle="modal" data-target="#exampleModalCenter" data-course="{{course.course_SRS_Title}}">
                 Request
               </button>
-
-              <!-- Modal -->
-              <!-- simplify with this https://getbootstrap.com/docs/4.0/components/modal/#varying-modal-content -->
-
-              <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLongTitle">Basic Request</h5>
-                      <div class="close" data-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                      </div>
-                    </div>
-                    <form action="{% url 'request-list' %}" method="POST">
-                      {% csrf_token %}
-                        <div class="modal-body">
-                          <label for="inputCanvasID">Copy From Canvas Site </label>
-                          <input type="text" id="inputCanvasID" name="copy_from_course" class="form-control mx-sm-3" placeholder="CANVAS SITE ID" aria-describedby="textHelpInline">
-                          <small id="passwordHelpInline" class="text-muted">
-                            Canvas Site ID is found in `https://canvas.upenn.edu/courses/&lt;CANVAS_ID&gt;`
-                            If left blank, the course created will have no content copied.
-                          </small>
-                        </div>
-                        <div class="modal-footer">
-                          <small> Hide these values later </small>
-                          <input name="course_requested" class="form-control" type="text" value="1">
-                          <input name="status" class="form-control" type="hidden" value="SUBMITTED">
-                          <input name="view_type" class="form-control" type="hidden" value="UI">
-                          <button type="button" class="accent-button" style="font-weight: 600;">Custom Request</button> <!-- Custom Request takes you to the full page form -->
-                          <button type="submit" value="save" style="font-weight: 600;">Submit request</button>
-                        </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-
           {% endif %}
-
-
         </td>
       </tr>
         {% endfor %}
     </tbody>
   </table>
+
+
+
+  <!-- Modal -->
+  <!-- simplify with this https://getbootstrap.com/docs/4.0/components/modal/#varying-modal-content -->
+
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle"> Basic Request For </h5>
+          <div class="close" data-dismiss="modal" aria-label="Close">
+            <i class="fas fa-times"></i>
+          </div>
+        </div>
+        <form action="{% url 'request-list' %}" method="POST">
+          {% csrf_token %}
+            <div class="modal-body">
+              <label for="inputCanvasID">Copy From Canvas Site </label>
+              <input type="text" id="inputCanvasID" name="copy_from_course" class="form-control mx-sm-3" placeholder="CANVAS SITE ID" aria-describedby="textHelpInline">
+              <small id="passwordHelpInline" class="text-muted">
+                Canvas Site ID is found in `https://canvas.upenn.edu/courses/&lt;CANVAS_ID&gt;`
+                If left blank, the course created will have no content copied.
+              </small>
+            </div>
+            <div class="modal-footer">
+              <input name="course_requested" type="hidden"class="form-control" type="text" value="1">
+              <input name="status" class="form-control" type="hidden" value="SUBMITTED">
+              <input name="view_type" class="form-control" type="hidden" value="UI">
+              <button type="button" class="accent-button" style="font-weight: 600;">Custom Request</button> <!-- Custom Request takes you to the full page form -->
+              <button type="submit" value="save" style="font-weight: 600;">Submit request</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
 
 
 <!-- PAGINATION -->
@@ -121,10 +130,8 @@
       <a class="page-link" href="" tabindex="-1">Previous</a>
       {% endif %}
     </li>
-
 <!-- fix these links-->
 <!-- could be taking advantage of a foorlop somewhere -->
-
     {% if pagination.prev %}
       <li class="page-item"><a class="page-link" href="{{pagination.prev.url}}">{{pagination.prev.value}}</a></li>
     {% endif %}
@@ -136,52 +143,27 @@
           <li class="page-item"><a class="page-link" href="?page={{pagination.next.value|add:"1"}}">{{pagination.next.value|add:"1"}}</a></li>
 
           <!--<li class="page-item disabled"><a class="page-link" href="">...</a></li>-->
-
       {% endif %}
-      <li class="page-item"><a class="page-link" href='{{ pagination.last.url }}'>{{pagination.last.value}}</a></li>
+      <!--<li class="page-item"><a class="page-link" href='{{ pagination.last.url }}'>{{pagination.last.value}}</a></li>-->
     {% endif %}
-
-
 
   <!--  {% if pagination.last.url %}
     <li class="page-item"><a class="page-link" href='{{ pagination.last.url }}'>{{pagination.last.value}}</a></li>
     {% endif %} -->
-
     {% if pagination.next.url %}
     <li class="page-item">
       <a class="page-link" href={{pagination.next.url}}>Next</a>
-
     {% else %}
     <li class="page-item disabled">
       <a class="page-link" href="" tabindex="-1">Next</a>
-
     {% endif %}
   </li>
   </ul>
 </nav>
 
 
-{% if is_paginated %}
-  <ul class="pagination">
-    {% if page_obj.has_previous %}
-      <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
-    {% else %}
-      <li class="disabled"><span>&laquo;</span></li>
-    {% endif %}
-    {% for i in paginator.page_range %}
-      {% if page_obj.number == i %}
-        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-      {% else %}
-        <li><a href="?page={{ i }}">{{ i }}</a></li>
-      {% endif %}
-    {% endfor %}
-    {% if page_obj.has_next %}
-      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
-    {% else %}
-      <li class="disabled"><span>&raquo;</span></li>
-    {% endif %}
-  </ul>
-{% endif %}
+
+
 
 
 </div>

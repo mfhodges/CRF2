@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-
+from django.core.mail import send_mail
 from django.contrib.auth.models import User
 
 # This model is to represent a Course object in the CRF
@@ -31,7 +31,6 @@ class User(User):
 """
         this class expands on the User model
 """
-
 
 #    def __str__(self):
 #        return self.username
@@ -205,7 +204,7 @@ class Request(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey('auth.User', related_name='requests', on_delete=models.CASCADE)#should not delete when user is deleted
-    masquerade = models.CharField(max_length=20)
+    masquerade = models.CharField(max_length=20,null=True)
 
     class Meta:
         ordering = ('created',)
@@ -214,7 +213,7 @@ class Request(models.Model):
         """
         some text
         """
-        
+
         print("(Model.py) Request self.pk",self.pk)
         super(Request, self).save(*args,**kwargs)
 
@@ -229,6 +228,31 @@ class Request(models.Model):
 """
 
 
+
+# https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html
+# see section on Extending User Model Using a One-To-One Link
+class AutoAdd(models.Model):
+    ROLE_CHOICES = (
+    ('ta','TA'),
+    ('instructor','Instructor'),
+    ('designer','Designer'),
+    ('librarian','Librarian'),)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False)
+    school = models.ForeignKey(School,on_delete=models.CASCADE, blank=False)
+    subject = models.ForeignKey(Subject,on_delete=models.CASCADE, blank=False)
+    role = models.CharField(
+            max_length=10,choices = ROLE_CHOICES,)
+
+    #def __str__(self):
+    #    return self.
+
+
+
+    def email_user(self, subject, message, from_email=None, **kwargs):
+        '''
+        Sends an email to this User.
+        '''
+        send_mail(subject, message, from_email, [self.email], **kwargs)
 
 
 

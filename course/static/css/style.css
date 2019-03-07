@@ -975,7 +975,12 @@ main {
   margin: 2.3rem 0;
 }
 
+/* PAGINATION */
 
+.page-item.active .page-link {
+    background-color: #0366ee;
+    border-color: #0366ee;
+  }
 
 
   /* Desktop Styles */

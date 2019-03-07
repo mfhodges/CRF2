@@ -88,7 +88,7 @@
                 {% else %}
                 <input type="text" id="name" placeholder="pennkey" name="on_behalf_of" required >
                 {% endif %}
-                <input type="submit" value="save">
+                <input type="submit" value="submit">
              </form>
 
 
@@ -118,7 +118,7 @@
 
               <li class="title">Admin</li>
               <li><a href="/admin">Admin Portal</a></li>
-              <li><a href="/autoadds">Manage Auto-Adds</a></li>
+              <li><a href="/autoadds" class="{% block autoadd %}{% endblock %}">Manage Auto-Adds</a></li>
               <!-- logout / login info -->
 
 
@@ -176,6 +176,7 @@ $('.toggle-nav').click(function (e) {
 //  $('.toggle-nav').removeClass('active');
 //  $('#references').show();
 //});
+
 ///// Toggle Notices /////
 $('.close-notification i').click(function (e) {
   if ($('blockquote').hasClass('show')) {
@@ -197,8 +198,22 @@ $('.close-notification i').click(function (e) {
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
 })
+
 </script>
 
+<script>
+$('#exampleModalCenter').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var course = button.data('course') // Extract info from data-* attributes
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  var modal = $(this)
+  modal.find('.modal-title').text('Basic Request for ' + course)
+  modal.find(".modal-footer input[name='course_requested']").val(course)
+})
+</script>
+
+<!-- if there has been an issue with masquerade form -->
 {% if messages %}
 <script>
 $(document).ready(function(){

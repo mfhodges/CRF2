@@ -1,7 +1,7 @@
 import json
 import re
 import requests
-from pprintpp import pprint as pp
+
 import csv
 import random
 import time
@@ -125,24 +125,30 @@ user_data = [
 #########  get what is in DB   #########
 ########################################
 
-def get_helper(link):
+def get_helper(response):
     # recursively gets the next page
-    if link == None:
-        return ["end"]
-    print("link",link)
+    try:
+        link = response.links['next']['url']
+    except KeyError:
+        return []
+        print("link",link)
+
     response = requests.get(link, headers=headers,auth=auth )
     r=response.json()
-    return r['results'] + get_helper(r['next'])
+    return r + get_helper(response)
 
 def get_instructors():
     # returns a list of users that could be an instructor
     url = domain + 'users/'
     response = requests.get(url, headers=headers,auth=auth )
     r=response.json()
-    res = r['results']  + get_helper(r['next'])
-    res.remove('end')
-    results = [ x['username'] for x in res ]
-    return results
+    if r == []: # nothing here
+        return None
+    else:
+        res = r  + get_helper(response)
+        #res.remove('end')
+        results = [ x['username'] for x in res ]
+        return results
 
 
 
@@ -152,30 +158,37 @@ def get_subjects():
     url = domain + 'subjects/'
     response = requests.get(url, headers=headers,auth=auth )
     r=response.json()
-    res = r['results'] + get_helper(r['next'])
-    res.remove('end')
-    results = [ x['abbreviation'] for x in res ]
-    return results
+    if r == []:
+        return None
+    else:
+        #print(response.links['next']) # works!
+        res = r + get_helper(response)
+        results = [ x['abbreviation'] for x in res ]
+        return results
 
 def get_schools():
     # returns a list of schools that could be listed for a course
     url = domain + 'schools/'
     response = requests.get(url, headers=headers,auth=auth )
     r=response.json()
-    res = r['results'] + get_helper(r['next'])
-    res.remove('end')
-    results = [ x['abbreviation'] for x in res ]
-    return results
+    if r == []:
+        return None
+    else:
+        res = r + get_helper(response)
+        results = [ x['abbreviation'] for x in res ]
+        return results
 
 def get_courses():
     # returns a list of schools that could be listed for a course
     url = domain + 'courses/'
     response = requests.get(url, headers=headers,auth=auth )
     r=response.json()
-    res = r['results'] + get_helper(r['next'])
-    res.remove('end')
-    results = [ x['course_SRS_Title'] for x in res ]
-    return results
+    if r == []:
+        return None
+    else:
+        res = r + get_helper(response)
+        results = [ x['course_SRS_Title'] for x in res ]
+        return results
 
 
 
@@ -197,7 +210,7 @@ def create_instance(uri,data):
     response = requests.post(url, data=json_data, headers=headers,auth=auth, hooks={'response': print_url} )
     if str(response.status_code)[0] == '2':
         r=response.json()
-        pp(r)
+        print(r)
     else:
         print(response)
         print(response.json())
@@ -258,11 +271,11 @@ print("Courses\n", get_courses(),"\n" )
 #print("Subjects\n", get_subjects(),"\n")
 #print("Schools\n", get_schools(),"\n")
 
-print("~~~~~CREATING USERS~~~~~\n")
-print(bulk_create_users())
-print("~~~~~CREATING SCHOOLS & SUBJECTS ~~~~~\n")
-print(bulk_create_sub_sch())
-
+#print("~~~~~CREATING USERS~~~~~\n")
+#print(bulk_create_users())
+#print("~~~~~CREATING SCHOOLS & SUBJECTS ~~~~~\n")
+#print(bulk_create_sub_sch())
+get_subjects()
 bulk_create_courses()
 
 #data = {'course_SRS_Title': 'SRS_14', 'instructors': ['username_8'], 'course_schools': ['PSOM'], 'course_subjects': ['abbr_30', 'abbr_4'], 'course_term': 'A', 'course_activity': 'Lab', 'course_name': 'course_name_14', 'requested': False}

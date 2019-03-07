@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from course.models import Course, Notice, Request, School, Subject
+from course.models import Course, Notice, Request, School, Subject, AutoAdd
 from django.contrib.auth.models import User
 
 
@@ -274,5 +274,33 @@ class NoticeSerializer(serializers.HyperlinkedModelSerializer):
         Update and return an existing 'Notice' instance given the validated_data.
         """
         instance.notice_text = validated_data.get('notice_text', instance.notice_text)
+        instance.save()
+        return instance
+
+
+
+
+class AutoAddSerializer(serializers.HyperlinkedModelSerializer):
+    # Eventually the queryset should also filter by Group = Instructors
+    user = serializers.SlugRelatedField(many=False,queryset=User.objects.all(), slug_field='username')
+
+    school = serializers.SlugRelatedField(many=False,queryset=School.objects.all(), slug_field='abbreviation')
+    subject = serializers.SlugRelatedField(many=False,queryset=Subject.objects.all(), slug_field='abbreviation')
+
+    class Meta:
+        model = AutoAdd
+        fields = '__all__'
+
+    def create(self, validated_data):
+        """
+        Create and return a new 'Notice' instance, given the validated data.
+        """
+        return AutoAdd.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing 'Notice' instance given the validated_data.
+        """
+        #instance.notice_text = validated_data.get('notice_text', instance.notice_text)
         instance.save()
         return instance
