@@ -47,32 +47,6 @@ of Django REST Framework's class-based views and serializers'see: http://www.cdr
 # for more on viewsets see: https://www.django-rest-framework.org/api-guide/viewsets/
 # (slightly helpful ) or see: http://polyglot.ninja/django-rest-framework-viewset-modelviewset-router/
 
-#these functions should exist somewhere else !
-
-def get_links(response,request):
-    parsed_links = py_requests.utils.parse_header_links(response['Link'].rstrip('>').replace('>,<', ',<'))
-    reformatted_links = d = { item['rel']: {'url':item['url'], 'value':get_page_number(item['url'])} for item in parsed_links }
-
-    url = request.get_full_path()
-    reformatted_links['current']= {'url':url, 'value':get_page_number(url)}
-    return reformatted_links
-
-def get_page_number(url):
-    try:
-        value = parse.parse_qs(parse.urlsplit(url).query)['page'][0]
-    except KeyError:
-        value = 1
-    return value
-
-def get_last_page_number(response):
-    pages = get_links(response)
-    try:
-        params = parse.parse_qs(parse.urlsplit(pages['last']).query)
-
-        return pages, params['page'][0] # will be string
-    except KeyError:
-        return pages, None
-
 def validate_pennkey(pennkey):
     # assumes usernames are valid pennkeys
 
@@ -129,8 +103,6 @@ class CourseViewSet(viewsets.ModelViewSet):
                           IsOwnerOrReadOnly,)
     #filter_backends = (DjangoFilterBackend,)
     filter_fields = ('course_SRS_Title','course_name', 'course_activity','instructors','course_schools','course_subjects',)
-    #template_name='course_list.html'
-    #renderer_classes = [TemplateHTMLRenderer]
 
     def perform_create(self, serializer):
         print("CourseViewSet.perform_create: request.POST", self.request.POST)
@@ -151,18 +123,14 @@ class CourseViewSet(viewsets.ModelViewSet):
 
             serializer = self.get_serializer(page, many=True)
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
-
             print("template_name",response.template_name)
             if request.accepted_renderer.format == 'html':
                 response.template_name = 'course_list.html'
                 print("template_name",response.template_name)
-                
                 response.data = {'results': response.data,'paginator':self.paginator}
-
             print("request.accepted_renderer.format",request.accepted_renderer.format)
-
             return response
-        print("2")
+
         serializer = self.get_serializer(queryset, many=True)
         response = Response(serializer.data)
         if request.accepted_renderer.format == 'html':
@@ -172,30 +140,12 @@ class CourseViewSet(viewsets.ModelViewSet):
             response.data = {'results': response.data}
         return response
 
-
-        #response = get_paginated_response(selfsuper(CourseViewSet, self).list(request, *args, **kwargs))
-        ##if request.accepted_renderer.format == 'html':
-
-
-            #{'data': response.data, 'pagination':parsed_links,'paginator':response['Link']}
-            ##return Response({'data': response.data}, template_name='course_list.html')
-        #print("Coursviewset", response.data)
-        #print(response)
-        #print(response.data)
-        #print(response.items())
-        #print(request.content_type)
-
-        #return response
-
-    # FOR PAGINATION: https://github.com/tbeadle/django-rest-framework-link-header-pagination/blob/master/drf_link_header_pagination/__init__.py
-
     def retrieve(self, request, *args, **kwargs):
         print('CourseViewSet.retreive lookup field', self.lookup_field)
         response = super(CourseViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
             print("bye george(detail)!\n",response.data)
             return Response({'course': response.data}, template_name='course_detail.html')
-
         return response
 
     def post(self, request,*args, **kwargs):
@@ -234,7 +184,6 @@ class RequestViewSet(viewsets.ModelViewSet):
         """
 
         print("views.py in create: request.data", request.data)
-
         try:
             masquerade = request.session['on_behalf_of']
         except KeyError:
@@ -286,28 +235,49 @@ class RequestViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         print('rrr', self.lookup_field)
 
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        print("1")
+        if page is not None:
 
-        response = super(RequestViewSet, self).list(request, *args, **kwargs)
-        print("in the list... ")
-        #def get_paginated_response(self, data): GenericAPIView
+            serializer = self.get_serializer(page, many=True)
+            response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
+            print("template_name",response.template_name)
+            if request.accepted_renderer.format == 'html':
+                response.template_name = 'request_list.html'
+                print("template_name",response.template_name)
+                response.data = {'results': response.data,'paginator':self.paginator}
+            print("request.accepted_renderer.format",request.accepted_renderer.format)
+            return response
+
+        serializer = self.get_serializer(queryset, many=True)
+        response = Response(serializer.data)
         if request.accepted_renderer.format == 'html':
-            #num_pages = -(-response.data['count']//10) # this should get 10 from settings.py
-            #response.data.update({'total_pages': num_pages})
-
-            #print("bye george(UI-request-list)!\n",response.data)
-            return Response({'data': response.data}, template_name='request_list.html')
+            print("template_name",response.template_name)
+            response.template_name = 'request_list.html'
+            print("template_name",response.template_name)
+            response.data = {'results': response.data}
         return response
+
+
+
+
 
     def retrieve(self, request, *args, **kwargs):
         print("ok in ret self,,",self.request.session.get('on_behalf_of','None'))
         print("ok in ret,,", request.session.get('on_behalf_of','None'))
         print("Request.retrieve")
+        print(request.data)
         response = super(RequestViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
             #print("bye george(UI-request-detail)!\n",response.data)
             return Response({'data': response.data}, template_name='request_detail.html')
         return response
 
+
+
+    def destroy(self, request, *args, **kwargs):
+        print("OH MY GOLLY GEEE")
 
     def post(self, request,*args, **kwargs):
         #if request.user.is_authenticated()
@@ -331,6 +301,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 
+
+
 class SchoolViewSet(viewsets.ModelViewSet):
     """
     This viewset only provides custom `list` actions
@@ -342,19 +314,29 @@ class SchoolViewSet(viewsets.ModelViewSet):
 
 #    def perform_create(self, serializer):
 #        serializer.save(owner=self.request.user)
-
     def list(self, request, *args, **kwargs):
-        print("ohhhhhhhhh")
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        print("1")
+        if page is not None:
 
-        response = super(SchoolViewSet, self).list(request, *args, **kwargs)
+            serializer = self.get_serializer(page, many=True)
+            response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
+            print("template_name",response.template_name)
+            if request.accepted_renderer.format == 'html':
+                response.template_name = 'schools_list.html'
+                print("template_name",response.template_name)
+                response.data = {'results': response.data,'paginator':self.paginator}
+            print("request.accepted_renderer.format",request.accepted_renderer.format)
+            return response
+
+        serializer = self.get_serializer(queryset, many=True)
+        response = Response(serializer.data)
         if request.accepted_renderer.format == 'html':
-
-            print("SchoolViewSet HTML-UI")
-            #num_pages = -(-response.data['count']//10) # this should get 10 from settings.py
-            #response.data.update({'total_pages': num_pages})
-
-            print("bye george(UI-school-list)!\n",response.data)
-            return Response({'data': response.data}, template_name='schools_list.html')
+            print("template_name",response.template_name)
+            response.template_name = 'schools_list.html'
+            print("template_name",response.template_name)
+            response.data = {'results': response.data}
         return response
 
     def post(self, request,*args, **kwargs):
@@ -378,23 +360,32 @@ class SubjectViewSet(viewsets.ModelViewSet):
 
 #    def perform_create(self, serializer):
 #        serializer.save(owner=self.request.user)
-
     def list(self, request, *args, **kwargs):
-        print("ohhhhhhhhh")
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        print("1")
+        if page is not None:
 
-        response = super(SubjectViewSet, self).list(request, *args, **kwargs)
+            serializer = self.get_serializer(page, many=True)
+            response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
+            print("template_name",response.template_name)
+            if request.accepted_renderer.format == 'html':
+                response.template_name = 'subjects_list.html'
+                response.data = {'results': response.data,'paginator':self.paginator}
+            return response
+
+        serializer = self.get_serializer(queryset, many=True)
+        response = Response(serializer.data)
         if request.accepted_renderer.format == 'html':
-            print("SubjectViewSet HTML-UI")
-            #num_pages = -(-response.data['count']//10) # this should get 10 from settings.py
-            #response.data.update({'total_pages': num_pages})
-            print("bye george(UI-subject-list)!\n",response.data)
-            return Response({'data': response.data}, template_name='subjects_list.html')
+            print("template_name",response.template_name)
+            response.template_name = 'subjects_list.html'
+            print("template_name",response.template_name)
+            response.data = {'results': response.data}
         return response
 
     def post(self, request,*args, **kwargs):
 
         #if request.user.is_authenticated():
-
         #need to check if the post is for masquerade
         print(request.get_full_path())
         set_session(request)
@@ -421,7 +412,6 @@ class HomePage(APIView):
     # [x] add base case of empty responses
     # [ ] add method for setting session info
     # [ ] ensure POST is only setting masquerade
-
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'home_content.html'
 
@@ -452,9 +442,7 @@ class HomePage(APIView):
 
 
     def post(self, request,*args, **kwargs):
-
         #if request.user.is_authenticated():
-
         #need to check if the post is for masquerade
         print(request.get_full_path())
         set_session(request)
@@ -473,11 +461,32 @@ class AutoAddViewSet(viewsets.ModelViewSet):
     """
     queryset = AutoAdd.objects.all()
     serializer_class = AutoAddSerializer
-    template_name = 'autoadd_list.html'
 
-    def get(self, request, *args, **kwargs):
-        context = super().get_renderer_context()
-        print(context)
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        print("1")
+        if page is not None:
+
+            serializer = self.get_serializer(page, many=True)
+            response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
+            print("template_name",response.template_name)
+            if request.accepted_renderer.format == 'html':
+                response.template_name = 'autoadd_list.html'
+                print("template_name",response.template_name)
+                response.data = {'results': response.data,'paginator':self.paginator}
+            print("request.accepted_renderer.format",request.accepted_renderer.format)
+            return response
+
+        serializer = self.get_serializer(queryset, many=True)
+        response = Response(serializer.data)
+        if request.accepted_renderer.format == 'html':
+            print("template_name",response.template_name)
+            response.template_name = 'autoadd_list.html'
+            print("template_name",response.template_name)
+            response.data = {'results': response.data}
+        return response
+
 
 def send_email(request):
     subject = request.POST.get('subject', '')

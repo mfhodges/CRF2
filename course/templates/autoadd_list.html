@@ -1,5 +1,5 @@
 {% extends "base_generic.html" %}
-
+{% load rest_framework %}
 {% block autoadd %}active{% endblock %}
 
 {% block content %}
@@ -8,7 +8,7 @@
 
 <h1> AutoAdd</h1>
 
-<p> Results({{ data.count }}) </p>
+<p> Results({{ results|length }}) </p>
 <!--<p> previous{{ data.previous }} </p>
 <p> next{{ data.next}} </p>
 <p> num_pages{{ data.total_pages}} </p> -->
@@ -26,7 +26,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for request in data %}
+      {% for request in results %}
       <tr>
         <td><a href='{% url "UI-request-detail" pk=request.course_info.course_SRS_Title %}'> {{request.course_requested}} </a></td>
         <td>{{request.course_info.course_name}}</td>
@@ -44,33 +44,11 @@
   </table>
 
 <!-- PAGINATION -->
-<nav aria-label="Page navigation example" style="padding-top:0px;">
-  <ul class="pagination justify-content-center">
-
-      {% if data.previous %}
-    <li class="page-item">
-      <a class="page-link" href="{{data.previous}}" tabindex="-1">Previous</a>
-      {% else %}
-    <li class="page-item disabled">
-      <a class="page-link" href="" tabindex="-1">Previous</a>
-      {% endif %}
-    </li>
-<!-- fix these links-->
-    <li class="page-item disabled"><a class="page-link" href="#">1</a></li>
-    <li class="page-item disabled"><a class="page-link" href="#">2</a></li>
-    <li class="page-item disabled"><a class="page-link" href="#">3</a></li>
-    {% if data.next %}
-    <li class="page-item">
-      <a class="page-link" href={{data.next}}>Next</a>
-
-    {% else %}
-    <li class="page-item disabled">
-      <a class="page-link" href="" tabindex="-1">Next</a>
-
-    {% endif %}
-  </li>
-  </ul>
-</nav>
+{% if paginator %}
+  <nav aria-label="Page navigation" class="vertical-center">
+    {% get_pagination_html paginator %}
+  </nav>
+{% endif %}
 
 
 

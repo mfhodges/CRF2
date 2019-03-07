@@ -1,5 +1,4 @@
 {% extends "base_generic.html" %}
-{% load crispy_forms_tags %}
 {% load rest_framework %}
 <!-- this sets the nav li to active -->
 {% block courses %}active{% endblock %}
@@ -13,15 +12,11 @@
 
 <h1>Courses</h1>
 
-<p> Results({{ data.count }}) </p>
+<p> Results({{ results|length }}) </p>
 <!--<p> previous{{ data.previous }} </p>
 <p> next{{ data.next}} </p> -->
 
-{% if paginator %}
-  <nav style="float: right">
-    {% get_pagination_html paginator %}
-  </nav>
-{% endif %}
+
 
 <p>&ltFiltering goes here&gt</p>
 
@@ -77,6 +72,8 @@
 
 
 
+
+
   <!-- Modal -->
   <!-- simplify with this https://getbootstrap.com/docs/4.0/components/modal/#varying-modal-content -->
 
@@ -113,58 +110,12 @@
 
 
 
-
-
-
-
-
-<!-- PAGINATION -->
-<nav aria-label="Page navigation example" style="padding-top:0px;">
-  <ul class="pagination justify-content-center">
-
-      {% if pagination.prev.value %}
-    <li class="page-item">
-      <a class="page-link" href="{{ pagination.prev.url }}" tabindex="-1">Previous</a>
-      {% else %}
-    <li class="page-item disabled">
-      <a class="page-link" href="" tabindex="-1">Previous</a>
-      {% endif %}
-    </li>
-<!-- fix these links-->
-<!-- could be taking advantage of a foorlop somewhere -->
-    {% if pagination.prev %}
-      <li class="page-item"><a class="page-link" href="{{pagination.prev.url}}">{{pagination.prev.value}}</a></li>
-    {% endif %}
-
-    <li class="page-item active"><a class="page-link" href="{{pagination.current.url}}">{{pagination.current.value}}</a></li>
-    {% if pagination.next %}
-      {% if pagination.next.value != pagination.last.value %}
-        <li class="page-item"><a class="page-link" href="{{pagination.next.url}}">{{pagination.next.value}}</a></li>
-          <li class="page-item"><a class="page-link" href="?page={{pagination.next.value|add:"1"}}">{{pagination.next.value|add:"1"}}</a></li>
-
-          <!--<li class="page-item disabled"><a class="page-link" href="">...</a></li>-->
-      {% endif %}
-      <!--<li class="page-item"><a class="page-link" href='{{ pagination.last.url }}'>{{pagination.last.value}}</a></li>-->
-    {% endif %}
-
-  <!--  {% if pagination.last.url %}
-    <li class="page-item"><a class="page-link" href='{{ pagination.last.url }}'>{{pagination.last.value}}</a></li>
-    {% endif %} -->
-    {% if pagination.next.url %}
-    <li class="page-item">
-      <a class="page-link" href={{pagination.next.url}}>Next</a>
-    {% else %}
-    <li class="page-item disabled">
-      <a class="page-link" href="" tabindex="-1">Next</a>
-    {% endif %}
-  </li>
-  </ul>
-</nav>
-
-
-
-
-
+  <!-- PAGINATION -->
+  {% if paginator %}
+    <nav aria-label="Page navigation" class="vertical-center">
+      {% get_pagination_html paginator %}
+    </nav>
+  {% endif %}
 
 </div>
 {% endblock %}

@@ -975,12 +975,7 @@ main {
   margin: 2.3rem 0;
 }
 
-/* PAGINATION */
 
-.page-item.active .page-link {
-    background-color: #0366ee;
-    border-color: #0366ee;
-  }
 
 
   /* Desktop Styles */
@@ -1061,16 +1056,9 @@ main {
 	}
 }
 
-/*
-position:fixed;
-padding: .5rem;
-    display: block;
-    background: #ffffff;
-    border-bottom: 1px solid #ddd;
+/* PAGINATION */
 
-    top: 0;
-    width: 100%;
-    z-index: 2;
-
-
-*/
+.page-item.active .page-link {
+    background-color: #0366EE;
+    border-color: #0366EE;
+  }

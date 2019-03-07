@@ -64,7 +64,7 @@ urlpatterns = [
     # --------------- HOMEPAGE view -------------------
     path('', views.HomePage.as_view(), name='home'),
     # --------------- AUTOADDS view -------------------
-    path('autoadds/', views.AutoAddViewSet.as_view({'get':'list'},template_name='autoadd_list.html'), name='UI-autoadd-list'),
+    path('autoadds/', views.AutoAddViewSet.as_view({'get':'list'},renderer_classes=[renderers.TemplateHTMLRenderer]), name='UI-autoadd-list'),
     #path('users/<?:pennkey>/', UserDetail.asview(),name='user-detail'),
 ]
 #path('course', views.CourseViewSet.as_view({'get': 'list'})),
