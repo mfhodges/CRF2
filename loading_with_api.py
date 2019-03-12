@@ -247,7 +247,7 @@ def bulk_create_courses():
         subject_size = random.choice([1,1,2,3])
         school_size = random.choice([1,2,1])
         course_data = {
-        "course_SRS_Title": "SRS_"+ str(i),
+        "course_SRStitle": "SRS_"+ str(i),
 
         "instructors": random.sample(instructors,k=instructor_size),
         "course_schools": random.sample(schools, k=school_size),
@@ -265,8 +265,23 @@ def bulk_create_courses():
 
 
 
+def update_obj():
+    url = domain + 'subjects/1/'
+    data = {
 
-print("Courses\n", get_courses(),"\n" )
+    "name": "Annenberg School For Communicationss",
+    "abbreviation": "AN",
+    "visible": "true"
+}
+    json_data = json.dumps(data)
+
+    print(data)
+    response = requests.put(url,data=json_data, headers=headers,auth=auth, hooks={'response': print_url}  )
+
+    print("hii")
+
+update_obj()
+#print("Courses\n", get_courses(),"\n" )
 #print("Instructors\n", get_instructors(),"\n")
 #print("Subjects\n", get_subjects(),"\n")
 #print("Schools\n", get_schools(),"\n")
@@ -275,8 +290,7 @@ print("Courses\n", get_courses(),"\n" )
 #print(bulk_create_users())
 #print("~~~~~CREATING SCHOOLS & SUBJECTS ~~~~~\n")
 #print(bulk_create_sub_sch())
-get_subjects()
-bulk_create_courses()
+
 
 #data = {'course_SRS_Title': 'SRS_14', 'instructors': ['username_8'], 'course_schools': ['PSOM'], 'course_subjects': ['abbr_30', 'abbr_4'], 'course_term': 'A', 'course_activity': 'Lab', 'course_name': 'course_name_14', 'requested': False}
 #print(create_instance('courses',data))
@@ -286,8 +300,9 @@ print("~~~~~CREATING USERS~~~~~\n")
 print(bulk_create_users())
 print("~~~~~CREATING SCHOOLS & SUBJECTS ~~~~~\n")
 print(bulk_create_sub_sch())
+get_subjects()
+bulk_create_courses()
 """
-
 
 """
 SEE: http://docs.python-requests.org/en/master/user/advanced/#advanced-usage

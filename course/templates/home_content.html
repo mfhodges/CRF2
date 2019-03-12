@@ -30,13 +30,14 @@
 
 <p> Welcome {{data.username}} ... remove this later </p>
 <small> Requesting on behalf of '{{ request.session.on_behalf_of }}' </small>
+
 <div class="small-container">
   <dt>Request site on behalf of user:</dt>
-<form class="form-inline" method="POST" action="{% url 'home' %}">
+<form class="" method="POST" action="{% url 'home' %}">
   {% csrf_token %}
   <label for="name">User's Pennkey</label>
     <input type="text" id="name" placeholder="pennkey" name="on_behalf_of" required>
-    <input type="submit" value="submit">
+    <input type="submit" value="Submit">
 </form>
 </div>
 

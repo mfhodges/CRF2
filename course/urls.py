@@ -57,14 +57,26 @@ urlpatterns = [
     path('requests/<str:pk>/', views.RequestViewSet.as_view(
         {'get': 'retrieve'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
         name='UI-request-detail'),
-    # --------------- School list view -------------------
-    path('schools/', views.SchoolViewSet.as_view({'get':'list'},renderer_classes=[renderers.TemplateHTMLRenderer]), name='UI-school-list'),
+    # --------------- School list/detail view -------------------
+    path('schools/', views.SchoolViewSet.as_view(
+        {'get':'list',},renderer_classes=[renderers.TemplateHTMLRenderer]),
+         name='UI-school-list'),
+    path('schools/<str:pk>/', views.SchoolViewSet.as_view(
+        {'get': 'retrieve', 'put': 'update'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
+        name='UI-school-detail'),
     # --------------- Subject list view -------------------
-    path('subjects/', views.SubjectViewSet.as_view({'get':'list'},renderer_classes=[renderers.TemplateHTMLRenderer]), name='UI-subject-list'),
+    path('subjects/', views.SubjectViewSet.as_view(
+        {'get':'list'},renderer_classes=[renderers.TemplateHTMLRenderer]),
+         name='UI-subject-list'),
+    path('subjects/<str:pk>/', views.SubjectViewSet.as_view(
+        {'get': 'retrieve', 'put': 'update'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
+        name='UI-subject-detail'),
     # --------------- HOMEPAGE view -------------------
     path('', views.HomePage.as_view(), name='home'),
     # --------------- AUTOADDS view -------------------
-    path('autoadds/', views.AutoAddViewSet.as_view({'get':'list'},renderer_classes=[renderers.TemplateHTMLRenderer]), name='UI-autoadd-list'),
+    path('autoadds/', views.AutoAddViewSet.as_view(
+        {'get':'list'},renderer_classes=[renderers.TemplateHTMLRenderer]),
+         name='UI-autoadd-list'),
     #path('users/<?:pennkey>/', UserDetail.asview(),name='user-detail'),
 ]
 #path('course', views.CourseViewSet.as_view({'get': 'list'})),

@@ -1,0 +1,20 @@
+
+{% extends "base_generic.html" %}
+{% load rest_framework %}
+
+{% block content %}
+<div class="medium-container">
+
+  <h1> Schools</h1>
+
+  {% for key, value in data.items %}
+    <p>  <b>{{ key }}</b>: {{ value }}</p>
+  {% endfor %}
+
+
+
+<a href="/schools/"> Go Back to School List </a>
+</div>
+
+
+{% endblock %}

@@ -28,7 +28,7 @@ class CourseSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
 
     # cant uncomment following line without resolving lookup for Request
-    course_SRS_Title = serializers.CharField()
+    course_SRStitle = serializers.CharField()
     request_info = serializers.HyperlinkedRelatedField(many=False, lookup_field='course_requested',view_name='request-detail',read_only=True)
 
     #request_status = serializers.HyperlinkedIdentityField(view_name='course-request', format='html')
@@ -80,7 +80,7 @@ class CourseSerializer(serializers.HyperlinkedModelSerializer):
         Update and return an existing 'Course' instance, given the validated_data.
         """
         print("validated_data", validated_data)
-        instance.course_SRS_Title = validated_data.get('course_SRS_Title', instance.course_SRS_Title)
+        instance.course_SRStitle = validated_data.get('course_SRStitle', instance.course_SRStitle)
 
         instance.requested = validated_data.get('requested',instance.requested)
         #print("whoohooohho",instance.instructors, validated_data.get('instructors',instance.instructors))
@@ -142,7 +142,7 @@ class RequestSerializer(serializers.HyperlinkedModelSerializer):
     # the following line is needed to create the drop down
 
     #test = CourseSerializer()
-    course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='course_SRS_Title')
+    course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='course_SRStitle')
 
     # IF REQUEST STATUS IS CHANGED TO CANCELED IT SHOULD BE DISASSOCIATED FROM COURSE INSTANCE
     # IN ORDER TO PRESERVE THE ONE TO ONE COURSE -> REQUEST RELATIONSHIP
@@ -197,6 +197,7 @@ class SchoolSerializer(serializers.HyperlinkedModelSerializer):
     """
 
     """
+    id = serializers.ReadOnlyField() # allows in templates to call school.id to get pk
 
     class Meta:
         model = School
@@ -213,7 +214,7 @@ class SchoolSerializer(serializers.HyperlinkedModelSerializer):
         """
         Update and return an existing 'School' instance given the validated_data.
         """
-        print("ATTEMPTING TO UPDATE SCHOOL")
+        print("(serializer.py ATTEMPTING TO UPDATE SCHOOL")
         print("conext['format']",self.context['format'])
 
         instance.name = validated_data.get('name', instance.name)
@@ -227,7 +228,7 @@ class SubjectSerializer(serializers.HyperlinkedModelSerializer):
     """
 
     """
-
+    id = serializers.ReadOnlyField()# allows in templates to call subject.id to get pk
     class Meta:
         model = Subject
         fields = '__all__'

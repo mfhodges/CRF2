@@ -12,6 +12,12 @@
   --theme-lightgray: #f6f8f9; /* use for background */
   --theme-darkgray: #e8e8e8; /* use for textera fields*/
 
+/* #2965DE has replaced #0366EE */
+
+/* i like this color 136F63
+https://www.colorbook.io/hexcolors/view/296bde
+*/
+
   /*  :#e9e9e9; is used for piping on divs */
 
 }
@@ -267,7 +273,7 @@ h5 {
     font-size: 1.25rem; } }
 
 a {
-  color: #0366EE;
+  color: #2965DE;
   text-decoration: none; }
   a:hover, a:active, a:focus {
     color: #0246a2;
@@ -279,9 +285,9 @@ mark {
 
 blockquote {
   margin: 0 0 1.5rem 0;
-  border-left: 16px solid #0366ee;
+  border-left: 16px solid #2965DE;
   padding: 0 1.5rem;
-  background: #0366ee1a;
+  background: #2965DE1a;
   font-size: 1.0rem;
   min-width: max-content;
   display: flex !important;
@@ -522,9 +528,9 @@ dd {
 .button, a.button, button, [type=submit], [type=reset], [type=button] {
   -webkit-appearance: none;
   display: inline-block;
-  border: 1px solid #0366EE;
+  border: 1px solid #2965DE;
   border-radius: 4px;
-  background: #0366EE;
+  background: #2965DE;
   color: #ffffff;
   font-weight: 600;
   font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial, sans-serif;
@@ -619,7 +625,7 @@ table .button,table a.button,table button,table [type=submit],table [type=reset]
   border: 1px solid #b4b4b4; }
 
 [type=color]:focus, [type=color]:active, [type=date]:focus, [type=date]:active, [type=datetime]:focus, [type=datetime]:active, [type=datetime-local]:focus, [type=datetime-local]:active, [type=email]:focus, [type=email]:active, [type=month]:focus, [type=month]:active, [type=number]:focus, [type=number]:active, [type=password]:focus, [type=password]:active, [type=search]:focus, [type=search]:active, [type=tel]:focus, [type=tel]:active, [type=text]:focus, [type=text]:active, [type=url]:focus, [type=url]:active, [type=week]:focus, [type=week]:active, [type=time]:focus, [type=time]:active, select:focus, select:active, textarea:focus, textarea:active {
-  border: 1px solid #0366EE;
+  border: 1px solid #2965DE;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1), 0 0 6px #8cbcfe; }
 
 textarea {
@@ -694,7 +700,7 @@ header .flex-small {
   z-index: 99;
   max-width:fit-content;
   min-width:fit-content !important;
-  background: #0366ee1a;
+  background: #2965DE1a;
 
   margin-left: 27%;
   padding: 0px;
@@ -765,19 +771,32 @@ table {
 }
 
 thead th {
-  border-bottom: 2px solid #dedede; }
+  border-bottom: 2px solid #dedede;
+  text-align: left;/*center;*/
+
+}
+
 
 tfoot th {
   border-top: 2px solid #dedede; }
 
 td {
-  border-bottom: 1px solid #dedede; }
+  border-bottom: 1px solid #dedede;}
 
 th,
 td {
-  text-align: left;
+  text-align: left;/*center;*/
   padding: .1rem; }
 
+tr td:nth-child(1){
+  padding-left: 15px;
+}
+th#instructors,
+td#instructors {
+  text-align: left;
+  max-width: 200px;
+
+}
 caption {
   padding: 1rem 0;
   caption-side: bottom;
@@ -856,7 +875,7 @@ caption {
   }
 
   aside li a.active {
-  	color: #0366ee;
+  	color: #2965DE;
   }
 
   aside li a:hover,
@@ -871,7 +890,7 @@ caption {
   aside li a.active:active,
   aside li a.active:focus {
   	background: #f0f0f0;
-  	color: #0366ee;
+  	color: #2965DE;
   	text-decoration: none;
   }
 
@@ -886,7 +905,7 @@ caption {
   }
 
   .active .fa {
-  	color: #0366ee;
+  	color: #2965DE;
   }
 
   .toggle-nav {
@@ -953,7 +972,7 @@ main {
   	margin-bottom: .5rem;
   	padding-top: .25rem;
   	padding-bottom: .25rem;
-  	border: 1px solid #0366ee;
+  	border: 1px solid #2965DE;
   	font-weight: 400;
   }
 
@@ -1059,6 +1078,6 @@ main {
 /* PAGINATION */
 
 .page-item.active .page-link {
-    background-color: #0366EE;
-    border-color: #0366EE;
+    background-color: #2965DE;
+    border-color: #2965DE;
   }

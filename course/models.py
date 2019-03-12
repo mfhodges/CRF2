@@ -92,7 +92,7 @@ class Course(models.Model):
         max_length=3,choices = ACTIVITY_CHOICES,)
 
     # course_SRS_Title must not allow spaces
-    course_SRS_Title = models.CharField(max_length=250,unique=True, primary_key=True, blank=False) # unique and primary_key means that is the lookup_field
+    course_SRStitle = models.CharField(max_length=250,unique=True, primary_key=True, blank=False) # unique and primary_key means that is the lookup_field
 
     course_subjects = models.ManyToManyField(Subject,related_name='courses') # one to many
     course_schools = models.ManyToManyField(School,related_name='courses')# one to many
@@ -139,10 +139,10 @@ class Course(models.Model):
         super(Course, self).save(*args,**kwargs)
 
     def __str__(self):
-        return self.course_SRS_Title # this should be changed to the SRS name
+        return self.course_SRStitle # this should be changed to the SRS name
 
     def __unicode__(self):
-        return self.course_SRS_Title # this should be changed to the SRS name
+        return self.course_SRStitle # this should be changed to the SRS name
 
     #def get_absolute_url(self):
     #    """
@@ -185,7 +185,8 @@ class Request(models.Model):
         ('IN_PROCESS', 'In Process'),
         ('CANCELED' , 'Canceled'),
         ('APPROVED', 'Approved'),
-        ('SUBMITTED', 'Submitted'),)
+        ('SUBMITTED', 'Submitted'),
+        ('LOCKED','Locked'),)
         # The first element in each tuple is the actual value to be set on the model,
         #and the second element is the human-readable name.
 
@@ -219,7 +220,7 @@ class Request(models.Model):
 
 
     def __str__(self):
-        return " \"%s\" site request" % ( self.course_requested.course_SRS_Title)
+        return " \"%s\" site request" % ( self.course_requested.course_SRStitle)
 
 #class SubjectArea(models.Model):
 """

@@ -12,13 +12,62 @@
 
 <h1>Courses</h1>
 
-<p> Results({{ results|length }}) </p>
 <!--<p> previous{{ data.previous }} </p>
 <p> next{{ data.next}} </p> -->
 
+{% if filter_fields %}
+<div class="filter">
+<p>{{filter_fields}}</p>
+<a class="button" href="{% add_query_param request 'instructors__username' '' %}{{ user.username }}"> by {{ user.username }} </a>
 
+  <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
+    <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+    <p> {{request}}</p>
+  </button>
+</div>
+
+<!-- MODAL FILTERING -->
+
+<div class="modal fade" id="FilterModal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"> Basic Request For </h5>
+        <div class="close" data-dismiss="modal" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </div>
+      </div>
+      <form action="{% url 'request-list' %}" method="POST">
+        {% csrf_token %}
+          <div class="modal-body">
+            <label for="inputCanvasID">Copy From Canvas Site </label>
+            <input type="text" id="inputCanvasID" name="copy_from_course" class="form-control mx-sm-3" placeholder="CANVAS SITE ID" aria-describedby="textHelpInline">
+            <small id="passwordHelpInline" class="text-muted">
+              Canvas Site ID is found in `https://canvas.upenn.edu/courses/&lt;CANVAS_ID&gt;`
+              If left blank, the course created will have no content copied.
+            </small>
+          </div>
+          <div class="modal-footer">
+            <input name="course_requested" type="hidden"class="form-control" type="text" value="1">
+            <input name="status" class="form-control" type="hidden" value="SUBMITTED">
+            <input name="view_type" class="form-control" type="hidden" value="UI">
+            <button type="button" class="accent-button" style="font-weight: 600;">Custom Request</button> <!-- Custom Request takes you to the full page form -->
+            <button type="submit" value="save" style="font-weight: 600;">Submit request</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- END MODAL FILTERING -->
+
+{% endif %}
 
 <p>&ltFiltering goes here&gt</p>
+
+
+<!-- TABLE -->
 
   <table class="striped-table">
     <thead>
@@ -26,7 +75,7 @@
         <th>Section</th>
         <th>Title</th>
         <th>Activity</th>
-        <th>Instructor</th>
+        <th id="instructors">Instructor</th>
         <th>Created Date</th>
         <th>Request Status</th>
       </tr>
@@ -35,11 +84,11 @@
       {% for course in results %}
       <tr>
 
-        <td><a href='{% url "UI-course-detail" pk=course.course_SRS_Title %}'>{{course.course_SRS_Title}} </a></td>
+        <td><a href='{% url "UI-course-detail" pk=course.course_SRStitle %}'>{{course.course_SRStitle}} </a></td>
         <td>{{course.course_name}}</td>
         <td>{{course.course_activity}}</td>
 
-        <td>
+        <td id="instructors">
           {% for instructor in course.instructors %}
               {% if forloop.last %}
                 {{instructor}}
@@ -48,19 +97,20 @@
               {% endif %}
           {% endfor %}
         </td>
-        <td>{{course.created}} </td>
+        <td>{{course.created}} a {{course.created|time:'h:i' }} b {{course.created|date:"SHORT_DATE_FORMAT"}} </td>
+
         <!--<td>{{course.created|date:'m/d/Y'}} {{course.created|time:'h:i' }}</td> -->
         <td>
           <!-- REQUEST MODAL -->
           {{course.requested}}
           {% if course.requested == True %}
               <!-- this button should pull up the submitted request! -->
-              <a  href='{% url "UI-request-detail" pk=course.course_SRS_Title %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</a>
+              <a  href='{% url "UI-request-detail" pk=course.course_SRStitle %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</a>
           {% else %}
             <!--  <input type="hidden" name="requested" value="true">
               <button type="submit" class="button" >Request</button>-->
               <!-- Button trigger modal -->
-              <button class="button" data-toggle="modal" data-target="#exampleModalCenter" data-course="{{course.course_SRS_Title}}">
+              <button class="button" data-toggle="modal" data-target="#CourseModal" data-course="{{course.course_SRStitle}}">
                 Request
               </button>
           {% endif %}
@@ -71,13 +121,13 @@
   </table>
 
 
-
+<!-- END TABLE -->
 
 
   <!-- Modal -->
   <!-- simplify with this https://getbootstrap.com/docs/4.0/components/modal/#varying-modal-content -->
 
-  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal fade" id="CourseModal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -97,7 +147,7 @@
               </small>
             </div>
             <div class="modal-footer">
-              <input name="course_requested" type="hidden"class="form-control" type="text" value="1">
+              <input name="course_requested" type="hidden"class="form-control" type="text" value="">
               <input name="status" class="form-control" type="hidden" value="SUBMITTED">
               <input name="view_type" class="form-control" type="hidden" value="UI">
               <button type="button" class="accent-button" style="font-weight: 600;">Custom Request</button> <!-- Custom Request takes you to the full page form -->
@@ -107,7 +157,7 @@
       </div>
     </div>
   </div>
-
+<!-- END COURSE REQUEST MODAL -->
 
 
   <!-- PAGINATION -->
@@ -118,4 +168,21 @@
   {% endif %}
 
 </div>
+{% endblock %}
+
+
+{% block template_page_js %}
+<script>
+// For the Course List View
+$('#CourseModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var course = button.data('course') // Extract info from data-* attributes
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  var modal = $(this)
+  modal.find('.modal-title').text('Basic Request for ' + course)
+  modal.find(".modal-footer input[name='course_requested']").val(course)
+})
+
+</script>
 {% endblock %}

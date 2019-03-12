@@ -27,9 +27,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from rest_framework.pagination import PageNumberPagination
-import requests as py_requests
-import re
-from urllib import parse
+from django.db.models import Q
+
 #class CourseView(TemplateView):
 #    template_name = "index.html"
 
@@ -82,8 +81,6 @@ def set_session(request):
 
 
 
-
-
 class CourseViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
@@ -97,12 +94,16 @@ class CourseViewSet(viewsets.ModelViewSet):
     #lookup_field = 'course_SRS_Title'
     #lookup_value_regex = '[0-9a-f]{32}'
 
-    queryset = Course.objects.all()#.order_by() # order by
+
+    queryset = Course.objects.filter(~Q(course_subjects__visible=False)).exclude(course_schools__visible=False,) #this should be filtered by the
     serializer_class = CourseSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
     #filter_backends = (DjangoFilterBackend,)
-    filter_fields = ('course_SRS_Title','course_name', 'course_activity','instructors','course_schools','course_subjects',)
+    #http://127.0.0.1:8000/courses/?instructors__username=mfhodges works ...
+    filter_fields = ('course_SRStitle','course_name', 'course_activity','instructors__username','course_schools','course_subjects',) #automatically create a FilterSet class
+
+
 
     def perform_create(self, serializer):
         print("CourseViewSet.perform_create: request.POST", self.request.POST)
@@ -117,8 +118,19 @@ class CourseViewSet(viewsets.ModelViewSet):
     # I AM NOT SURE IF THIS IS OKAY WITH AUTHENTICATION
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
+
+
+        print("query_set", queryset)
         page = self.paginate_queryset(queryset)
-        print("1")
+        print("yes!")
+        print("1\n", request.query_params, '\n', request.META, 'w')
+        #print(",,",self.filter_backends[0].get_filterset(request,self.get_queryset(),self))
+        for backend in list(self.filter_backends):
+            #django_filters.rest_framework.backends.DjangoFilterBackend - https://github.com/carltongibson/django-filter/blob/master/django_filters/rest_framework/backends.py
+            print("...",backend.filterset_base.form) # <class 'django_filters.rest_framework.filterset.FilterSet'>
+            print("...1",backend.filterset_base.get_form_class)
+            #print("...1",backend.filterset_base.filters)
+
         if page is not None:
 
             serializer = self.get_serializer(page, many=True)
@@ -126,19 +138,20 @@ class CourseViewSet(viewsets.ModelViewSet):
             print("template_name",response.template_name)
             if request.accepted_renderer.format == 'html':
                 response.template_name = 'course_list.html'
-                print("template_name",response.template_name)
-                response.data = {'results': response.data,'paginator':self.paginator}
-            print("request.accepted_renderer.format",request.accepted_renderer.format)
-            return response
+                print(request.get_full_path())
+                response.data = {'results': response.data,'paginator':self.paginator, 'filter_fields':self.filter_fields, 'request':request}
+            print("yeah ok1",response.items())
 
+            return response
+        """
         serializer = self.get_serializer(queryset, many=True)
         response = Response(serializer.data)
         if request.accepted_renderer.format == 'html':
-            print("template_name",response.template_name)
             response.template_name = 'course_list.html'
-            print("template_name",response.template_name)
             response.data = {'results': response.data}
+        print("yeah ok2",response.items())
         return response
+        """
 
     def retrieve(self, request, *args, **kwargs):
         print('CourseViewSet.retreive lookup field', self.lookup_field)
@@ -157,6 +170,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 
 
+
 class RequestViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
@@ -167,7 +181,7 @@ class RequestViewSet(viewsets.ModelViewSet):
     # [x] on creation of request instance mutatate course instance so courese.requested = True
     #[ ] ensure POST is only setting masquerade
 
-    queryset = Request.objects.all()#.order_by() # order by
+    queryset = Request.objects.all()
     serializer_class = RequestSerializer
     filter_fields = ('copy_from_course','status','owner','course_requested',)
     #permission_classes = (permissions.IsAuthenticatedOrReadOnly,
@@ -196,18 +210,15 @@ class RequestViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        print("oahewgoaihw f", serializer.validated_data)
-        print("sad", serializer)
         serializer.validated_data['masquerade'] = masquerade
         self.perform_create(serializer)
-        print("its gonna b ok")
         headers = self.get_success_headers(serializer.data)
 
         # updates the course instance #
-        course = Course.objects.get(course_SRS_Title=request.data['course_requested'])# get Course instance
+        course = Course.objects.get(course_SRStitle=request.data['course_requested'])# get Course instance
         course.requested = True
         course.save()
-        print(course.course_SRS_Title, course.requested)
+        print(course.course_SRStitle, course.requested)
         # update course instance
         # this allow for the redirect to the UI and not the API endpoint. 'view_type' should be defined in the form that submits this request
         if 'view_type' in request.data:
@@ -226,7 +237,7 @@ class RequestViewSet(viewsets.ModelViewSet):
 
         serializer.save(owner=self.request.user)
         print("no prob here")
-        serializer.save(masquerade="HECK")
+        serializer.save(masquerade="test")
         print(serializer)
         print("2. no prob here")
 
@@ -249,7 +260,7 @@ class RequestViewSet(viewsets.ModelViewSet):
                 response.data = {'results': response.data,'paginator':self.paginator}
             print("request.accepted_renderer.format",request.accepted_renderer.format)
             return response
-
+        """
         serializer = self.get_serializer(queryset, many=True)
         response = Response(serializer.data)
         if request.accepted_renderer.format == 'html':
@@ -258,16 +269,17 @@ class RequestViewSet(viewsets.ModelViewSet):
             print("template_name",response.template_name)
             response.data = {'results': response.data}
         return response
-
+        """
 
 
 
 
     def retrieve(self, request, *args, **kwargs):
-        print("ok in ret self,,",self.request.session.get('on_behalf_of','None'))
+        print("ok in retreive self,,",self.request.session.get('on_behalf_of','None'))
         print("ok in ret,,", request.session.get('on_behalf_of','None'))
         print("Request.retrieve")
         print(request.data)
+
         response = super(RequestViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
             #print("bye george(UI-request-detail)!\n",response.data)
@@ -278,6 +290,15 @@ class RequestViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         print("OH MY GOLLY GEEE")
+        instance = self.get_object()
+
+        # Must get Course and set .request to true
+        course = Course.objects.get(course_SRStitle=instance.course_requested)# get Course instance
+        course.requested = False
+        course.save()
+
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def post(self, request,*args, **kwargs):
         #if request.user.is_authenticated()
@@ -297,8 +318,21 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAdminUser,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    lookup_field = 'username'
+
+    """
+    # this is just to havet the pk be username and not id
+    def retrieve(self, request, pk=None):
+        print("IM DOING MY BEST")
+        instance = User.objects.filter(username=pk)
+        print(instance)
 
 
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+        return Response(serializer.data)
+    """
 
 
 
@@ -329,7 +363,7 @@ class SchoolViewSet(viewsets.ModelViewSet):
                 response.data = {'results': response.data,'paginator':self.paginator}
             print("request.accepted_renderer.format",request.accepted_renderer.format)
             return response
-
+        """
         serializer = self.get_serializer(queryset, many=True)
         response = Response(serializer.data)
         if request.accepted_renderer.format == 'html':
@@ -338,15 +372,45 @@ class SchoolViewSet(viewsets.ModelViewSet):
             print("template_name",response.template_name)
             response.data = {'results': response.data}
         return response
+        """
 
     def post(self, request,*args, **kwargs):
-
+        print("postie")
         #if request.user.is_authenticated():
 
         #need to check if the post is for masquerade
         print(request.get_full_path())
         set_session(request)
         return(redirect(request.get_full_path()))
+
+    def update(self, request, *args, **kwargs):
+        print("update?")
+        print("args",args)
+        print("kwargs", kwargs)
+        print("request.data", request.data)
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+        if request.data.get('view_type',None) == 'UI':
+            print("its happening")
+
+        return Response(serializer.data)
+
+
+    def retrieve(self, request, *args, **kwargs):
+        print("this is dumb",request.method)
+        response = super(SchoolViewSet, self).retrieve(request, *args, **kwargs)
+        if request.accepted_renderer.format == 'html':
+            #print("bye george(UI-request-detail)!\n",response.data)
+            return Response({'data': response.data}, template_name='school_detail.html')
+        return response
+
 
 class SubjectViewSet(viewsets.ModelViewSet):
     """
@@ -373,7 +437,7 @@ class SubjectViewSet(viewsets.ModelViewSet):
                 response.template_name = 'subjects_list.html'
                 response.data = {'results': response.data,'paginator':self.paginator}
             return response
-
+        """
         serializer = self.get_serializer(queryset, many=True)
         response = Response(serializer.data)
         if request.accepted_renderer.format == 'html':
@@ -382,14 +446,24 @@ class SubjectViewSet(viewsets.ModelViewSet):
             print("template_name",response.template_name)
             response.data = {'results': response.data}
         return response
+        """
 
     def post(self, request,*args, **kwargs):
-
         #if request.user.is_authenticated():
         #need to check if the post is for masquerade
         print(request.get_full_path())
         set_session(request)
         return(redirect(request.get_full_path()))
+
+    def retrieve(self, request, *args, **kwargs):
+        print(request.data)
+        response = super(SubjectViewSet, self).retrieve(request, *args, **kwargs)
+        if request.accepted_renderer.format == 'html':
+            #print("bye george(UI-request-detail)!\n",response.data)
+            return Response({'data': response.data}, template_name='subject_detail.html')
+        return response
+
+
 
 
 class NoticeViewSet(viewsets.ModelViewSet):
@@ -476,8 +550,9 @@ class AutoAddViewSet(viewsets.ModelViewSet):
                 print("template_name",response.template_name)
                 response.data = {'results': response.data,'paginator':self.paginator}
             print("request.accepted_renderer.format",request.accepted_renderer.format)
+            print("yeah ok1",response.items())
             return response
-
+        """
         serializer = self.get_serializer(queryset, many=True)
         response = Response(serializer.data)
         if request.accepted_renderer.format == 'html':
@@ -485,8 +560,9 @@ class AutoAddViewSet(viewsets.ModelViewSet):
             response.template_name = 'autoadd_list.html'
             print("template_name",response.template_name)
             response.data = {'results': response.data}
+        print("yeah ok2",response.items())
         return response
-
+        """
 
 def send_email(request):
     subject = request.POST.get('subject', '')

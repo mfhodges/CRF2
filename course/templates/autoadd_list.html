@@ -13,31 +13,27 @@
 <p> next{{ data.next}} </p>
 <p> num_pages{{ data.total_pages}} </p> -->
 
-<p>&ltFiltering goes here&gt</p>
+<p>&lt add AutoAdd button to form here &gt</p>
 
   <table class="striped-table">
     <thead>
       <tr>
-        <th>Section</th>
-        <th>Title</th>
-        <th>Requestor</th>
-        <th>Date Requested</th>
-        <th>Status</th>
+        <th>User</th>
+        <th>School</th>
+        <th>Subject</th>
+        <th>Role</th>
+        <th>Edit / Remove</th>
+
       </tr>
     </thead>
     <tbody>
       {% for request in results %}
       <tr>
-        <td><a href='{% url "UI-request-detail" pk=request.course_info.course_SRS_Title %}'> {{request.course_requested}} </a></td>
-        <td>{{request.course_info.course_name}}</td>
-        <td>{{request.owner}}
-          {% if request.masquerade %}
-          ({{request.masquerade}})
-          {% endif %}
-        </td>
-
-        <td>{{request.created }}</td>
-        <td>{{request.status}}</td>
+        <td> {{request.user}} </td>
+        <td>{{request.school}}</td>
+        <td>{{request.subject}}</td>
+        <td>{{request.role }}</td>
+        <td>edit and remove buttons here</td>
       </tr>
         {% endfor %}
     </tbody>

@@ -6,17 +6,17 @@
 
   <h1> Subjects</h1>
 
-  <p> Results({{ results|length}}) </p>
+
   <!--<p> previous{{ data.previous }} </p>
   <p> next{{ data.next}} </p>
   <p> num_pages{{ data.total_pages}} </p> -->
 
   <p> &lt each name should link to Courses filtered by that variable &gt </p>
-<p> &lt need to handle authentication of last column &gt </p>
+    <p> &lt need to handle authentication of last column &gt </p>
     <table class="striped-table">
       <thead>
         <tr>
-          <th  style="padding-left:15px;" >Name</th>
+          <th>Name</th>
           <th>Abbr.</th>
           <th>Visibility</th>
         </tr>
@@ -24,27 +24,74 @@
       <tbody>
         {% for subject in results %}
         <tr>
-          <td  style="padding-left:15px;">{{subject.name}}</td>
+          <td>{{subject.name}}</td>
           <td>{{subject.abbreviation}}</td>
           <td>
-            <form action="/api/subjects/1/" data-method="PUT" enctype="multipart/form-data"  novalidate="">
-            <!-- <form action="{% url 'school-detail' pk=1 %}" method="POST"> -->
-              {% csrf_token %}
+
+            <!-- <form action="{% url 'subject-detail' pk=1 %}" method="POST"> -->
+
+            {% if user.is_staff %}
 
                 {% if subject.visible == True %}
-                <button type="submit" class="button" > <b>REMOVE</b> <i class="fas fa-minus-square"></i></button>
+                <!--  -->
+                <button class="button" data-toggle="modal" data-target="#subjectModal" data-subject="{{subject.name}}" data-abbr="{{subject.abbreviation}}" data-id="{{ subject.id }}" data-visible='false'>
+                  <b>REMOVE</b> <i class="fas fa-minus-square"></i>
+                </button>
               TRUE (click button to remove)
                 {% else %}
-                <input type="hidden" name="visible" value="true">
-                <button class="button" > <b>ADD</b> <i class="fas fa-plus-square"></i></button>
+                <!-- data-subject="{{subject.name}}" data-abbr="{{subject.abbreviation}}" data-id="{{ subject.id }}" data-visible='true' -->
+                <button class="button" data-toggle="modal" data-target="#subjectModal" data-subject="{{subject.name}}" data-abbr="{{subject.abbreviation}}" data-id="{{ subject.id }}" data-visible='true'>
+                  <b>ADD</b> <i class="fas fa-plus-square"></i>
+                </button>
                 FALSE (click button to add)
               {% endif %}
-          </form>
+            {% else %}
+              {% if subject.visible == True %}
+              TRUE
+              {% else %}
+                FALSE
+              {% endif %}
+          {% endif %}
+
           </td>
         </tr>
           {% endfor %}
       </tbody>
     </table>
+
+
+    <!-- Modal -->
+    <!-- simplify with this https://getbootstrap.com/docs/4.0/components/modal/#varying-modal-content -->
+
+    <div class="modal fade" id="subjectModal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle"> Change Visibility </h5>
+            <div class="close" data-dismiss="modal" aria-label="Close">
+              <i class="fas fa-times"></i>
+            </div>
+          </div>
+          <form id="form" action="" data-method="PUT" enctype="multipart/form-data">
+            {% csrf_token %}
+              <div class="modal-body">
+                <p> Are you sure that you want to change the visibility ? </p>
+              </div>
+              <div class="modal-footer">
+                <input name="name" type="hidden" class="form-control" type="text" value="">
+                <input name="abbreviation" type="hidden" class="form-control" type="text" value="">
+                <input name="visible" type="hidden" class="form-control" type="text" value="">
+
+                <button type="submit" value="save" style="font-weight: 600;">Submit</button>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+
+
 
     <!-- PAGINATION -->
     {% if paginator %}
@@ -54,5 +101,37 @@
     {% endif %}
 
 
+
 </div>
+{% endblock %}
+
+
+{% block template_page_js %}
+<script>
+// For the subject List View
+$('#subjectModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var subject = button.data('subject') // Extract info from data-* attributes
+  var id = button.data('id')
+  var vis = button.data('visible')
+  var abbr = button.data('abbr')
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  console.log(subject,id,vis)
+  $('#form').attr('action', '/subjects/' + id + '/')
+  var modal = $(this)
+
+  modal.find('.modal-title').text('Change Visibility for: ' + subject)
+  modal.find(".modal-footer input[name='name']").val(subject)
+  modal.find(".modal-footer input[name='abbreviation']").val(abbr)
+  modal.find(".modal-footer input[name='visible']").val(vis)
+})
+</script>
+<script>
+$(document).ready(function() {
+        $('form').ajaxForm();
+    });
+</script>
+
+
 {% endblock %}

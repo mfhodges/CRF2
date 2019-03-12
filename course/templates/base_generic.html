@@ -19,7 +19,11 @@
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 
+
+
+
     {% load static %}
+    <script src="{% static "rest_framework/js/jquery-3.3.1.min.js" %}"></script>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'images/favicon_book.ico' %}">
 </head>
@@ -65,7 +69,8 @@
       </div>
      </header>
 
-     <!-- Modal START -->
+     <!-- MASQUERADE Modal START -->
+     <!-- i like the example from here:https://getbootstrap.com/docs/4.3/components/forms/#auto-sizing -->
      <div class="modal fade" id="AddOnBehalf" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
        <div class="modal-dialog modal-dialog-centered" role="document">
          <div class="modal-content">
@@ -76,11 +81,10 @@
              </div>
            </div>
            <div class="modal-body">
-             <form class="form-inline" method="POST" action="">
+             <form class="" method="POST" action="">
                {% csrf_token %}
+               <label for="name">User's Pennkey</label>
                {% if messages %}
-                <label for="name">User's Pennkey</label>
-
                   <input type="text" id="name" placeholder="pennkey" name="on_behalf_of" class="has-error" required >
                   {% for message in messages %}
                     <b{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</b><br>
@@ -88,7 +92,7 @@
                 {% else %}
                 <input type="text" id="name" placeholder="pennkey" name="on_behalf_of" required >
                 {% endif %}
-                <input type="submit" value="submit">
+                <input type="submit" value="Submit">
              </form>
 
 
@@ -154,7 +158,7 @@
 
   <script src="https://taniarascia.github.io/primitive/js/prism.js"></script>
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <!--  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <!--<script src="https://taniarascia.github.io/primitive/js/example.js"></script>-->
@@ -201,17 +205,10 @@ $(function () {
 
 </script>
 
-<script>
-$('#exampleModalCenter').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget) // Button that triggered the modal
-  var course = button.data('course') // Extract info from data-* attributes
-  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-  var modal = $(this)
-  modal.find('.modal-title').text('Basic Request for ' + course)
-  modal.find(".modal-footer input[name='course_requested']").val(course)
-})
-</script>
+
+{% block template_page_js %}{% endblock %}
+
+
 
 <!-- if there has been an issue with masquerade form -->
 {% if messages %}
@@ -222,5 +219,21 @@ $(document).ready(function(){
 </script>
 {% endif %}
 <script async="" defer="" src="https://buttons.github.io/buttons.js"></script>
-
+<script>
+  window.drf = {
+    csrfHeaderName: "{{ csrf_header_name|default:'X-CSRFToken' }}",
+    csrfCookieName: "{{ csrf_cookie_name|default:'csrftoken' }}"
+  };
+</script>
+<!--<script src="{% static "rest_framework/js/jquery-3.3.1.min.js" %}"></script>-->
+<script src="{% static "rest_framework/js/ajax-form.js" %}"></script>
+<script src="{% static "rest_framework/js/csrf.js" %}"></script>
+ <!--<script src="{% static "rest_framework/js/bootstrap.min.js" %}"></script>-->
+<script src="{% static "rest_framework/js/prettify-min.js" %}"></script>
+<script src="{% static "rest_framework/js/default.js" %}"></script>
+<script>
+  $(document).ready(function() {
+    $('form').ajaxForm();
+  });
+</script>
 </html>

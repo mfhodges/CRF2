@@ -8,7 +8,7 @@
 
 <h1> Requests</h1>
 
-<p> Results({{ results|length }}) </p>
+
 <!--<p> previous{{ data.previous }} </p>
 <p> next{{ data.next}} </p>
 <p> num_pages{{ data.total_pages}} </p> -->
@@ -28,7 +28,7 @@
     <tbody>
       {% for request in results %}
       <tr>
-        <td><a href='{% url "UI-request-detail" pk=request.course_info.course_SRS_Title %}'> {{request.course_requested}} </a></td>
+        <td><a href='{% url "UI-request-detail" pk=request.course_info.course_SRStitle %}'> {{request.course_requested}} </a></td>
         <td>{{request.course_info.course_name}}</td>
         <td>{{request.owner}}
           {% if request.masquerade %}
