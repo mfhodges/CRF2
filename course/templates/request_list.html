@@ -37,7 +37,11 @@
         </td>
 
         <td>{{request.created }}</td>
-        <td>{{request.status}}</td>
+        <td>{{request.status}}
+          {% if request.status == 'LOCKED' %}
+            <i class="fas fa-lock" data-toggle="tooltip" data-placement="top" title="" data-original-title="this request will not be processed until unlocked by admin"></i>
+          {% endif %}
+        </td>
       </tr>
         {% endfor %}
     </tbody>

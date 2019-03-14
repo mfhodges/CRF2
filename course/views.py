@@ -28,6 +28,8 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Q
+from rest_framework.utils.urls import replace_query_param, remove_query_param
+from django_filters import rest_framework as filters
 
 #class CourseView(TemplateView):
 #    template_name = "index.html"
@@ -80,6 +82,22 @@ def set_session(request):
 
 
 
+class CourseFilter(filters.FilterSet):
+    #activity =
+    #filter_fields = ('course_activity','instructors__username','course_schools__abbreviation','course_subjects__abbreviation',) #automatically create a FilterSet class
+    # https://github.com/philipn/django-rest-framework-filters/issues/102
+
+
+    #pls see: https://django-filter.readthedocs.io/en/master/ref/filters.html
+    activity = filters.ChoiceFilter(choices=Course.ACTIVITY_CHOICES, field_name='course_activity', label='Activity')
+    instructor = filters.CharFilter(field_name='instructors__username', label='Instructor')
+    school = filters.CharFilter(field_name='course_schools__abbreviation',label='School (abbreviation)')
+    subject = filters.CharFilter(field_name='course_subjects__abbreviation', label='Subject (abbreviation)')
+
+    class Meta:
+        model = Course
+        fields = ['activity','instructor','school','subject']
+
 
 class CourseViewSet(viewsets.ModelViewSet):
     """
@@ -99,12 +117,9 @@ class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
-    #filter_backends = (DjangoFilterBackend,)
-    #http://127.0.0.1:8000/courses/?instructors__username=mfhodges works ...
-    filter_fields = ('course_SRStitle','course_name', 'course_activity','instructors__username','course_schools','course_subjects',) #automatically create a FilterSet class
+    filterset_class = CourseFilter
 
-
-
+    search_fields = ['$course_name', '$course_SRStitle']
     def perform_create(self, serializer):
         print("CourseViewSet.perform_create: request.POST", self.request.POST)
         print("CourseViewSet.perform_create: request.meta", self.request.META) # could use 'HTTP_REFERER': 'http://127.0.0.1:8000/courses/'
@@ -117,6 +132,8 @@ class CourseViewSet(viewsets.ModelViewSet):
     # below allows for it to be passed to the template !!!!
     # I AM NOT SURE IF THIS IS OKAY WITH AUTHENTICATION
     def list(self, request, *args, **kwargs):
+
+
         queryset = self.filter_queryset(self.get_queryset())
 
 
@@ -139,7 +156,14 @@ class CourseViewSet(viewsets.ModelViewSet):
             if request.accepted_renderer.format == 'html':
                 response.template_name = 'course_list.html'
                 print(request.get_full_path())
-                response.data = {'results': response.data,'paginator':self.paginator, 'filter_fields':self.filter_fields, 'request':request}
+                print("kwargs",kwargs)
+                print("args",args)
+
+                # https://github.com/encode/django-rest-framework/blob/master/rest_framework/utils/urls.py
+
+                print('filterfield', CourseFilter.Meta.fields)
+                print('request.query_params', request.query_params.keys())
+                response.data = {'results': response.data,'paginator':self.paginator, 'filter':CourseFilter, 'request':request}
             print("yeah ok1",response.items())
 
             return response
@@ -303,12 +327,14 @@ class RequestViewSet(viewsets.ModelViewSet):
     def post(self, request,*args, **kwargs):
         #if request.user.is_authenticated()
         #need to check if the post is for masquerade
-        if request.data['on_behalf_of']:
+
+        # '' is different than None ... if the key isnt present the .get() returns None
+        if request.data.get('on_behalf_of')=='':
             print(request.get_full_path())
             print("ok self,,",self.request.session.get('on_behalf_of','None'))
             print("ok no self,,",request.session.get('on_behalf_of','None'))
             set_session(request)
-            return(redirect(request.get_full_path()))
+            return redirect(request.get_full_path())
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -494,11 +520,13 @@ class HomePage(APIView):
         # # TODO:
         # [ ] Check that valid pennkey
         # [ ] handles if there are no notice instances in the db
+        print("in home")
         try:
             notice = Notice.objects.latest()
             print(Notice.notice_text)
         except Notice.DoesNotExist:
             notice = None
+            print("no notices")
 
         return Response({'data':
             {'notice':notice,

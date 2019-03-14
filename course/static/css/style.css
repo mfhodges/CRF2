@@ -7,12 +7,24 @@
 :root {
   --theme-specialfont: 'Ubuntu';
   --theme-textfont: 'Open Sans',serif;
-  --theme-blue: #224084;
+  --theme-blue: #2965DE;
   --theme-lightblue:#ebf2fe;
   --theme-lightgray: #f6f8f9; /* use for background */
   --theme-darkgray: #e8e8e8; /* use for textera fields*/
 
-/* #2965DE has replaced #0366EE */
+/* BLUE: #2965DE
+ on HOVER: #0246a2  or maybe it should be #1946a2 ...
+ORANGE: #DE9C29
+on HOVER: #CE8E20
+
+#2059ce
+
+ green #00635D
+ dark liver #4E4B5C ,, on hover: #353243
+
+ dark raspnerry #8F2D56
+ */
+
 
 /* i like this color 136F63
 https://www.colorbook.io/hexcolors/view/296bde
@@ -563,15 +575,15 @@ dd {
 .accent-button,
 a.accent-button {
   color: #ffffff;
-  border: 1px solid #29de7d;
-  background: #29de7d; }
+  border: 1px solid #4E4B5C;
+  background: #4E4B5C; }
   .accent-button:hover, .accent-button:focus, .accent-button:active,
   a.accent-button:hover,
   a.accent-button:focus,
   a.accent-button:active {
     color: #ffffff;
-    border: 1px solid #1cb864;
-    background: #1cb864; }
+    border: 1px solid #353243;
+    background: #353243; }
 
 .muted-button,
 a.muted-button {
@@ -604,6 +616,16 @@ table .button,table a.button,table button,table [type=submit],table [type=reset]
   font-size: 0.75rem;
   font-weight:400;
   margin: 4px 0px;
+}
+
+
+.badge {
+  background: #c1deff;
+  padding: 0.5em;
+}
+.badge .fa {
+  padding-left: 0.3em;
+  padding-right: 0.4em;
 }
 
 /* Forms
@@ -685,6 +707,45 @@ textarea.has-error:active {
 :-ms-input-placeholder {
   color: #9a9a9a; }
 
+
+/* search bar */
+#search {
+  float:right;
+}
+
+#search form {
+  display: inherit;
+  width: 300px;
+  margin-top: -49px;
+
+}
+#search .input-group {
+  position: inherit;
+}
+
+#search button{
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  margin-left: -1px;
+}
+#search button:before {
+  content: 'Search';
+}
+
+@media (max-width: 600px) {
+  #search button:before {
+    content: "\f002";
+    font-family: 'FontAwesome';
+  }
+
+  #search form {
+    margin-top: -10px;
+    width:260px;
+
+  }
+}
+
+
 /* masquerade */
 header .flex-small {
   margin: 0px;
@@ -705,6 +766,7 @@ header .flex-small {
   margin-left: 27%;
   padding: 0px;
   padding-left: 5px;
+  position: fixed;
 
 }
 #masquerade > button,
@@ -727,7 +789,7 @@ header .flex-small {
   #masquerade {
     padding-left: 1rem;
     padding-right: 1rem;
-    /*color: pink;*/
+    position: fixed;
     margin-left: 33%;
   }
   #sign_in{
@@ -938,10 +1000,24 @@ caption {
 /* Layout
   =============== */
   /* Containers */
+main {
+  margin-top: 25px;
+}
+
+
+@media (min-width: 600px){
+
+main {
+  margin-top: 30px;
+}
+}
+@media (min-width: 800px){
 
 main {
   margin-top: 70px;
 }
+}
+
 
   .content {
   	width: 100%;

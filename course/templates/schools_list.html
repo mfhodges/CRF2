@@ -11,8 +11,7 @@
   <p> next{{ data.next}} </p>
   <p> num_pages{{ data.total_pages}} </p> -->
 
-  <p> &lt each name should link to Courses filtered by that variable &gt </p>
-    <p> &lt need to handle authentication of last column &gt </p>
+
     <table class="striped-table">
       <thead>
         <tr>
@@ -24,7 +23,11 @@
       <tbody>
         {% for school in results %}
         <tr>
+          {% if school.visible == True %}
+          <td><a href="/courses/?school={{ school.abbreviation }}">{{school.name}}</a></td>
+          {% else %}
           <td>{{school.name}}</td>
+          {% endif %}
           <td>{{school.abbreviation}}</td>
           <td>
 
