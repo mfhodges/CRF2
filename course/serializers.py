@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from course.models import Course, Notice, Request, School, Subject, AutoAdd
+from course.models import Course, Notice, Request, School, Subject, AutoAdd, UpdateLog
 from django.contrib.auth.models import User
 
 
@@ -32,12 +32,15 @@ class CourseSerializer(serializers.HyperlinkedModelSerializer):
     request_info = serializers.HyperlinkedRelatedField(many=False, lookup_field='course_requested',view_name='request-detail',read_only=True)
 
     #request_status = serializers.HyperlinkedIdentityField(view_name='course-request', format='html')
-
+    
 
     # Eventually the queryset should also filter by Group = Instructors
     instructors = serializers.SlugRelatedField(many=True,queryset=User.objects.all(), slug_field='username')
     course_schools = serializers.SlugRelatedField(many=True,queryset=School.objects.all(), slug_field='abbreviation')
     course_subjects = serializers.SlugRelatedField(many=True,queryset=Subject.objects.all(), slug_field='abbreviation')
+    created = serializers.DateTimeField()
+    updated = serializers.DateTimeField()
+
     #request_details = RequestSerializer(many=True,read_only=True)
 
     class Meta:
@@ -142,6 +145,8 @@ class RequestSerializer(serializers.HyperlinkedModelSerializer):
     # the following line is needed to create the drop down
 
     #test = CourseSerializer()
+    created = serializers.DateTimeField()
+    updated = serializers.DateTimeField()
     course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='course_SRStitle')
 
     # IF REQUEST STATUS IS CHANGED TO CANCELED IT SHOULD BE DISASSOCIATED FROM COURSE INSTANCE
@@ -283,10 +288,12 @@ class NoticeSerializer(serializers.HyperlinkedModelSerializer):
 
 class AutoAddSerializer(serializers.HyperlinkedModelSerializer):
     # Eventually the queryset should also filter by Group = Instructors
-    user = serializers.SlugRelatedField(many=False,queryset=User.objects.all(), slug_field='username')
 
+    # for more info on base_template style see: https://www.django-rest-framework.org/topics/html-and-forms/#field-styles ( table at the end of page)
+    user = serializers.SlugRelatedField(many=False,queryset=User.objects.all(), slug_field='username',  style={'base_template': 'input.html'})
     school = serializers.SlugRelatedField(many=False,queryset=School.objects.all(), slug_field='abbreviation')
-    subject = serializers.SlugRelatedField(many=False,queryset=Subject.objects.all(), slug_field='abbreviation')
+    subject = serializers.SlugRelatedField(many=False,queryset=Subject.objects.all(), slug_field='abbreviation', style={'base_template': 'input.html'})
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = AutoAdd

@@ -70,6 +70,8 @@ class Course(models.Model):
     SPRING = 'A'
     SUMMER = 'B'
     FALL = 'C'
+
+    # dont change these variable names -- used in views.py
     TERM_CHOICES = (
         (SPRING, 'Spring'),
         (SUMMER, 'Summer'),
@@ -85,7 +87,7 @@ class Course(models.Model):
     #id = models.CharField(max_length=250) # this is a number
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='created', on_delete=models.CASCADE) #this is who edited it
     updated = models.DateTimeField(auto_now=True)
-    instructors = models.ManyToManyField(User,related_name='courses')
+    instructors = models.ManyToManyField(User,related_name='courses') # should be allowed to be null --> "STAFF"
     course_term = models.CharField(
         max_length=1,choices = TERM_CHOICES,) # self.course_term would == self.SPRING || self.FALL || self.SUMMER
     course_activity = models.CharField(
@@ -100,30 +102,6 @@ class Course(models.Model):
 
     requested =  models.BooleanField(default=False)# False -> not requested
 
-    """
-    course_section = models.CharField(max_length=250) # need a validator on this
-    course_activity = models.CharField(max_length=250)# need a validator on this
-    course_instructor = models.ForeignKey('auth.User', related_name='courses', on_delete=models.CASCADE) # this is not correct!
-    course_ = models.CharField(max_length=250)# need a validator on this
-    """
-
-    """
-    course_section = //i.e. AFRC050 402 2019A - must be unique
-    course_term = // A , B , or C
-    course_year = //
-    course_SRS_Title = // name of course
-    course_subject_area = // This will be its own model with views!, can be many
-    course_school = // This will be its own model with views! , can be many
-    course_activity = // choice field ('LEC',...)
-    course_crosslistings = // Link to other Course objects! , can be many
-    course_instructor = // this will be its own model, can be many
-
-    ### CANVAS SITE DETAILS ###
-    # this stuff gets pulled n synced from Canvas and is different from the information
-    # about the Canvas site in the Request object
-
-    course_site_url = // url to the canvas site
-    """
     #
     #
     class Meta:
@@ -249,91 +227,10 @@ class AutoAdd(models.Model):
 
 
 
-    def email_user(self, subject, message, from_email=None, **kwargs):
-        '''
-        Sends an email to this User.
-        '''
-        send_mail(subject, message, from_email, [self.email], **kwargs)
 
 
 
-
-
-#class User(models.User):
-#"""
-# needs Name , pennkey, email and Role ( maybe not role bc that could be another class ?)
-# permissions of each user should be defined by the subclass
-# https://docs.djangoproject.com/en/2.1/ref/contrib/auth/#user-model
-#"""
-#    full_name = models.CharField(verbose_name='full name', max_length=100)# Full name i.e. 'John Doe'
-#
-#    pennkey = models.TextField()#needs validator
-#    email = models.EmailField()
-
-#    def save(self, *args, **kwargs):
-#        """
-#        some text
-#        """
-#        super(User, self).save(*args,**kwargs)
-
-
-# THIS CLASS SHOULD EXPAND ON USER MODEL !
-#class Instructor(models.Model):
-#"""
-# name and associated pennkey
-# doesnt require view
-# should have function that gets all course objects from CRF2 db for a particular sem
-#"""
-
-#class Request(models.Model):
-#"""
-# COPY BELOW
-#   class Article(models.Model):
-#    STATUSES = Choices(
-#        (0, 'draft', _('draft')),
-#        (1, 'published', _('published'))   )
-#    status = models.IntegerField(choices=STATUSES, default=STATUSES.draft)
-#"""
-#   def save(self, *args, **kwargs):
-#       self.request = # a func that generates the text for the api call to make the course ( doesnt actually execute )
-#                   # hence the api call is generated when the request object is saved but not excuted until approved
-#       super(Request, self).save(*args, **kwargs)
-
-
-
-
-
-#class (models.Model):
-#"""
-#
-#"""
-
-
-
-
-
-"""
-Below is is how the course to subject `ownership` should be handled since There
-can be multiple 'Groups'/'SubjectAreas' for a 'Person'/'Course'
-
-class Person(models.Model):
-    name = models.CharField(max_length=50)
-
-class Group(models.Model):
-    name = models.CharField(max_length=128)
-    members = models.ManyToManyField(
-        Person,
-        through='Membership',
-        through_fields=('group', 'person'),
-    )
-
-class Membership(models.Model):
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    person = models.ForeignKey(Person, on_delete=models.CASCADE)
-    inviter = models.ForeignKey(
-        Person,
-        on_delete=models.CASCADE,
-        related_name="membership_invites",
-    )
-    invite_reason = models.CharField(max_length=64)
-"""
+class UpdateLog(models.Model):
+    """
+    this is how to store
+    """

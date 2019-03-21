@@ -11,21 +11,19 @@
   <p>If this is your first time on the new site please take a moment to give some feedback by filling out a breif google form <a href="https://goo.gl/forms/1hjbGK2Y5wnBYk0E2">here</a> (<a href="https://goo.gl/forms/1hjbGK2Y5wnBYk0E2">https://goo.gl/forms/1hjbGK2Y5wnBYk0E2</a>).
   If you have any feed back on this site or encounter any issues please forward them to mfhodges@upenn.edu or fill out the form below: </p>
 
-  <div class="card">
+  <div class="card" >
     <h5 class="card-header no-margin-top">Contact Form</h5>
     <div class="card-body">
-      <form>
-        <label for="name">Name</label>
-        <input type="text" id="name" placeholder="First Name">
+      <form role="form" action="" method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit">Send <i class="far fa-paper-plane"></i>
 
-        <label for="comments">Additional Comments</label>
-        <textarea id="comments"></textarea>
-
-        <input type="submit" value="Send">
+          </button>
       </form>
     </div>
   </div>
-
-
+<br>
+<br>
 </div>
 {% endblock %}

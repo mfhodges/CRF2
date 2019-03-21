@@ -81,20 +81,26 @@
              </div>
            </div>
            <div class="modal-body">
-             <form class="" method="POST" action="">
+
+             <form class="" method="POST" action="" style="display:inherit;max-width:500px;margin-left:auto;margin-right:auto;">
                {% csrf_token %}
                <label for="name">User's Pennkey</label>
-               {% if messages %}
-                  <input type="text" id="name" placeholder="pennkey" name="on_behalf_of" class="has-error" required >
-                  {% for message in messages %}
-                    <b{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</b><br>
-                  {% endfor %}
+               <div class="input-group mb-3">
+                {% if messages %}
+                    <input name="on_behalf_of" type="text" class="form-control has-error" placeholder="pennkey" aria-label="User's Pennkey" required>
                 {% else %}
-                <input type="text" id="name" placeholder="pennkey" name="on_behalf_of" required >
+                  <input name="on_behalf_of" type="text" class="form-control" placeholder="pennkey" aria-label="User's Pennkey" required>
                 {% endif %}
-                <input type="submit" value="Submit">
+               <div class="input-group-append">
+                 <button style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;margin-left: -1px;height: 100%;z-index: 0" >Submit</button>
+               </div>
+             </div>
+             {% if messages %}
+                {% for message in messages %}
+                  <b{% if message.tags %} class="{{ message.tags }} vertical-center" {% endif %}>{{ message }}</b><br>
+                {% endfor %}
+              {% endif %}
              </form>
-
 
 
            </div>
@@ -120,12 +126,16 @@
               <li><a class="{% block schools %}{% endblock %}" href="/schools">Schools</a></li>
               <li><a class="{% block subjects %}{% endblock %}" href="/subjects">Subjects</a></li>
 
+              {% if user.is_staff  and user.is_authenticated %}
+
               <li class="title">Admin</li>
               <li><a href="/admin">Admin Portal</a></li>
               <li><a href="/autoadds" class="{% block autoadd %}{% endblock %}">Manage Auto-Adds</a></li>
+              <li><a href="/bulkupdates" class="{% block bulkupdates %}{% endblock %}">Manage Bulk Updates</a></li>
+
+              {% endif %}
+
               <!-- logout / login info -->
-
-
               <li id="side_sign_in">
                 {% if user.is_authenticated %}
                 <a href="accounts/logout">

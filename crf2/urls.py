@@ -35,7 +35,7 @@ urlpatterns = [
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),
     path('', include('course.urls')),
-    path('contact/',TemplateView.as_view(template_name='contact.html')),
+    
     # --------------- login url/view -------------------
     path('accounts/login/', auth_views.LoginView.as_view(
         template_name='login.html',

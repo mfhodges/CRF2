@@ -22,7 +22,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import path
 from course import views
 
-from django.core.mail import BadHeaderError, send_mail
+from django.core.mail import EmailMessage
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
@@ -31,6 +31,9 @@ from django.db.models import Q
 from rest_framework.utils.urls import replace_query_param, remove_query_param
 from django_filters import rest_framework as filters
 
+
+from course.forms import ContactForm
+from django.template.loader import get_template
 #class CourseView(TemplateView):
 #    template_name = "index.html"
 
@@ -93,10 +96,11 @@ class CourseFilter(filters.FilterSet):
     instructor = filters.CharFilter(field_name='instructors__username', label='Instructor')
     school = filters.CharFilter(field_name='course_schools__abbreviation',label='School (abbreviation)')
     subject = filters.CharFilter(field_name='course_subjects__abbreviation', label='Subject (abbreviation)')
+    term = filters.ChoiceFilter(choices=Course.TERM_CHOICES, field_name='course_term', label='Term')
 
     class Meta:
         model = Course
-        fields = ['activity','instructor','school','subject']
+        fields = ['activity','instructor','school','subject','term']
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -119,6 +123,7 @@ class CourseViewSet(viewsets.ModelViewSet):
                           IsOwnerOrReadOnly,)
     filterset_class = CourseFilter
 
+
     search_fields = ['$course_name', '$course_SRStitle']
     def perform_create(self, serializer):
         print("CourseViewSet.perform_create: request.POST", self.request.POST)
@@ -132,15 +137,10 @@ class CourseViewSet(viewsets.ModelViewSet):
     # below allows for it to be passed to the template !!!!
     # I AM NOT SURE IF THIS IS OKAY WITH AUTHENTICATION
     def list(self, request, *args, **kwargs):
-
-
         queryset = self.filter_queryset(self.get_queryset())
-
-
         print("query_set", queryset)
         page = self.paginate_queryset(queryset)
-        print("yes!")
-        print("1\n", request.query_params, '\n', request.META, 'w')
+        
         #print(",,",self.filter_backends[0].get_filterset(request,self.get_queryset(),self))
         for backend in list(self.filter_backends):
             #django_filters.rest_framework.backends.DjangoFilterBackend - https://github.com/carltongibson/django-filter/blob/master/django_filters/rest_framework/backends.py
@@ -149,7 +149,6 @@ class CourseViewSet(viewsets.ModelViewSet):
             #print("...1",backend.filterset_base.filters)
 
         if page is not None:
-
             serializer = self.get_serializer(page, many=True)
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
             print("template_name",response.template_name)
@@ -182,8 +181,11 @@ class CourseViewSet(viewsets.ModelViewSet):
         response = super(CourseViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
             print("bye george(detail)!\n",response.data)
-            return Response({'course': response.data}, template_name='course_detail.html')
+            return Response({'course': response.data, 'request_form': RequestSerializer }, template_name='course_detail.html')
         return response
+
+
+
 
     def post(self, request,*args, **kwargs):
         #need to check if the post is for masquerade
@@ -309,6 +311,15 @@ class RequestViewSet(viewsets.ModelViewSet):
             #print("bye george(UI-request-detail)!\n",response.data)
             return Response({'data': response.data}, template_name='request_detail.html')
         return response
+
+    def retrieve_form(self, request, *args, **kwargs):
+        # kwargs is {'pk': 'SRS_2'}
+        course = Course.objects.get(course_SRStitle=kwargs['pk'])# get Course instance
+        if request.accepted_renderer.format == 'html':
+            print("bye george(request form )!\n")
+            return Response({'course': course, 'serializer':RequestSerializer}, template_name='request_form.html')
+        return response
+
 
 
 
@@ -533,7 +544,9 @@ class HomePage(APIView):
             'site_requests':'',
             'srs_course':'',
             'username':request.user}})
+
     # get the user id and then do three queries to create these tables
+    # you should get the user id of the auth.user or if they are masquerading get the id of that user
     # 1. Site Requests
     # 2. SRS Courses
     # 3. Canvas Sites
@@ -548,6 +561,7 @@ class HomePage(APIView):
         #need to check if the post is for masquerade
         print(request.get_full_path())
         set_session(request)
+
         return(redirect(request.get_full_path()))
 
 
@@ -564,6 +578,19 @@ class AutoAddViewSet(viewsets.ModelViewSet):
     queryset = AutoAdd.objects.all()
     serializer_class = AutoAddSerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        response = Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        print("got here")
+        if request.accepted_renderer.format == 'html':
+            response.template_name = 'admin/autoadd_list.html'
+            return(redirect('UI-autoadd-list'))
+        return response
+
+
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
@@ -574,44 +601,87 @@ class AutoAddViewSet(viewsets.ModelViewSet):
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
             print("template_name",response.template_name)
             if request.accepted_renderer.format == 'html':
-                response.template_name = 'autoadd_list.html'
+                response.template_name = 'admin/autoadd_list.html'
                 print("template_name",response.template_name)
-                response.data = {'results': response.data,'paginator':self.paginator}
+                print("qqq",repr(AutoAddSerializer))
+                print("qqqq",AutoAddSerializer.fields)
+                response.data = {'results': response.data,'paginator':self.paginator,'serializer':AutoAddSerializer}
             print("request.accepted_renderer.format",request.accepted_renderer.format)
             print("yeah ok1",response.items())
             return response
-        """
-        serializer = self.get_serializer(queryset, many=True)
-        response = Response(serializer.data)
-        if request.accepted_renderer.format == 'html':
-            print("template_name",response.template_name)
-            response.template_name = 'autoadd_list.html'
-            print("template_name",response.template_name)
-            response.data = {'results': response.data}
-        print("yeah ok2",response.items())
-        return response
-        """
 
-def send_email(request):
-    subject = request.POST.get('subject', '')
-    message = request.POST.get('message', '')
-    from_email = request.POST.get('from_email', '')
-    if subject and message and from_email:
-        try:
-            send_mail(subject, message, from_email, ['admin@example.com'])
-        except BadHeaderError:
-            return HttpResponse('Invalid header found.')
-        return HttpResponseRedirect('/contact/thanks/')
-    else:
-        # In reality we'd use a form class
-        # to get proper validation errors.
-        return HttpResponse('Make sure all fields are entered and valid.')
-    """"
-    send_mail(
-        'Subject here',
-        'Here is the message.',
-        'from@example.com',
-        ['to@example.com'],
-        fail_silently=False,)
-    SEE MORE: https://docs.djangoproject.com/en/2.1/topics/email/
+    def destroy(self, request, *args, **kwargs):
+        print("ss")
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        print("ok", request.path)
+        response = Response(status=status.HTTP_204_NO_CONTENT)
+        if 'UI' in request.data:
+            if request.data['UI'] == 'true':
+                print("eya")
+                response.template_name = 'admin/autoadd_list.html'
+                return(redirect('UI-autoadd-list'))
+        return response
+
+
+
+
+
+#class UpdateLogViewSet(viewsets.ModelViewSet):
     """
+    THIS IS A TEMPORARY COPY
+    This viewset automatically provides `list` and `detail` actions.
+    """
+    #queryset = UpdateLog.objects.all()
+    #serializer_class = UpdateLogSerializer
+    #def perform_create(self, serializer):
+        #print("NoticeViewSet - perform_create trying to create Notice")
+        #print(self.request.user) == username making request
+        #serializer.save(owner=self.request.user)
+
+
+
+
+# add to your views
+def contact(request):
+    form_class = ContactForm
+    if request.method == 'POST':
+        form = form_class(data=request.POST)
+        if form.is_valid():
+            contact_name = request.POST.get('contact_name', '')
+            contact_email = request.POST.get('contact_email', '')
+            form_content = request.POST.get('content', '')
+
+            # Email the profile with the
+            # contact information
+            template = get_template('emails/contact_template.txt')
+            context = {'contact_name': contact_name,'contact_email': contact_email,'form_content': form_content,}
+            content = template.render(context)
+
+            email = EmailMessage(
+                subject="CRF Feedback from "+contact_name ,
+                body=content,
+                from_email="librarycrf@pobox.upenn.edu",
+                to=['mfhodges@upenn.edu'],
+                #headers = {'Reply-To': contact_email }
+            )
+            email.send()
+            return redirect('contact')
+
+    return render(request, 'contact.html', {
+        'form': form_class,})
+
+
+
+def send_notification():
+    email = EmailMessage(
+        subject="CRF Feedback from "+contact_name ,
+        body=content,
+        from_email="librarycrf@pobox.upenn.edu",
+        to=['mfhodges@upenn.edu'],
+        headers = {'Reply-To': contact_email }
+    )
+
+
+
+#SEE MORE: https://docs.djangoproject.com/en/2.1/topics/email/

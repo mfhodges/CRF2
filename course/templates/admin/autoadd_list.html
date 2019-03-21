@@ -1,0 +1,138 @@
+{% extends "base_generic.html" %}
+{% load rest_framework %}
+{% block autoadd %}active{% endblock %}
+
+{% block content %}
+<div class="medium-container">
+
+
+<h1> AutoAdd</h1>
+
+
+<!--<p> previous{{ data.previous }} </p>
+<p> next{{ data.next}} </p>
+<p> num_pages{{ data.total_pages}} </p> -->
+
+<p> <mark>Note:</mark> form will submitt and refresh page -- there is no details page </p>
+
+<button class="muted-button" data-toggle="modal" data-target="#AutoAddModal">Create AutoAdd
+    <i class="fas fa-add"></i>
+</button>
+
+
+
+
+  <table class="striped-table">
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>School</th>
+        <th>Subject</th>
+        <th>Role</th>
+        <th>Edit / Remove</th>
+
+      </tr>
+    </thead>
+    <tbody>
+      {% for request in results %}
+      <tr>
+        <td> {{request.user}} </td>
+        <td>{{request.school}}</td>
+        <td>{{request.subject}}</td>
+        <td>{{request.role }}</td>
+        <td>
+
+          <button data-toggle="modal" data-target="#deleteModal" data-autoadd="{{request.id}}">
+            Delete
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </td>
+      </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+
+
+
+  <!-- MODAL AUTO ADD -->
+
+  <div class="modal fade" id="AutoAddModal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Create Auto Add </h5>
+          <div class="close" data-dismiss="modal" aria-label="Close">
+            <i class="fas fa-times"></i>
+          </div>
+        </div>
+        <div class="modal-body">
+
+            <h5 style="margin:0px;"><mark>NOTE:</mark></h5 >
+            <h6 style="padding-left:10px;"> Currently there is no validation in this form.
+            Please double check that you have perfect spelling for the user's penn key and Subject abbreviation.
+            If the values are not exact you will get a 400 Error.
+          </h6>
+        <form action="/autoadds/" method="post">
+            {% csrf_token %}
+            {% render_form serializer %}
+            <input type="submit" value="Create" />
+        </form>
+      </div>
+      </div>
+    </div>
+  </div>
+  <!-- END MODAL AUTO ADD -->
+
+
+<!-- Delete MODAL -->
+
+<div class="modal fade in" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-body">
+                    <h5 class="text-center">Are you sure you want to delete this Auto Add Instance?</h5>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <form class="button-form" id='formDelete' action="" data-method="DELETE">
+                      <input type="hidden" name="UI" value="true">
+                      <button class="btn-danger">Delete</button>
+                    </form>
+                  </div>
+          </div>
+      </div>
+</div>
+
+
+
+<!--  END Delete MODAL -->
+
+
+
+
+<!-- PAGINATION -->
+{% if paginator %}
+  <nav aria-label="Page navigation" class="vertical-center">
+    {% get_pagination_html paginator %}
+  </nav>
+{% endif %}
+
+
+
+
+</div>
+{% endblock %}
+
+{% block template_page_js %}
+<script>
+// For the Course List View
+$('#deleteModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var id = button.data('autoadd') // Extract info from data-* attributes
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  console.log(id);
+  $('#formDelete').attr("action",'/api/autoadds/' + id + '/')
+});
+</script>
+{% endblock %}

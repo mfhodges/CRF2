@@ -47,6 +47,7 @@ urlpatterns = [
     path('courses/<str:pk>/', views.CourseViewSet.as_view(
         {'get': 'retrieve'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
          name='UI-course-detail'),
+
     #path('courses/<int:pk>/request', views.CourseViewSet.as_view(
     #    {'get': 'retrieve'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
     #     name='UI-course-detail'),
@@ -57,6 +58,8 @@ urlpatterns = [
     path('requests/<str:pk>/', views.RequestViewSet.as_view(
         {'get': 'retrieve'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
         name='UI-request-detail'),
+
+
     # --------------- School list/detail view -------------------
     path('schools/', views.SchoolViewSet.as_view(
         {'get':'list',},renderer_classes=[renderers.TemplateHTMLRenderer]),
@@ -64,6 +67,7 @@ urlpatterns = [
     path('schools/<str:pk>/', views.SchoolViewSet.as_view(
         {'get': 'retrieve', 'put': 'update'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
         name='UI-school-detail'),
+
     # --------------- Subject list view -------------------
     path('subjects/', views.SubjectViewSet.as_view(
         {'get':'list'},renderer_classes=[renderers.TemplateHTMLRenderer]),
@@ -74,10 +78,16 @@ urlpatterns = [
 
     # --------------- AUTOADDS view -------------------
     path('autoadds/', views.AutoAddViewSet.as_view(
-        {'get':'list'},renderer_classes=[renderers.TemplateHTMLRenderer]),
-         name='UI-autoadd-list'),
+        {'get':'list','post':'create','delete':'list'},renderer_classes=[renderers.TemplateHTMLRenderer]),
+         name='UI-autoadd-list'), # adding 'delete': 'list' is hacky but saves me from writiing a detail page in UI
     #path('users/<?:pennkey>/', UserDetail.asview(),name='user-detail'),
     # --------------- HOMEPAGE view -------------------
     path('', views.HomePage.as_view(), name='home'),
+    # --------------- CONTACT view -------------------
+    path('contact/', views.contact, name='contact'),
+    # --------------- UPDATE LOG view -------------------
+    #path('bulkupdates/', views.UpdateLogViewSet.as_view(
+    #    {'get':'list'},renderer_classes=[renderers.TemplateHTMLRenderer]),
+    #    name='UI-updatelog-list'),
 ]
 #path('course', views.CourseViewSet.as_view({'get': 'list'})),

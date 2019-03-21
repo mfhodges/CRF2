@@ -1,0 +1,58 @@
+{% extends "base_generic.html" %}
+{% load rest_framework %}
+
+{% block content %}
+<div class="medium-container">
+
+<h1> Request Form </h1>
+<small> this will be the page to view a course's request history or if none is recorded,
+the form to make a request for a course.
+</small>
+
+
+<!-- this will be the page to view a course's request history or if none is recorded,
+the form to make a request for a course -->
+
+<fieldset>
+<legend>Course Info</legend>
+<dl class="row" style="line-height:1.1;">
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">SRS Title</dt>
+      <dd class="col-8 col-md-9">description</dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Subject Area</dt>
+      <dd class="col-8 col-md-9">description</dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">School</dt>
+      <dd class="col-8 col-md-9">description</dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Activity</dt>
+      <dd class="col-8 col-md-9">description</dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Cross Listing</dt>
+      <dd class="col-8 col-md-9">description</dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Instructor</dt>
+      <dd class="col-8 col-md-9">description</dd>
+  </dl>
+
+</fieldset>
+
+
+
+<form action="/request/" method="post">
+<fieldset>
+<legend>Canvas Site Options</legend>
+{% csrf_token %}
+{% render_form serializer %}
+<input type="submit" value="Submit Request" />
+</fieldset>
+</form>
+
+
+
+
+
+
+
+</div>
+{% endblock %}

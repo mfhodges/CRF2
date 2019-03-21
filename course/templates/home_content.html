@@ -11,7 +11,7 @@
 
 
 
-{% if notice %}
+{% if data.notice %}
 <div class="small-container" style="border: none;box-shadow: none !important;">
 
 
@@ -28,16 +28,31 @@
 </div>
 {% endif %}
 
+
+
 <p> Welcome {{data.username}} ... remove this later </p>
 <small> Requesting on behalf of '{{ request.session.on_behalf_of }}' </small>
 
+<p>
+  Some info should go here related to people's first time on this site - i.e. what it is and how to navigate
+</p>
+<p>
+  also there sould be something that requires them to verify their contact info 
+</p>
+
+
+
 <div class="small-container">
   <dt>Request site on behalf of user:</dt>
-<form class="" method="POST" action="{% url 'home' %}">
+<form class="" method="POST" action="{% url 'home' %}" style="display:inherit;max-width:500px;margin-left:auto;margin-right:auto;">
   {% csrf_token %}
   <label for="name">User's Pennkey</label>
-    <input type="text" id="name" placeholder="pennkey" name="on_behalf_of" required>
-    <input type="submit" value="Submit">
+  <div class="input-group mb-3">
+  <input name="on_behalf_of" type="text" class="form-control" placeholder="pennkey" aria-label="User's Pennkey" required>
+  <div class="input-group-append">
+    <button style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;margin-left: -1px;height: 100%;z-index: 0" >Submit</button>
+  </div>
+</div>
 </form>
 </div>
 

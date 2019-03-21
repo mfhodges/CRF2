@@ -662,7 +662,9 @@ fieldset {
 
 legend {
   padding: 0 .5rem;
-  font-weight: 600; }
+  font-weight: 600;
+  width: auto;
+}
 
 select {
   color: #404040;

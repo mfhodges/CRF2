@@ -1,39 +1,57 @@
 {% extends "base_generic.html" %}
+{% load rest_framework %}
 
 
 {% block content %}
 <div class="medium-container">
-<h1>Courses Detail</h1>
 
-{% for key, value in course.items %}
-  <p>  {{ key }}: {{ value }} </p>
-{% endfor %}
+  <!-- course info -->
+  <fieldset>
+  <legend>Course Info</legend>
+  <dl class="row" style="line-height:1.1;">
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">SRS Title</dt>
+        <dd class="col-8 col-md-9"> {{ course.courseSRStitle }}</dd>
 
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Subject Area</dt>
+        <dd class="col-8 col-md-9">{{course.course_subjects}}</dd>
 
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">School</dt>
+        <dd class="col-8 col-md-9">{{course.course_schools}}</dd>
 
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Activity</dt>
+        <dd class="col-8 col-md-9">{{course.course_activity}}</dd>
 
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Cross Listing</dt>
+        <dd class="col-8 col-md-9">description</dd>
 
-  <form action="" method="GET" > <!--switch this back to POST later -->
-    {{course.requested}}
-    {% if course.requested == True %}
-        <!-- this button should pull up the submitted request! -->
-        <button type="submit" class="muted-button" >Requested</button>
-            <a href='{{coure.id}}'> go to request detail </a>
-
-    {% else %}
-
-
-      <!--  <input type="hidden" name="requested" value="true">
-        <button type="submit" class="button" >Request</button>-->
-
-        <!-- Button trigger modal -->
-        <button class="button" href="/">
-          Request
-        </button>
-    {% endif %}
-</form>
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Instructor</dt>
+        <dd class="col-8 col-md-9">{{course.instructors}}</dd>
+    </dl>
+  </fieldset>
+<!-- end course info -->
 
 
+
+<!-- Request Form -->
+  <!-- if already requested this should just be request details?
+        BUT how do you handle sections ? -->
+  <form action="/request/" method="post">
+  <fieldset>
+  <legend>Canvas Site Options</legend>
+  {% csrf_token %}
+  {% render_form request_form %}
+  <input type="submit" value="Submit Request" />
+  </fieldset>
+  </form>
+<!-- end request form -->
+
+
+<!-- Canvas Site info -->
+<fieldset>
+
+
+</fieldset>
+<!-- END Canvas Site info -->
 
 <p> &lt button that links to admin view to edit &gt </p>
 

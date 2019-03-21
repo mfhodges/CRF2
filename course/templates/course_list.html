@@ -22,7 +22,7 @@
     <div id="search" > <!-- class="collapse" -->
       <div class="input-group mb-3">
       <form action="" method="GET">
-      <input name="search" type="text" class="form-control" placeholder="Course Section or Name" aria-label="Course's SRS title or name " >
+      <input name="search" type="text" class="form-control" placeholder="Course Section or Name" aria-label="Course's SRS title or name " required>
       <div class="input-group-append">
         <button ></button> <!-- contents handled in css -->
       </div>
@@ -39,6 +39,7 @@
 
 <div style='padding-top:10px;'> <!-- param badges -->
 {% for filter,value in request.query_params.items %}
+ {% if filter != "page" %}
   <span class="badge" > {{ filter }}: {{ value }}
     <span aria-hidden="true">
       <a href="{% delete_query_param request filter %}">
@@ -46,7 +47,7 @@
       </a>
     </span>
   </span>
-
+  {% endif %}
 {% endfor %}
 </div>
 <!--  <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
