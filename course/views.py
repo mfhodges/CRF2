@@ -9,7 +9,7 @@ from rest_framework.reverse import reverse
 
 from rest_framework import viewsets
 from rest_framework.decorators import action, api_view
-
+from django.contrib.auth.decorators import login_required
 
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.response import Response
@@ -32,8 +32,9 @@ from rest_framework.utils.urls import replace_query_param, remove_query_param
 from django_filters import rest_framework as filters
 
 
-from course.forms import ContactForm
+from course.forms import ContactForm, EmailChangeForm
 from django.template.loader import get_template
+import datetime
 #class CourseView(TemplateView):
 #    template_name = "index.html"
 
@@ -47,6 +48,9 @@ of Django REST Framework's class-based views and serializers'see: http://www.cdr
 #self.request.QUERY_PARAMS.get('appKey', None)
 
 
+######### API METHODS ########
+# PUT/PATCH -> PARTIAL UPDATE
+# POST -> CREATE
 
 # for more on viewsets see: https://www.django-rest-framework.org/api-guide/viewsets/
 # (slightly helpful ) or see: http://polyglot.ninja/django-rest-framework-viewset-modelviewset-router/
@@ -113,7 +117,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     # [x] on creation of request instance mutatate course instance so courese.requested = True
     #[ ] ensure POST is only setting masquerade
 
-    #lookup_field = 'course_SRS_Title'
+    lookup_field = 'course_SRStitle'
     #lookup_value_regex = '[0-9a-f]{32}'
 
 
@@ -140,7 +144,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         queryset = self.filter_queryset(self.get_queryset())
         print("query_set", queryset)
         page = self.paginate_queryset(queryset)
-        
+
         #print(",,",self.filter_backends[0].get_filterset(request,self.get_queryset(),self))
         for backend in list(self.filter_backends):
             #django_filters.rest_framework.backends.DjangoFilterBackend - https://github.com/carltongibson/django-filter/blob/master/django_filters/rest_framework/backends.py
@@ -180,8 +184,29 @@ class CourseViewSet(viewsets.ModelViewSet):
         print('CourseViewSet.retreive lookup field', self.lookup_field)
         response = super(CourseViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
+
             print("bye george(detail)!\n",response.data)
-            return Response({'course': response.data, 'request_form': RequestSerializer }, template_name='course_detail.html')
+            print(response)
+            course_instance = self.get_object()
+            print("iii",course_instance)
+            # okay so at this point none of this is working soe
+
+            # should check if requested and if so get that request obj! is this efficient ??
+            if course_instance.requested == True:
+                # course detail needs form history
+
+                #NOTE there must be an associated course and if there isnt... we r in trouble!
+                request_instance = course_instance.request
+                print("hfaweuifh ",request_instance)
+                this_form =''
+            else:
+                # course detail needs to get form
+                this_form = RequestSerializer(data={'course_requested':self.get_object()})
+                print("ok")
+                this_form.is_valid()
+                print("this_form",this_form.data)
+                request_instance =''
+            return Response({'course': response.data, 'request_instance':request_instance,'request_form':this_form ,'style':{'template_pack': 'rest_framework/vertical/'}}, template_name='course_detail.html')
         return response
 
 
@@ -247,9 +272,13 @@ class RequestViewSet(viewsets.ModelViewSet):
         print(course.course_SRStitle, course.requested)
         # update course instance
         # this allow for the redirect to the UI and not the API endpoint. 'view_type' should be defined in the form that submits this request
+
+        # the following should have redirect pages which say something like "you have created X see item, go back to list"
         if 'view_type' in request.data:
-            if request.data['view_type'] == 'UI':
+            if request.data['view_type'] == 'UI-course-list':
                 return redirect('UI-course-list')
+            if request.data['view_type'] == 'UI-request-detail':
+                return redirect('UI-request-detail', pk=course.course_SRStitle)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
@@ -312,13 +341,6 @@ class RequestViewSet(viewsets.ModelViewSet):
             return Response({'data': response.data}, template_name='request_detail.html')
         return response
 
-    def retrieve_form(self, request, *args, **kwargs):
-        # kwargs is {'pk': 'SRS_2'}
-        course = Course.objects.get(course_SRStitle=kwargs['pk'])# get Course instance
-        if request.accepted_renderer.format == 'html':
-            print("bye george(request form )!\n")
-            return Response({'course': course, 'serializer':RequestSerializer}, template_name='request_form.html')
-        return response
 
 
 
@@ -627,6 +649,9 @@ class AutoAddViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
 #class UpdateLogViewSet(viewsets.ModelViewSet):
     """
     THIS IS A TEMPORARY COPY
@@ -639,8 +664,19 @@ class AutoAddViewSet(viewsets.ModelViewSet):
         #print(self.request.user) == username making request
         #serializer.save(owner=self.request.user)
 
+#@login_required(login_url='/accounts/login/')
+def userinfo(request):
+    form = EmailChangeForm(request.user)
+    print(request.method)
+    if request.method=='POST':
+        print("we in the POST")
+        form = EmailChangeForm(request.user, request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('userinfo') # this should redirect to success page
 
 
+    return render(request, "user_info.html", {'form':form})
 
 # add to your views
 def contact(request):
@@ -661,15 +697,13 @@ def contact(request):
             email = EmailMessage(
                 subject="CRF Feedback from "+contact_name ,
                 body=content,
-                from_email="librarycrf@pobox.upenn.edu",
                 to=['mfhodges@upenn.edu'],
                 #headers = {'Reply-To': contact_email }
             )
             email.send()
             return redirect('contact')
 
-    return render(request, 'contact.html', {
-        'form': form_class,})
+    return render(request, 'contact.html', {'form': form_class,})
 
 
 
@@ -677,7 +711,6 @@ def send_notification():
     email = EmailMessage(
         subject="CRF Feedback from "+contact_name ,
         body=content,
-        from_email="librarycrf@pobox.upenn.edu",
         to=['mfhodges@upenn.edu'],
         headers = {'Reply-To': contact_email }
     )

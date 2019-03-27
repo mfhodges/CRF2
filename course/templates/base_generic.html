@@ -37,7 +37,7 @@
         <div class="flex-small" id="masquerade" style="background:#f7d6a2">
           <form method="POST" action="">
             {% csrf_token %}
-          <small> Requesting on behalf of '{{ request.session.on_behalf_of }}' </small>
+          <small> Requesting as '{{ request.session.on_behalf_of }}' </small>
           <input type="hidden" id="name" value='' name="on_behalf_of" >
           <button>
             <i class="fas fa-user-times" data-toggle="tooltip" data-placement="bottom" title="click to stop requesting on behalf of {{ request.session.on_behalf_of }}"></i>
@@ -81,7 +81,7 @@
              </div>
            </div>
            <div class="modal-body">
-
+             {% if  user.is_authenticated %}
              <form class="" method="POST" action="" style="display:inherit;max-width:500px;margin-left:auto;margin-right:auto;">
                {% csrf_token %}
                <label for="name">User's Pennkey</label>
@@ -101,7 +101,11 @@
                 {% endfor %}
               {% endif %}
              </form>
-
+             {% else %}
+             <div>
+               <p> Invalid permission. Please <a href="accounts/login">login</a> </p>
+             </div>
+             {% endif %}
 
            </div>
          </div>
@@ -197,12 +201,14 @@ $('.close-notification i').click(function (e) {
     $('blockquote').removeClass('show'); // removing the show class adds the expand icon
     $('.message').hide();
     $('.default').show();
+    $('.close-notification').addClass('vertical-center');
     $('.close-notification i').removeClass('fa-times');
     $('.close-notification i').addClass('fa-plus');
   } else {
     $('blockquote').addClass('show');
     $('.message').show();
     $('.default').hide();
+    $('.close-notification').removeClass('vertical-center');
     $('.close-notification i').removeClass('fa-plus');
     $('.close-notification i').addClass('fa-times');
   }

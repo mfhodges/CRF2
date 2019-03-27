@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
+import datetime
 
 # This model is to represent a Course object in the CRF
 # the meta-data that is important with this is information that will help the course be
@@ -61,7 +62,11 @@ class Subject(models.Model):
     def __str__(self):
         return '%s (%s)' % (self.name, self.abbreviation)
 
-
+class CanvasSite(models.Model):
+    """
+    this contains all the relevant info about the canvas site once it has been created
+    """
+    url = models.URLField()
 
 
 
@@ -102,6 +107,7 @@ class Course(models.Model):
 
     requested =  models.BooleanField(default=False)# False -> not requested
 
+    #sections = models.
     #
     #
     class Meta:
@@ -173,10 +179,15 @@ class Request(models.Model):
         on_delete=models.CASCADE,
         primary_key=True) # once the course is deleted the request will be deleted too.
 
-    copy_from_course =models.CharField(max_length=100, null=True)
+    copy_from_course =models.CharField(max_length=100, null=True) # previously content source
     # this should be a list of courses they have rights too
     # SuperUsers have access to all courses
+    title_override = models.CharField(max_length=100,null=True) # previously SRS title override
+    additional_instructions = models.TextField(blank=True,default=None, null=True)
+    reserves = models.BooleanField(default=False)
+    canvas_instance = models.ForeignKey(CanvasSite,related_name='canvas', on_delete=models.CASCADE,default=None,null=True)
 
+    # NOTE! needs something for multisection course sites!
 
 
     status = models.CharField(max_length=20, choices=REQUEST_PROCESS_CHOICES,default='SUBMITTED' )

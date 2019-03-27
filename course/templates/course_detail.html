@@ -4,13 +4,12 @@
 
 {% block content %}
 <div class="medium-container">
-
   <!-- course info -->
   <fieldset>
   <legend>Course Info</legend>
   <dl class="row" style="line-height:1.1;">
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">SRS Title</dt>
-        <dd class="col-8 col-md-9"> {{ course.courseSRStitle }}</dd>
+        <dd class="col-8 col-md-9"> {{ course.course_SRStitle }}</dd>
 
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Subject Area</dt>
         <dd class="col-8 col-md-9">{{course.course_subjects}}</dd>
@@ -30,30 +29,133 @@
   </fieldset>
 <!-- end course info -->
 
+<!-- Start Notice banner -->
 
+
+<!-- End Notice banner -->
 
 <!-- Request Form -->
   <!-- if already requested this should just be request details?
         BUT how do you handle sections ? -->
-  <form action="/request/" method="post">
-  <fieldset>
+  {% if not course.requested %}
+  <form action="{% url 'request-list' %}" method="post" id="RequestForm">
+  <fieldset >
   <legend>Canvas Site Options</legend>
   {% csrf_token %}
-  {% render_form request_form %}
+  <input name="view_type" class="form-control" type="hidden" value="UI-request-detail">
+  <input name='course_requested' value='{{course.course_SRStitle}}' type='hidden'>
+<!--  {% render_form request_form %} -->
+  <p> Course site title will default to <i> {{ course.course_SRStitle }} </i>. You may modify it in the box provided below.
+  {% render_field request_form.title_override style=style %}
+
+  <p> If you would like to copy content from an existing course site, please select the source from the list below.</p>
+  {% render_field request_form.copy_from_course style=style %}
+
+  <fieldset>
+    <legend><h6 style="margin:0;">Mulit-Section Course Sites </h6></legend>
+    <b><p> ADD CONTENT HERE </p></b>
+  </fieldset>
+
+    <fieldset>
+      <legend><h6 style="margin:0;">Library Services</h6></legend>
+      {% render_field request_form.reserves style=style %}
+    </fieldset>
+
+  {% render_field request_form.additional_instructions style=style %}
+
   <input type="submit" value="Submit Request" />
   </fieldset>
   </form>
+
+
+  {% else %} <!-- course request history -->
+  <fieldset >
+    <legend>Submitted Request</legend>
+
+    <dl class="row" style="line-height:1.1;">
+          <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Status</dt>
+          <dd class="col-8 col-md-9"> {{ request_instance.status }}</dd>
+
+          <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Requestor</dt>
+          <dd class="col-8 col-md-9"> {{ request_instance.owner }}
+            {% if request_instance.masquerade %}
+              ( as {{ request_instance.masquerade}} )
+            {% endif %}
+          </dd>
+
+          <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Created</dt>
+          <dd class="col-8 col-md-9"> {{ request_instance.created }}</dd>
+
+          <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Updated</dt>
+          <dd class="col-8 col-md-9"> {{ request_instance.updated }}</dd>
+    </dl>
+
+    <div class="form-group ">
+      <label>Title override</label>
+      <input name="title_override" class="form-control" type="text" value="{{ request_instance.title_override }}" disabled>
+    </div>
+
+    <div class="form-group ">
+      <label>Copy from course</label>
+      <input name="copy_from_course" class="form-control" type="text" value="{{ request_instance.copy_from_course }}" disabled>
+    </div>
+
+  <fieldset>
+    <legend><h6 style="margin:0;">Multi-Section Course Sites</h6></legend>
+      <div class="form-group ">
+        <b><p> ADD CONTENT HERE </p></b>
+      </div>
+  </fieldset>
+
+    <fieldset>
+          <legend><h6 style="margin:0;">Library Services</h6></legend>
+          <dl class="row" style="line-height:1.1;">
+                <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Reserves</dt>
+                <dd class="col-8 col-md-9"> {{ request_instance.reserves }}</dd>
+          </dl>
+    </fieldset>
+
+    <div class="form-group ">
+      <label>Additional instructions</label>
+      <textarea name="additional_instructions" class="form-control" value="{{ request_instance.additional_instructions }}" disabled></textarea>
+    </div>
+
+
+  {% if user.is_staff %}
+    <p> buttons to lock or edit go here <p>
+  {% endif %}
+
+  </fieldset>
+  {% endif %}
 <!-- end request form -->
 
 
 <!-- Canvas Site info -->
 <fieldset>
+  <legend>Canvas Site</legend>
+ {% if request_instance.canvas_instance %}
+  <dl class="row" style="line-height:1.1;">
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Name</dt>
+        <dd class="col-8 col-md-9"> </dd>
 
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Workflow State</dt>
+        <dd class="col-8 col-md-9"> </dd>
+
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">SIS Course ID</dt>
+        <dd class="col-8 col-md-9"> </dd>
+
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">URL</dt>
+        <dd class="col-8 col-md-9"> </dd>
+  </dl>
+
+  {% else %}
+  <p> no canvas instance created yet </p>
+
+  {% endif %}
 
 </fieldset>
 <!-- END Canvas Site info -->
 
-<p> &lt button that links to admin view to edit &gt </p>
 
 </div>
 

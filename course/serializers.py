@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from course.models import Course, Notice, Request, School, Subject, AutoAdd, UpdateLog
 from django.contrib.auth.models import User
-
+import datetime
 
 # Serializer Classes provide a way of serializing and deserializing
 # the model instances into representations such as json. We can do this
@@ -15,7 +15,7 @@ from django.contrib.auth.models import User
 
 
 
-class CourseSerializer(serializers.HyperlinkedModelSerializer):
+class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSerializer
     """
 
     """
@@ -26,21 +26,21 @@ class CourseSerializer(serializers.HyperlinkedModelSerializer):
     #this adds a field that is not defined in the model
 
     owner = serializers.ReadOnlyField(source='owner.username')
-
     # cant uncomment following line without resolving lookup for Request
     course_SRStitle = serializers.CharField()
-    request_info = serializers.HyperlinkedRelatedField(many=False, lookup_field='course_requested',view_name='request-detail',read_only=True)
+
+    #request_info = serializers.HyperlinkedRelatedField(many=False, lookup_field='course_requested',view_name='courses-detail',read_only=True)
 
     #request_status = serializers.HyperlinkedIdentityField(view_name='course-request', format='html')
-    
+
 
     # Eventually the queryset should also filter by Group = Instructors
     instructors = serializers.SlugRelatedField(many=True,queryset=User.objects.all(), slug_field='username')
     course_schools = serializers.SlugRelatedField(many=True,queryset=School.objects.all(), slug_field='abbreviation')
     course_subjects = serializers.SlugRelatedField(many=True,queryset=Subject.objects.all(), slug_field='abbreviation')
-    created = serializers.DateTimeField()
-    updated = serializers.DateTimeField()
 
+    id = serializers.ReadOnlyField()
+    #course_requested = serializers.HyperlinkedRelatedField(many=True, view_name='request-detail',read_only=True)
     #request_details = RequestSerializer(many=True,read_only=True)
 
     class Meta:
@@ -95,9 +95,9 @@ class CourseSerializer(serializers.HyperlinkedModelSerializer):
         print("instance",instance)
         return instance
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     """
-    viewset is read only therefore serializer does not support PUT/PATCH
+
     """
 
     #courses = serializers.HyperlinkedRelatedField(many=True, view_name='course-detail', read_only=True)
@@ -133,7 +133,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 
-class RequestSerializer(serializers.HyperlinkedModelSerializer):
+class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerializer
     #this adds a field that is not defined in the model
     #url = serializers.HyperlinkedIdentityField(view_name='UI-requests', looku
     print("how???")
@@ -143,11 +143,13 @@ class RequestSerializer(serializers.HyperlinkedModelSerializer):
     #course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.exclude(requested=True), slug_field='course_SRS_Title')
 
     # the following line is needed to create the drop down
-
+    status= serializers.ReadOnlyField()
     #test = CourseSerializer()
-    created = serializers.DateTimeField()
-    updated = serializers.DateTimeField()
-    course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='course_SRStitle')
+    created = serializers.DateTimeField(read_only=True)
+    updated = serializers.DateTimeField(read_only=True)
+    course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='course_SRStitle' , style={'base_template': 'input.html'})
+
+    title_override = serializers.CharField(required=False , style={'base_template': 'input.html'})
 
     # IF REQUEST STATUS IS CHANGED TO CANCELED IT SHOULD BE DISASSOCIATED FROM COURSE INSTANCE
     # IN ORDER TO PRESERVE THE ONE TO ONE COURSE -> REQUEST RELATIONSHIP
@@ -294,6 +296,7 @@ class AutoAddSerializer(serializers.HyperlinkedModelSerializer):
     school = serializers.SlugRelatedField(many=False,queryset=School.objects.all(), slug_field='abbreviation')
     subject = serializers.SlugRelatedField(many=False,queryset=Subject.objects.all(), slug_field='abbreviation', style={'base_template': 'input.html'})
     id = serializers.ReadOnlyField()
+
 
     class Meta:
         model = AutoAdd

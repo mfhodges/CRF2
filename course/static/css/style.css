@@ -309,7 +309,7 @@ blockquote {
 
 .close-notification {
   text-align: right;
-  padding: 6px 0px;
+  /*padding: 6px 0px;*/
   display: flex;
 }
 
@@ -324,6 +324,13 @@ blockquote pre {
 }
 blockquote.show {
   display: flex !important;
+  font-family: Menlo, monospace;
+  min-width: 0;
+  padding: 1rem;
+  tab-size: 2;
+  color: #404040;
+  font-size: 14px;
+  margin: 0 0 1.5rem 0;
 }
 
 blockquote cite {
@@ -683,7 +690,7 @@ label {
   font-weight: 600;
   max-width: 100%;
   display: block;
-  margin: 1rem 0 .5rem; }
+/*  margin: 1rem 0 .5rem; */}
 
 @media (min-width: 600px) {
   .split-form label {
@@ -823,6 +830,13 @@ header .flex-small {
 
 }
 
+
+
+/*  course form */
+/* fieldset dd, fieldset dt*/
+ dd, dt {
+  z-index: -1;
+}
 
 /* Tables
   =============== */
@@ -1003,14 +1017,14 @@ caption {
   =============== */
   /* Containers */
 main {
-  margin-top: 25px;
+  margin-top: 50px;
 }
 
 
 @media (min-width: 600px){
 
 main {
-  margin-top: 30px;
+  margin-top: 50px;
 }
 }
 @media (min-width: 800px){

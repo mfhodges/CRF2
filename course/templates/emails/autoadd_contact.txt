@@ -1,0 +1,11 @@
+Subject: CRF Notification: Added as Auto-Add Contact
+
+Body:
+You have been set as an auto-add contact in the Course Request Form.
+You will be added as a {{ role }} to all courses in the School {{ school  }} in the Subject {{ subject }} for all future courses.
+
+If this seems like a mistake, please respond to this email to open a ticket with Courseware Support.
+
+----------
+Please visit Canvas at Penn for Canvas instructions, news, and help:
+https://infocanvas.upenn.edu/

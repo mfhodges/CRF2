@@ -242,7 +242,7 @@ def bulk_create_courses():
     terms = ['A','B','C']
     activity = ['LEC','SEM','LAB']
 
-    for i in range(0,101):
+    for i in range(102,600):
         instructor_size = random.choice([1,1,2,3])
         subject_size = random.choice([1,1,2,3])
         school_size = random.choice([1,2,1])
@@ -280,7 +280,7 @@ def update_obj():
 
     print("hii")
 
-update_obj()
+#update_obj()
 #print("Courses\n", get_courses(),"\n" )
 #print("Instructors\n", get_instructors(),"\n")
 #print("Subjects\n", get_subjects(),"\n")
@@ -290,7 +290,8 @@ update_obj()
 #print(bulk_create_users())
 #print("~~~~~CREATING SCHOOLS & SUBJECTS ~~~~~\n")
 #print(bulk_create_sub_sch())
-
+print("~~~~~CREATING COURSES ~~~~~\n")
+bulk_create_courses()
 
 #data = {'course_SRS_Title': 'SRS_14', 'instructors': ['username_8'], 'course_schools': ['PSOM'], 'course_subjects': ['abbr_30', 'abbr_4'], 'course_term': 'A', 'course_activity': 'Lab', 'course_name': 'course_name_14', 'requested': False}
 #print(create_instance('courses',data))

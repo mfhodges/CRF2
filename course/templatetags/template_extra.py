@@ -6,7 +6,7 @@ from django import template
 from rest_framework.utils.urls import remove_query_param
 from django.utils.encoding import iri_to_uri
 from django.utils.html import escape
-
+from django.contrib.auth.models import User
 
 register = template.Library()
 
@@ -32,6 +32,17 @@ def get_item(qp, key):
         return ""
     else:
         return val
+@register.simple_tag
+def get_user(user):
+    # qp is request.query_params
+    print(user)
+    try:
+        user = User.objects.get(username=user)
+    except User.DoesNotExist:
+        user = None
+    else:
+        return user
+
 
 """
 @register.simple_tag
@@ -61,7 +72,7 @@ def remove_query_param(url, key):
 
     ##Given a URL and a key/val pair, remove an item in the query
     ##parameters of the URL, and return the new URL.
-    
+
     (scheme, netloc, path, query, fragment) = urlparse.urlsplit(force_str(url))
     query_dict = urlparse.parse_qs(query, keep_blank_values=True)
     query_dict.pop(key, None)

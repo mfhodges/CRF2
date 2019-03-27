@@ -1,0 +1,10 @@
+Subject: CRF Notification: Added to Course Request
+Body:
+You have been added as a {{ role }} to the course {{ course_code }}.
+You can see the course request and its status here: {{ request_detail_url }}.
+
+If this seems like a mistake please respond to this email to open a ticket with Courseware Support.
+
+----------
+Please visit Canvas at Penn for Canvas instructions, news, and help:
+https://infocanvas.upenn.edu/

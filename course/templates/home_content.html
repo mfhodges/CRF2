@@ -1,6 +1,6 @@
 
 {% extends "base_generic.html" %}
-
+{% load template_extra %}
 {% block home %}active{% endblock %}
 
 {% block content %}
@@ -9,145 +9,166 @@
 
 <div class="medium-container homepage">
 
+{% if not user.is_authenticated %}
+<p style="padding-top:60px;"> you dont have permissions to see this page, please <a href="/accounts/login">login</a></p>
+
+{% else %}
+    {% if data.notice %}
+    <div class="small-container" style="border: none;box-shadow: none !important;">
 
 
-{% if data.notice %}
-<div class="small-container" style="border: none;box-shadow: none !important;">
+    <blockquote class="show">
+
+      <p class="message"> <b>{{ data.notice.notice_heading }}</b> <br>
+    {% autoescape off %}{{ data.notice.notice_text }}{% endautoescape %}
+  </p>
+      <p class="default" style="display:none;width: -webkit-fill-available;margin: 0.5rem 0;font-family: Menlo;font-size: 14px;">expand to see message</p>
+      <div class='close-notification' style="height:40px;">
+        <i class="fas fa-times" style="font-size:20px;"></i>
+      </div>
+    </blockquote>
+    </div>
+    {% endif %}
+
+    <div class="small-container" style="border: none;box-shadow: none !important;">
+      <p>
+        TEMPORARY TEXT:  his site is for Faculty/TAs/Staff to make requests for the creation Canvas Sites for SRS-sites.
+        This site pulls data from the registrar's site < LINK HERE > and stores data from the current term and the next two terms.
+        For the creation of non-SRS sites please see https://infocanvas.upenn.edu/about/policies/#non-course.
+      </p>
+    </div>
+
+    <div class="small-container">
+      <dt style="margin-bottom: 1rem;">Contact Info</dt>
+      {% if request.session.on_behalf_of %}
+        {% get_user request.session.on_behalf_of as masq_user %}
+        <dl class="row" style="line-height:1.1;margin-bottom:0;">
+            <dt class="col-4 col-md-2 text-right" style="padding-right: 0px;">User: </dt>
+            <dd class="col-8 col-md-10"> {{masq_user.first_name }} {{masq_user.last_name}} ({{masq_user.username}})</dd>
+            <dt class="col-4 col-md-2 text-right" style="padding-right: 0px;">Email: </dt>
+            <dd class="col-8 col-md-10"> {{ masq_user.email|default:"None" }}</dd>
+        </dl>
+        {% else %}
+        <dl class="row" style="line-height:1.1;margin-bottom:0;">
+            <dt class="col-4 col-md-2 text-right" style="padding-right: 0px;">User: </dt>
+            <dd class="col-8 col-md-10"> {{user.first_name }} {{user.last_name}} ({{user.username}})</dd>
+            <dt class="col-4 col-md-2 text-right" style="padding-right: 0px;">Email: </dt>
+            <dd class="col-8 col-md-10"> {{user.email|default:"None" }}</dd>
+        </dl>
+        {% endif %}
+        <p class="text-right" style="margin-bottom:0;font-weight:500;">(<a href="{% url 'userinfo' %}" class="" style="">Edit Info</a>)</p>
+    </div>
 
 
-<blockquote class="show">
 
-  <pre class="message">{{ data.notice.notice_heading }}
-{% autoescape off %}{{ data.notice.notice_text }}{% endautoescape %}
-  </pre>
-  <pre class="default" style="display:none;">expand to see message</pre>
-  <div class='close-notification'>
-    <i class="fas fa-times"></i>
-  </div>
-</blockquote>
-</div>
+    <div class="small-container">
+      <dt>Request site on behalf of user:</dt>
+    <form class="" method="POST" action="{% url 'home' %}" style="display:inherit;max-width:500px;margin-left:auto;margin-right:auto;">
+      {% csrf_token %}
+      <label for="name">User's Pennkey</label>
+      <div class="input-group mb-3">
+      <input name="on_behalf_of" type="text" class="form-control" placeholder="pennkey" aria-label="User's Pennkey" required>
+      <div class="input-group-append">
+        <button style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;margin-left: -1px;height: 100%;z-index: 0" >Submit</button>
+      </div>
+    </div>
+    </form>
+    </div>
+
+
+    <!-- have all of these tables be collapsible -->
+    <div class="small-container">
+    <dl>
+     <dt>Site Requests</dt>
+     <dd> < descriptive text ></dd>
+    </dl>
+     <table class="striped-table">
+       <thead>
+         <tr>
+           <th>No.</th>
+           <th>Requestor</th>
+           <th>Date Requested</th>
+           <th>Status</th>
+         </tr>
+       </thead>
+       <tbody>
+         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+       </tbody>
+     </table>
+     <div class="vertical-center"><a href="/">see more </a></div>
+    </div>
+
+    <div class="small-container">
+    <dl>
+      	<dt>Courses</dt>
+      	<dd>SRS course assignments</dd>
+     </dl>
+       <table class="striped-table">
+         <thead>
+           <tr>
+             <th>SIS ID</th>
+             <th>Name</th>
+             <th>???</th>
+             <th>???</th>
+             <th>???</th>
+           </tr>
+         </thead>
+         <tbody>
+           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+         </tbody>
+       </table>
+       <div class="vertical-center"><a href="/">see more </a></div>
+    </div>
+
+
+
+    <div class="small-container">
+     <dl>
+     	<dt>Canvas Sites</dt>
+     	<dd>Existing Canvas Sites</dd>
+    </dl>
+
+      <table class="striped-table">
+        <thead>
+          <tr>
+            <th>SIS ID </th>
+            <th>Title</th>
+            <th>Content</th>
+            <th>Workflow State</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+
+        </tbody>
+      </table>
+      <div class="vertical-center"><a href="/">see more </a></div>
+    </div>
+
+
+    </div>
+
 {% endif %}
-
-
-
-<p> Welcome {{data.username}} ... remove this later </p>
-<small> Requesting on behalf of '{{ request.session.on_behalf_of }}' </small>
-
-<p>
-  Some info should go here related to people's first time on this site - i.e. what it is and how to navigate
-</p>
-<p>
-  also there sould be something that requires them to verify their contact info 
-</p>
-
-
-
-<div class="small-container">
-  <dt>Request site on behalf of user:</dt>
-<form class="" method="POST" action="{% url 'home' %}" style="display:inherit;max-width:500px;margin-left:auto;margin-right:auto;">
-  {% csrf_token %}
-  <label for="name">User's Pennkey</label>
-  <div class="input-group mb-3">
-  <input name="on_behalf_of" type="text" class="form-control" placeholder="pennkey" aria-label="User's Pennkey" required>
-  <div class="input-group-append">
-    <button style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;margin-left: -1px;height: 100%;z-index: 0" >Submit</button>
-  </div>
-</div>
-</form>
-</div>
-
-
-<!-- have all of these tables be collapsible -->
-<div class="small-container">
-<dl>
- <dt>Site Requests</dt>
- <dd> < descriptive text ></dd>
-</dl>
- <table class="striped-table">
-   <thead>
-     <tr>
-       <th>No.</th>
-       <th>Requestor</th>
-       <th>Date Requested</th>
-       <th>Status</th>
-     </tr>
-   </thead>
-   <tbody>
-     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-     <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-   </tbody>
- </table>
- <div class="vertical-center"><a href="/">see more </a></div>
-</div>
-
-<div class="small-container">
-<dl>
-  	<dt>Courses</dt>
-  	<dd>SRS course assignments</dd>
- </dl>
-   <table class="striped-table">
-     <thead>
-       <tr>
-         <th>SIS ID</th>
-         <th>Name</th>
-         <th>???</th>
-         <th>???</th>
-         <th>???</th>
-       </tr>
-     </thead>
-     <tbody>
-       <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-       <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-       <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-       <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-       <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-       <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-       <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-     </tbody>
-   </table>
-   <div class="vertical-center"><a href="/">see more </a></div>
-</div>
-
-
-
-<div class="small-container">
- <dl>
- 	<dt>Canvas Sites</dt>
- 	<dd>Existing Canvas Sites</dd>
-</dl>
-
-  <table class="striped-table">
-    <thead>
-      <tr>
-        <th>SIS ID </th>
-        <th>Title</th>
-        <th>Content</th>
-        <th>Workflow State</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-      <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-      <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-      <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-      <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-      <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-      <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-      <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-
-    </tbody>
-  </table>
-  <div class="vertical-center"><a href="/">see more </a></div>
-</div>
-
-
-</div>
  {% endblock %}

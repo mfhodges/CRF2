@@ -44,7 +44,7 @@ urlpatterns = [
     path('courses/', views.CourseViewSet.as_view(
         {'get': 'list'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
          name='UI-course-list'),
-    path('courses/<str:pk>/', views.CourseViewSet.as_view(
+    path('courses/<course_SRStitle>/', views.CourseViewSet.as_view(
         {'get': 'retrieve'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
          name='UI-course-detail'),
 
@@ -85,6 +85,8 @@ urlpatterns = [
     path('', views.HomePage.as_view(), name='home'),
     # --------------- CONTACT view -------------------
     path('contact/', views.contact, name='contact'),
+    # --------------- USERINFO view -------------------
+    path('accounts/userinfo/', views.userinfo, name='userinfo'),
     # --------------- UPDATE LOG view -------------------
     #path('bulkupdates/', views.UpdateLogViewSet.as_view(
     #    {'get':'list'},renderer_classes=[renderers.TemplateHTMLRenderer]),
