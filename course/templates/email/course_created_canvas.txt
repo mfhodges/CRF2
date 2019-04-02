@@ -1,7 +1,9 @@
+{% comment %}
 To: {{ requestor }}, {{ instructors }}
 Subject: CRF Notification: Course Request Completed ( {{ course_code }} )
 
 Body:
+{% endcomment %}
 Your site request for the course {{ course_code }} has been completed. You can find the canvas site here: {{ canvas_url }}. You can see the course request information here: {{ request_detail_url }}.
 
 If this seems like a mistake, please respond to this email to open a ticket with Courseware Support.

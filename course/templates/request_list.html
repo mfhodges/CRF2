@@ -1,19 +1,64 @@
 {% extends "base_generic.html" %}
 {% load rest_framework %}
 {% block requests %}active{% endblock %}
-
+{% load template_extra %}
 {% block content %}
 <div class="medium-container">
 
 
 <h1> Requests</h1>
 
+{% if filter %}
+<nav class="filter" style="padding-bottom:10px;padding-top:0px;">
+<div id="searchgroup">
+  <!--<p> SEARCH
+    <i class="fas fa-search" data-toggle="collapse" href="#search"></i>
+  <p>-->
+    <div id="search" > <!-- class="collapse" -->
+      <div class="input-group mb-3">
+      <form action="" method="GET">
+      <input name="search" type="text" class="form-control" placeholder="Course Section or Name" aria-label="Course's SRS code or title " required>
+      <div class="input-group-append">
+        <button ></button> <!-- contents handled in css -->
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+  <div style="width:100%;">
+  <button class="muted-button" data-toggle="modal" data-target="#FilterModal">Filter
+      <i class="fas fa-filter"  data-toggle="tooltip" data-placement="right" title="" data-original-title="click to filter results"></i>
+  </button>
+</div>
+
+
+<div style='padding-top:10px;'> <!-- param badges -->
+{% for filter,value in request.query_params.items %}
+ {% if filter != "page" %}
+  <span class="badge" > {{ filter }}: {{ value }}
+    <span aria-hidden="true">
+      <a href="{% delete_query_param request filter %}">
+        <i class="fa fa-times" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="" data-original-title="click to remove filter"></i>
+      </a>
+    </span>
+  </span>
+  {% endif %}
+{% endfor %}
+</div>
+<!--  <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
+    <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+    <p> {{request}}</p>
+  </button> -->
+</nav>
+{% endif %}
+
+
 
 <!--<p> previous{{ data.previous }} </p>
 <p> next{{ data.next}} </p>
 <p> num_pages{{ data.total_pages}} </p> -->
 
-<p>&ltFiltering goes here&gt</p>
+
 
   <table class="striped-table">
     <thead>
@@ -28,7 +73,7 @@
     <tbody>
       {% for request_instance in results %}
       <tr>
-        <td><a href='{% url "UI-request-detail" pk=request_instance.course_info.course_SRStitle %}'> {{request_instance.course_requested}} </a></td>
+        <td><a href="{% url 'UI-request-detail' pk=request_instance.course_requested %}"> {{request_instance.course_requested}} </a></td>
         <td>{{request_instance.course_info.course_name}}</td>
         <td>{{request_instance.owner}}
           {% if request_instance.masquerade %}
@@ -47,6 +92,36 @@
     </tbody>
   </table>
 
+
+  <!-- MODAL FILTERING -->
+
+  <div class="modal fade" id="FilterModal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Add Filter </h5>
+          <div class="close" data-dismiss="modal" aria-label="Close">
+            <i class="fas fa-times"></i>
+          </div>
+        </div>
+        <form id="filterform" action="" method="GET">
+            <div class="modal-body">
+              <p><mark> no validation and date filtering doesnt work.</mark></p>
+                  {{ filter.form.as_p }}
+            </div>
+            <div class="modal-footer">
+              <button onSubmit="mySubmitFunction()" id="submit-id-" type="submit" value="Submit" style="font-weight: 600;">Filter</button>
+            </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+<!-- END MODAL FILTERING -->
+
+
+
+
   <!-- PAGINATION -->
   {% if paginator %}
     <nav aria-label="Page navigation" class="vertical-center">
@@ -59,4 +134,20 @@
 
 
 </div>
+{% endblock %}
+
+
+{% block template_page_js %}
+<script>
+
+// removes null query_params ! <3
+$('form[method="get"]').submit(function(){
+    $(this).find(':input').each(function() {
+        var inp = $(this);
+        if (!inp.val()) {
+            inp.remove();
+        }
+    });
+});
+</script>
 {% endblock %}

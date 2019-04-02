@@ -1,5 +1,4 @@
 
-
 from django import forms
 
 # our new form
@@ -10,6 +9,8 @@ class ContactForm(forms.Form):
         required=True,
         widget=forms.Textarea
     )
+
+
 
 
 class EmailChangeForm(forms.Form):

@@ -1,6 +1,8 @@
+{% comment %}
 Subject: CRF Notification: Added as Auto-Add Contact
-
+To: {{ user }}
 Body:
+{% endcomment %}
 You have been set as an auto-add contact in the Course Request Form.
 You will be added as a {{ role }} to all courses in the School {{ school  }} in the Subject {{ subject }} for all future courses.
 

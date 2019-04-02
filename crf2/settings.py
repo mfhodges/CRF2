@@ -26,13 +26,22 @@ SECRET_KEY = 'jy0jd74_tg&674cxbvocpl4@x87i@(ynk%)h*p12by4fd^ilgs'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [#'128.91.176.219'
+ALLOWED_HOSTS = ['128.91.177.58'
 ]
-print=(BASE_DIR)
+print=("BASE_DIR",BASE_DIR)
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.1/howto/static-files/
+
+STATIC_URL = '/static/'
+
 config = ConfigParser()
 config.read('config/config.ini')
 print=(BASE_DIR)
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = 'course/static/emails' # change this to a proper location
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # to have it sent to console
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # to actually use it
 EMAIL_USE_TLS = True
 EMAIL_HOST = config.get('email', 'emailhost')
 EMAIL_PORT = 587
@@ -56,7 +65,7 @@ INSTALLED_APPS = [
 	'course',
 	'rest_framework',
     'django_filters',
-    'crispy_forms',
+    'admin_auto_filters',
 
 ]
 
@@ -140,10 +149,7 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = '/static/'
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (

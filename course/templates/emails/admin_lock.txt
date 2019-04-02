@@ -1,3 +1,0 @@
-Subject: CRF notification locked request
-Body:
-Request {{ url }} has been locked. 

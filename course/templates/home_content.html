@@ -32,7 +32,7 @@
 
     <div class="small-container" style="border: none;box-shadow: none !important;">
       <p>
-        TEMPORARY TEXT:  his site is for Faculty/TAs/Staff to make requests for the creation Canvas Sites for SRS-sites.
+        TEMPORARY TEXT:  this site is for Faculty/TAs/Staff to make requests for the creation Canvas Sites for SRS-sites.
         This site pulls data from the registrar's site < LINK HERE > and stores data from the current term and the next two terms.
         For the creation of non-SRS sites please see https://infocanvas.upenn.edu/about/policies/#non-course.
       </p>
@@ -55,8 +55,9 @@
             <dt class="col-4 col-md-2 text-right" style="padding-right: 0px;">Email: </dt>
             <dd class="col-8 col-md-10"> {{user.email|default:"None" }}</dd>
         </dl>
-        {% endif %}
         <p class="text-right" style="margin-bottom:0;font-weight:500;">(<a href="{% url 'userinfo' %}" class="" style="">Edit Info</a>)</p>
+        {% endif %}
+      
     </div>
 
 

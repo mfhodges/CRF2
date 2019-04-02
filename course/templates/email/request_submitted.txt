@@ -1,6 +1,8 @@
-
+{% comment %}
+To: {{ requestor }}
 Subject: CRF Notification: Course Requested ( {{ course_code }} )
 Body:
+{% endcomment %}
 You have requested the course {{ course_code }}.
 You can see the course request and its status here: {{ request_detail_url }}.
 

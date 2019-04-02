@@ -187,7 +187,7 @@ def get_courses():
         return None
     else:
         res = r + get_helper(response)
-        results = [ x['course_SRS_Title'] for x in res ]
+        results = [ x['course_code'] for x in res ]
         return results
 
 
@@ -218,6 +218,16 @@ def create_instance(uri,data):
 
 
 
+def cross_list(c1, c2, c3=None):
+    url = domain + 'courses/' + c1 + '/'
+
+    # just one crosslist
+    if c3 ==None:
+        response = requests.patch(url, data=json.dumps({"crosslisted":[ c2]}), headers=headers,auth=auth, hooks={'response': print_url})
+    else:
+        print(c2,c3,json.dumps({"crosslisted":[c2,c3]}))
+        response = requests.patch(url, data=json.dumps({"crosslisted":[c2,c3]}), headers=headers,auth=auth, hooks={'response': print_url})
+
 
 
 ######### BULK CREATIONS #########
@@ -233,6 +243,46 @@ def bulk_create_sub_sch():
     for school in school_data:
         create_instance('schools',school)
 
+
+
+def bulk_crosslist():
+    # goes through the pages and selects randomly
+    for page in range(1,300):
+        url = domain + 'courses/?page=' + str(page)
+        response = requests.get(url, headers=headers,auth=auth )
+        r=response.json()
+        if r == []:
+            return None
+        else:
+            res = r
+
+            results = [ x['course_code'] for x in res ]
+        # go thru page
+
+
+        index_a = random.randrange(len(results))
+        course_a = results[index_a]
+        del results[index_a]
+        print("course_a", course_a)
+        index_b = random.randrange(len(results))
+        course_b = results[index_b]
+        del results[index_b]
+        print("course_b", course_b)
+
+        index_x = random.randrange(len(results))
+        course_x = results[index_x]
+        del results[index_x]
+        index_y = random.randrange(len(results))
+        course_y = results[index_y]
+        del results[index_y]
+        index_z = random.randrange(len(results))
+        course_z = results[index_z]
+        del results[index_z]
+
+        cross_list(course_a, course_b)
+        cross_list(course_x, course_y, course_z,)
+
+
 def bulk_create_courses():
     # getting field possibilities
     instructors = get_instructors()
@@ -242,12 +292,12 @@ def bulk_create_courses():
     terms = ['A','B','C']
     activity = ['LEC','SEM','LAB']
 
-    for i in range(102,600):
+    for i in range(1,7500):
         instructor_size = random.choice([1,1,2,3])
         subject_size = random.choice([1,1,2,3])
         school_size = random.choice([1,2,1])
         course_data = {
-        "course_SRStitle": "SRS_"+ str(i),
+        "course_code": "SRS_"+ str(i),
 
         "instructors": random.sample(instructors,k=instructor_size),
         "course_schools": random.sample(schools, k=school_size),
@@ -261,8 +311,9 @@ def bulk_create_courses():
 
         create_instance('courses',course_data)
         # this is just to really ensure we arent overloading anything
-        time.sleep(0.5)
+        time.sleep(0.1)
 
+    bulk_crosslist()
 
 
 def update_obj():
@@ -290,8 +341,13 @@ def update_obj():
 #print(bulk_create_users())
 #print("~~~~~CREATING SCHOOLS & SUBJECTS ~~~~~\n")
 #print(bulk_create_sub_sch())
+
+
 print("~~~~~CREATING COURSES ~~~~~\n")
-bulk_create_courses()
+#bulk_create_courses()
+
+cross_list('SRS_23','SRS_2','SRS_3')
+
 
 #data = {'course_SRS_Title': 'SRS_14', 'instructors': ['username_8'], 'course_schools': ['PSOM'], 'course_subjects': ['abbr_30', 'abbr_4'], 'course_term': 'A', 'course_activity': 'Lab', 'course_name': 'course_name_14', 'requested': False}
 #print(create_instance('courses',data))

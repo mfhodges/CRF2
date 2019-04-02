@@ -22,7 +22,7 @@
     <div id="search" > <!-- class="collapse" -->
       <div class="input-group mb-3">
       <form action="" method="GET">
-      <input name="search" type="text" class="form-control" placeholder="Course Section or Name" aria-label="Course's SRS title or name " required>
+      <input name="search" type="text" class="form-control" placeholder="Course Section or Name" aria-label="Course's SRS code or title " required>
       <div class="input-group-append">
         <button ></button> <!-- contents handled in css -->
       </div>
@@ -76,34 +76,28 @@
       {% for course in results %}
       <tr>
 
-        <td><a href='{% url "UI-course-detail" course_SRStitle=course.course_SRStitle %}'>{{course.course_SRStitle}} </a></td>
+        <td><a href='{% url "UI-course-detail" course_code=course.course_code %}'>{{course.course_code}} </a></td>
         <td>{{course.course_name}}</td>
         <td>{{course.course_activity}}</td>
 
         <td id="instructors">
-          {% for instructor in course.instructors %}
-              {% if forloop.last %}
-                {{instructor}}
-              {% else %}
-                {{instructor}},
-              {% endif %}
-          {% endfor %}
+          {{course.instructors| join:", "}}
         </td>
         <!-- some how the time is being stored as a string ... -->
   <!--      <td>{{ course.created }} a {{ course.created|time:'h:i' }} b {{ course.created|date:"SHORT_DATE_FORMAT" }} </td> -->
 
         <!--<td>{{course.created|date:'m/d/Y'}} {{course.created|time:'h:i' }}</td> -->
-        <td>
+        <td style="padding-left:1%;">
           <!-- REQUEST MODAL -->
         <!--  {{course.requested}} -->
           {% if course.requested == True %}
               <!-- this button should pull up the submitted request! -->
-              <a  href='{% url "UI-request-detail" pk=course.course_SRStitle %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</a>
+              <a  href='{% url "UI-request-detail" pk=course.course_code %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</a>
           {% else %}
             <!--  <input type="hidden" name="requested" value="true">
               <button type="submit" class="button" >Request</button>-->
               <!-- Button trigger modal -->
-              <button class="button" data-toggle="modal" data-target="#CourseModal" data-course="{{course.course_SRStitle}}">
+              <button class="button" data-toggle="modal" data-target="#CourseModal" data-course="{{course.course_code}}">
                 Request
               </button>
           {% endif %}
@@ -167,6 +161,7 @@
       </div>
       <form id="filterform" action="" method="GET">
           <div class="modal-body">
+            <p><mark> no validation of fields.</mark></p>
                 {{ filter.form.as_p }}
           </div>
           <div class="modal-footer">
@@ -176,10 +171,6 @@
     </div>
   </div>
 </div>
-
-
-
-
 <!-- END MODAL FILTERING -->
 
 

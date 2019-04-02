@@ -6,25 +6,39 @@
 <div class="medium-container">
   <!-- course info -->
   <fieldset>
-  <legend>Course Info</legend>
+  <legend>Course Info: {{ course.course_code}}</legend>
   <dl class="row" style="line-height:1.1;">
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">SRS Title</dt>
-        <dd class="col-8 col-md-9"> {{ course.course_SRStitle }}</dd>
+        <dd class="col-8 col-md-9"> {{ course.course_name }}</dd>
 
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Subject Area</dt>
-        <dd class="col-8 col-md-9">{{course.course_subjects}}</dd>
+        <dd class="col-8 col-md-9">{{course.course_subjects| join:", "}}</dd>
 
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">School</dt>
-        <dd class="col-8 col-md-9">{{course.course_schools}}</dd>
+        <dd class="col-8 col-md-9">{{course.course_schools| join:", "}}</dd>
 
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Activity</dt>
-        <dd class="col-8 col-md-9">{{course.course_activity}}</dd>
+        <dd class="col-8 col-md-9">{{course.course_activity }}</dd>
+
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Term</dt>
+        <dd class="col-8 col-md-9">{{ course.course_term }}</dd>
+
 
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Cross Listing</dt>
-        <dd class="col-8 col-md-9">description</dd>
+        <dd class="col-8 col-md-9">
+          {% if course.crosslisted %}
+            {% for crosscourse in course.crosslisted %}
+              {% if forloop.last %}<a href='{% url "UI-course-detail" course_code=crosscourse %}'>{{ crosscourse }}</a>{% else %}
+                <a href='{% url "UI-course-detail" course_code=crosscourse %}'>{{ crosscourse }}</a>,{% endif %}
+            {% endfor %}
+          {% else %}
+            None
+          {% endif %}
+
+        </dd>
 
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Instructor</dt>
-        <dd class="col-8 col-md-9">{{course.instructors}}</dd>
+        <dd class="col-8 col-md-9">{{course.instructors| join:", "}}</dd>
     </dl>
   </fieldset>
 <!-- end course info -->
@@ -43,9 +57,9 @@
   <legend>Canvas Site Options</legend>
   {% csrf_token %}
   <input name="view_type" class="form-control" type="hidden" value="UI-request-detail">
-  <input name='course_requested' value='{{course.course_SRStitle}}' type='hidden'>
+  <input name='course_requested' value='{{course.course_code}}' type='hidden'>
 <!--  {% render_form request_form %} -->
-  <p> Course site title will default to <i> {{ course.course_SRStitle }} </i>. You may modify it in the box provided below.
+  <p> Course site title will default to <i> {{ course.course_name }} </i>. You may modify it in the box provided below. </p>
   {% render_field request_form.title_override style=style %}
 
   <p> If you would like to copy content from an existing course site, please select the source from the list below.</p>
@@ -61,6 +75,13 @@
       {% render_field request_form.reserves style=style %}
     </fieldset>
 
+    <fieldset>
+      <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
+      <b><p> ADD CONTENT HERE </p></b>
+      <p> this would be adding TA's, Instructors, Designers, Librarians ..NOT students</p>
+    </fieldset>
+
+
   {% render_field request_form.additional_instructions style=style %}
 
   <input type="submit" value="Submit Request" />
@@ -68,11 +89,20 @@
   </form>
 
 
-  {% else %} <!-- course request history -->
+  {% else %}
+  <!-- course request history -->
   <fieldset >
     <legend>Submitted Request</legend>
 
+    {% if course.crosslisted %}
+    <div style="padding-bottom:10px;">
+      <dt class="" style="padding-right: 0px;">Requested From Crosslist:</dt>
+      <dd class="" style="padding-left: 10px;"> This course was requested under it's cross listing {{ request_instance.course_requested }}</dd>
+    </div>
+    {% endif %}
+
     <dl class="row" style="line-height:1.1;">
+
           <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Status</dt>
           <dd class="col-8 col-md-9"> {{ request_instance.status }}</dd>
 
@@ -115,15 +145,24 @@
           </dl>
     </fieldset>
 
+
+    <fieldset>
+      <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
+      <b><p> ADD CONTENT HERE </p></b>
+      <p> this would be adding TA's, Instructors, Designers, Librarians ..NOT students</p>
+    </fieldset>
+
     <div class="form-group ">
       <label>Additional instructions</label>
       <textarea name="additional_instructions" class="form-control" value="{{ request_instance.additional_instructions }}" disabled></textarea>
     </div>
 
+    {% if course.crosslisted %}
+      <a href='{% url "UI-request-detail" pk=request_instance.course_requested %}'> See Full Request for {{request_instance.course_requested}}</a>
+    {% else %}
+      <a href='{% url "UI-request-detail" pk=course.course_code %}'> See Full Request for {{ course.course_code}} </a>
+    {% endif %}
 
-  {% if user.is_staff %}
-    <p> buttons to lock or edit go here <p>
-  {% endif %}
 
   </fieldset>
   {% endif %}

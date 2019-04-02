@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 import datetime
+import django.core.exceptions
 
 # This model is to represent a Course object in the CRF
 # the meta-data that is important with this is information that will help the course be
@@ -70,6 +71,16 @@ class CanvasSite(models.Model):
 
 
 
+class CourseManager(models.Manager):
+    def has_request(self):
+        return super().get_queryset().filter(requested=True)
+
+    #def submitted(self)
+
+
+
+
+
 class Course(models.Model):
 
     SPRING = 'A'
@@ -99,20 +110,19 @@ class Course(models.Model):
         max_length=3,choices = ACTIVITY_CHOICES,)
 
     # course_SRS_Title must not allow spaces
-    course_SRStitle = models.CharField(max_length=250,unique=True, primary_key=True, blank=False) # unique and primary_key means that is the lookup_field
+    course_code = models.CharField(max_length=250,unique=True, primary_key=True, blank=False) # unique and primary_key means that is the lookup_field
 
     course_subjects = models.ManyToManyField(Subject,related_name='courses') # one to many
     course_schools = models.ManyToManyField(School,related_name='courses')# one to many
     course_name = models.CharField(max_length=250) # Human Readable Name i.e. Late Antique Arts
+    crosslisted = models.ManyToManyField("self", blank=True, symmetrical=True, default=None)
 
     requested =  models.BooleanField(default=False)# False -> not requested
 
-    #sections = models.
-    #
-    #
+
+
     class Meta:
         ordering = ('created',)
-
 
     def save(self, *args, **kwargs):
         """
@@ -120,13 +130,51 @@ class Course(models.Model):
         """
         print("saving Course instance")
         print("self.pk",self.pk)
-        super(Course, self).save(*args,**kwargs)
+        super().save(*args,**kwargs) #super(Course, self)
+        # here is where you do the updating of cross listed instances
+
+    #def set_crosslistings(self):
+
+    def get_request(self):
+        possibilities = self.crosslisted.all()
+        print("possibilities",possibilities)
+        try:
+            print("course",self)
+            requestinfo = self.request
+            return requestinfo
+        except Request.DoesNotExist:
+            print("Request.DoesNotExist!")
+
+        for course in possibilities:
+            try:
+                print("course",course)
+                requestinfo = course.request
+                return requestinfo
+            except Request.DoesNotExist:
+                print("Request.DoesNotExist!")
+
+        #return error
+
+    def get_subjects(self):
+        return ",\n".join([sub.abbreviation for sub in self.course_subjects.all()])
+
+    def get_schools(self):
+        return ",\n".join([sch.abbreviation for sch in self.course_schools.all()])
+
+    def get_instructors(self):
+        return ",\n".join([inst.username for inst in self.instructors.all()])
+
 
     def __str__(self):
-        return self.course_SRStitle # this should be changed to the SRS name
+        return self.course_code
 
     def __unicode__(self):
-        return self.course_SRStitle # this should be changed to the SRS name
+        return self.course_code
+
+    objects = models.Manager()
+    CourseManager = CourseManager()
+
+
 
     #def get_absolute_url(self):
     #    """
@@ -162,6 +210,10 @@ class Notice(models.Model):
 
         return "(#"+str(self.pk) + ") " + self.creation_date.strftime('%m-%d-%Y') +": \""+ self.notice_heading+ "\" by " + self.owner.username
 
+#class RequestManager(models.Manager):
+#    def submitted(self):
+
+
 
 class Request(models.Model):
     REQUEST_PROCESS_CHOICES =(
@@ -179,10 +231,10 @@ class Request(models.Model):
         on_delete=models.CASCADE,
         primary_key=True) # once the course is deleted the request will be deleted too.
 
-    copy_from_course =models.CharField(max_length=100, null=True) # previously content source
+    copy_from_course =models.CharField(max_length=100, null=True,default=None) # previously content source
     # this should be a list of courses they have rights too
     # SuperUsers have access to all courses
-    title_override = models.CharField(max_length=100,null=True) # previously SRS title override
+    title_override = models.CharField(max_length=100,null=True,default=None) # previously SRS title override
     additional_instructions = models.TextField(blank=True,default=None, null=True)
     reserves = models.BooleanField(default=False)
     canvas_instance = models.ForeignKey(CanvasSite,related_name='canvas', on_delete=models.CASCADE,default=None,null=True)
@@ -191,8 +243,9 @@ class Request(models.Model):
 
 
     status = models.CharField(max_length=20, choices=REQUEST_PROCESS_CHOICES,default='SUBMITTED' )
-    updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
     owner = models.ForeignKey('auth.User', related_name='requests', on_delete=models.CASCADE)#should not delete when user is deleted
     masquerade = models.CharField(max_length=20,null=True)
 
@@ -203,13 +256,13 @@ class Request(models.Model):
         """
         some text
         """
-
+        print(self.status,args,kwargs)
         print("(Model.py) Request self.pk",self.pk)
         super(Request, self).save(*args,**kwargs)
 
 
     def __str__(self):
-        return " \"%s\" site request" % ( self.course_requested.course_SRStitle)
+        return " \"%s\" site request" % ( self.course_requested.course_code)
 
 #class SubjectArea(models.Model):
 """
@@ -245,3 +298,12 @@ class UpdateLog(models.Model):
     """
     this is how to store
     """
+    MANAGER_CHOICES = (
+    ('a','A'),
+    ('b','B'),
+    ('c','C')
+    )
+
+    created = models.DateTimeField(auto_now_add=True)
+    process= models.CharField(
+            max_length=10,choices = MANAGER_CHOICES,)

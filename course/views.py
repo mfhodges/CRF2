@@ -1,9 +1,10 @@
 
-from course.models import Course, Notice, Request, School, Subject, AutoAdd
-from course.serializers import CourseSerializer, UserSerializer, NoticeSerializer, RequestSerializer, SchoolSerializer, SubjectSerializer, AutoAddSerializer
+from course.models import * #Course, Notice, Request, School, Subject, AutoAdd
+from course.serializers import * #CourseSerializer, UserSerializer, NoticeSerializer, RequestSerializer, SchoolSerializer, SubjectSerializer, AutoAddSerializer
 from rest_framework import generics, permissions
 from django.contrib.auth.models import User
 from course.permissions import IsOwnerOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 
 from rest_framework.reverse import reverse
 
@@ -35,6 +36,7 @@ from django_filters import rest_framework as filters
 from course.forms import ContactForm, EmailChangeForm
 from django.template.loader import get_template
 import datetime
+from course import email_processor
 #class CourseView(TemplateView):
 #    template_name = "index.html"
 
@@ -57,7 +59,6 @@ of Django REST Framework's class-based views and serializers'see: http://www.cdr
 
 def validate_pennkey(pennkey):
     # assumes usernames are valid pennkeys
-
     try:
         user = User.objects.get(username=pennkey)
     except User.DoesNotExist:
@@ -65,27 +66,27 @@ def validate_pennkey(pennkey):
     return user
 
 
-def set_session(request):
-    print("home request.data",request.data)
-    #if request.session.get('on_behalf_of','None'):
-    #    on_behalf_of = request.session['on_behalf_of']
-    #else:
-    #    on_behalf_of = None
-    try:
-        on_behalf_of = request.data['on_behalf_of']
-        print("found on_behalf_of in request.data ", on_behalf_of)
-        if on_behalf_of: # if its not none -> if exists then see if pennkey works
-            if validate_pennkey(on_behalf_of) == None: #if pennkey is good the user exists
-                print("not valid input")
-                messages.error(request,'Invalid Pennkey')
-                on_behalf_of = None
-    except KeyError:
-        pass
 
-    # check if user is in the system
+class MixedPermissionModelViewSet(viewsets.ModelViewSet):
+   '''
+   Mixed permission base model allowing for action level
+   permission control. Subclasses may define their permissions
+   by creating a 'permission_classes_by_action' variable.
 
-    request.session['on_behalf_of'] = on_behalf_of
-    print("masquerading as:", request.session['on_behalf_of'])
+   Example:
+   permission_classes_by_action = {'list': [AllowAny],
+                                   'create': [IsAdminUser]}
+   '''
+   permission_classes_by_action = {}
+   def get_permissions(self):
+      try:
+        # return permission_classes depending on `action`
+        return [permission() for permission in self.permission_classes_by_action[self.action]]
+      except KeyError:
+        # action is not set return default permission_classes
+        return [permission() for permission in self.permission_classes]
+
+
 
 
 
@@ -93,15 +94,12 @@ class CourseFilter(filters.FilterSet):
     #activity =
     #filter_fields = ('course_activity','instructors__username','course_schools__abbreviation','course_subjects__abbreviation',) #automatically create a FilterSet class
     # https://github.com/philipn/django-rest-framework-filters/issues/102
-
-
     #pls see: https://django-filter.readthedocs.io/en/master/ref/filters.html
     activity = filters.ChoiceFilter(choices=Course.ACTIVITY_CHOICES, field_name='course_activity', label='Activity')
     instructor = filters.CharFilter(field_name='instructors__username', label='Instructor')
     school = filters.CharFilter(field_name='course_schools__abbreviation',label='School (abbreviation)')
     subject = filters.CharFilter(field_name='course_subjects__abbreviation', label='Subject (abbreviation)')
     term = filters.ChoiceFilter(choices=Course.TERM_CHOICES, field_name='course_term', label='Term')
-
     class Meta:
         model = Course
         fields = ['activity','instructor','school','subject','term']
@@ -116,19 +114,21 @@ class CourseViewSet(viewsets.ModelViewSet):
     # [ ] create and test permissions
     # [x] on creation of request instance mutatate course instance so courese.requested = True
     #[ ] ensure POST is only setting masquerade
-
-    lookup_field = 'course_SRStitle'
-    #lookup_value_regex = '[0-9a-f]{32}'
-
-
+    lookup_field = 'course_code'
     queryset = Course.objects.filter(~Q(course_subjects__visible=False)).exclude(course_schools__visible=False,) #this should be filtered by the
     serializer_class = CourseSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly,)
     filterset_class = CourseFilter
+    search_fields = ['$course_name', '$course_code']
+    # for permission_classes_by_action see: https://stackoverflow.com/questions/35970970/django-rest-framework-permission-classes-of-viewset-method
+    permission_classes_by_action = {'create': [IsAdminUser],
+                                    'list': [IsAuthenticatedOrReadOnly],
+                                    'retreive':[IsOwnerOrReadOnly,IsAdminUser],
+                                    'update':[IsAdminUser],
+                                    'partial_update':[IsAdminUser],
+                                    'delete':[IsAdminUser]}
 
 
-    search_fields = ['$course_name', '$course_SRStitle']
     def perform_create(self, serializer):
         print("CourseViewSet.perform_create: request.POST", self.request.POST)
         print("CourseViewSet.perform_create: request.meta", self.request.META) # could use 'HTTP_REFERER': 'http://127.0.0.1:8000/courses/'
@@ -184,9 +184,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         print('CourseViewSet.retreive lookup field', self.lookup_field)
         response = super(CourseViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
-
             print("bye george(detail)!\n",response.data)
-            print(response)
             course_instance = self.get_object()
             print("iii",course_instance)
             # okay so at this point none of this is working soe
@@ -196,11 +194,12 @@ class CourseViewSet(viewsets.ModelViewSet):
                 # course detail needs form history
 
                 #NOTE there must be an associated course and if there isnt... we r in trouble!
-                request_instance = course_instance.request
+                request_instance = course_instance.get_request()
                 print("hfaweuifh ",request_instance)
                 this_form =''
             else:
                 # course detail needs to get form
+                # URGENT is this creating many copies of the ob?
                 this_form = RequestSerializer(data={'course_requested':self.get_object()})
                 print("ok")
                 this_form.is_valid()
@@ -210,16 +209,21 @@ class CourseViewSet(viewsets.ModelViewSet):
         return response
 
 
-
-
-    def post(self, request,*args, **kwargs):
-        #need to check if the post is for masquerade
-        print(request.get_full_path())
-        set_session(request)
-        return(redirect(request.get_full_path()))
-
-
-
+class RequestFilter(filters.FilterSet):
+    #activity =
+    #filter_fields = ('course_activity','instructors__username','course_schools__abbreviation','course_subjects__abbreviation',) #automatically create a FilterSet class
+    # https://github.com/philipn/django-rest-framework-filters/issues/102
+    #pls see: https://django-filter.readthedocs.io/en/master/ref/filters.html
+    status = filters.ChoiceFilter(choices=Request.REQUEST_PROCESS_CHOICES, field_name='status', label='Status')
+    requestor = filters.CharFilter(field_name='owner__username', label='Requestor') # does not include masquerade! and needs validator on input!
+    date = filters.DateTimeFilter(field_name='created',label='Created')
+    #school = filters.CharFilter(field_name='course_schools__abbreviation',label='School (abbreviation)')
+    #subject = filters.CharFilter(field_name='course_subjects__abbreviation', label='Subject (abbreviation)')
+    #term = filters.ChoiceFilter(choices=Course.TERM_CHOICES, field_name='course_term', label='Term')
+    class Meta:
+        model = Request
+        fields = ['status','requestor','date']
+        #fields = ['activity','instructor','school','subject','term']
 
 
 class RequestViewSet(viewsets.ModelViewSet):
@@ -234,10 +238,38 @@ class RequestViewSet(viewsets.ModelViewSet):
 
     queryset = Request.objects.all()
     serializer_class = RequestSerializer
-    filter_fields = ('copy_from_course','status','owner','course_requested',)
+    filterset_class = RequestFilter
+    search_fields = ['$course_requested__course_name', '$course_requested__course_code']
     #permission_classes = (permissions.IsAuthenticatedOrReadOnly,
     #                      IsOwnerOrReadOnly,)
+    permission_classes_by_action = {'create': [ ],
+                                    'list': [],
+                                    'retreive':[],
+                                    'update':[],
+                                    'partial_update':[],
+                                    'delete':[]}
+
     def create(self, request, *args, **kwargs):
+        """
+        functions like a signal
+            whenever a request is created this function updates the course instance and updates the crosslisted courses.
+        """
+        # putting this function inside create because it should only be accessible here.
+        def update_course(self,course):
+            course.requested = True
+            course.save()
+            if course.crosslisted:
+                for crosslisted in course.crosslisted.all():
+                    crosslisted.requested = True
+                    crosslisted.request = course.request
+                    print(":::::",crosslisted.request , course.request)
+                    crosslisted.save()
+            print(course.course_code, course.requested)
+            #get crosslisted courses
+            crosslisted = course.crosslisted
+            print(crosslisted,"help me!!!")
+
+
         """
         Currently this function creates Request instances made from the UI view and the api view
         Therefore there needs to be diambiguation that routes to the UI list view or the api list view
@@ -255,10 +287,7 @@ class RequestViewSet(viewsets.ModelViewSet):
             masquerade = ''
         print("masqueraded as:", masquerade)
 
-        #print("in create: request.POST", request.POST)
-        #print("in create: request.meta", request.META) # could use 'HTTP_REFERER': 'http://127.0.0.1:8000/courses/'
-        #print("in create: request.query_params", request.query_params)
-
+        print("request.data", request.data)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.validated_data['masquerade'] = masquerade
@@ -266,10 +295,8 @@ class RequestViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
 
         # updates the course instance #
-        course = Course.objects.get(course_SRStitle=request.data['course_requested'])# get Course instance
-        course.requested = True
-        course.save()
-        print(course.course_SRStitle, course.requested)
+        course = Course.objects.get(course_code=request.data['course_requested'])# get Course instance
+        update_course(self,course)
         # update course instance
         # this allow for the redirect to the UI and not the API endpoint. 'view_type' should be defined in the form that submits this request
 
@@ -278,7 +305,7 @@ class RequestViewSet(viewsets.ModelViewSet):
             if request.data['view_type'] == 'UI-course-list':
                 return redirect('UI-course-list')
             if request.data['view_type'] == 'UI-request-detail':
-                return redirect('UI-request-detail', pk=course.course_SRStitle)
+                return redirect('UI-request-detail', pk=course.course_code)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
@@ -289,11 +316,9 @@ class RequestViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         print("Request perform_create")
-
         serializer.save(owner=self.request.user)
         print("no prob here")
-        serializer.save(masquerade="test")
-        print(serializer)
+        serializer.save(masquerade="test")# NOTE fix this!
         print("2. no prob here")
 
     # below allows for it to be passed to the template !!!!
@@ -307,12 +332,13 @@ class RequestViewSet(viewsets.ModelViewSet):
         if page is not None:
 
             serializer = self.get_serializer(page, many=True)
+            print(serializer.data)
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
             print("template_name",response.template_name)
             if request.accepted_renderer.format == 'html':
                 response.template_name = 'request_list.html'
                 print("template_name",response.template_name)
-                response.data = {'results': response.data,'paginator':self.paginator}
+                response.data = {'results': response.data,'paginator':self.paginator, 'filter': RequestFilter}
             print("request.accepted_renderer.format",request.accepted_renderer.format)
             return response
         """
@@ -327,47 +353,106 @@ class RequestViewSet(viewsets.ModelViewSet):
         """
 
 
+    def check_request_update_permissions(request,response_data):
+        request_status = response_data['status']
+        request_owner = response_data['owner']
+        request_masquerade = response_data['masquerade']
+            # owner is also considered masquerade
+        if request_status == "SUBMITTED": permissions = {'staff':['lock','cancel','edit'],'owner':['cancel','edit']}
+        elif request_status == "APPROVED": permissions = {'staff':['cancel','edit'],'owner':['cancel']}
+        elif request_status == "LOCKED": permissions = {'staff':['cancel','edit','unlock'],'owner':['']}
+        elif request_status == "CANCELED": permissions = {'staff':['lock'],'owner':['']}
+        elif request_status == "IN_PROCESS": permissions = {'staff':[''],'owner':['']}
+        elif request_status == "COMPLETED": permissions = {'staff':[''],'owner':['']}
+        else: permissions = {'staff':[''],'owner':['']} # throw error!???
+        if request.user.is_staff:
+            return permissions['staff']
+        if request.user.username == request_owner or (request.user.username == request_masquerade and request_masquerade !=''):
+            print("yeahh buddy",request.user.username)
+            return permissions['owner']
+        return ''
+
 
 
     def retrieve(self, request, *args, **kwargs):
+        """
+            can retreive for /requests/<COURSE_CODE>/ or /requests/<COURSE_CODE/edit
+        """
         print("ok in retreive self,,",self.request.session.get('on_behalf_of','None'))
         print("ok in ret,,", request.session.get('on_behalf_of','None'))
         print("Request.retrieve")
         print(request.data)
 
         response = super(RequestViewSet, self).retrieve(request, *args, **kwargs)
+        print("response",response.data)
         if request.accepted_renderer.format == 'html':
             #print("bye george(UI-request-detail)!\n",response.data)
-            return Response({'data': response.data}, template_name='request_detail.html')
+            permissions = RequestViewSet.check_request_update_permissions(request, response.data)
+
+            if 'edit' in request.path.split('/') : # this is possibly the most unreliable code ive ever written
+                # we want the edit form
+
+
+                # CHECK PERMISSIONS -> must be creator and not be masquerading as creator
+                # CHECK IF request status is submitted ( for requestor ) or submitted/locked( for admin)
+                return Response({'request_instance': response.data,'permissions':permissions}, template_name='request_detail_edit.html')
+            return Response({'request_instance': response.data, 'permissions':permissions}, template_name='request_detail.html')
         return response
 
-
-
-
-
     def destroy(self, request, *args, **kwargs):
-        print("OH MY GOLLY GEEE")
+        print("OH MY GOLLY GEEE we r deleteing")
         instance = self.get_object()
-
         # Must get Course and set .request to true
-        course = Course.objects.get(course_SRStitle=instance.course_requested)# get Course instance
+        course = Course.objects.get(course_code=instance.course_requested)# get Course instance
         course.requested = False
         course.save()
-
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
     def post(self, request,*args, **kwargs):
         #if request.user.is_authenticated()
         #need to check if the post is for masquerade
-
         # '' is different than None ... if the key isnt present the .get() returns None
+        """
         if request.data.get('on_behalf_of')=='':
             print(request.get_full_path())
             print("ok self,,",self.request.session.get('on_behalf_of','None'))
             print("ok no self,,",request.session.get('on_behalf_of','None'))
             set_session(request)
             return redirect(request.get_full_path())
+        """
+
+    def update(self, request, *args, **kwargs):
+        print("in update")
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        print(":^)")
+        print("request.data update!",request.data)
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        print(":^) !")
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        #Lets check if we need to send an email?
+        if 'status' in request.data:
+            if request.data['status'] =='LOCKED':
+                #lets send that email babie !!!!
+                email_processor.admin_lock(context={'request_detail_url':request.build_absolute_uri(reverse('UI-request-detail',kwargs={'pk':request.data['course_requested']})) , 'course_code': request.data['course_requested']})
+
+        if 'view_type' in request.data:
+            if request.data['view_type'] == 'UI-request-detail':
+                print("LLL")
+                permissions = RequestViewSet.check_request_update_permissions(request, {'owner':instance.owner,'masquerade':instance.masquerade,'status':instance.status})
+                return Response({'request_instance':serializer.data,'permissions':permissions}, template_name='request_detail.html')
+                #return redirect('UI-request-detail', pk=request.data['course_requested'])
+
+        return Response(serializer.data)
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -378,6 +463,12 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
+    permission_classes_by_action = {'create': [],
+                                    'list': [],
+                                    'retreive':[],
+                                    'update':[],
+                                    'partial_update':[],
+                                    'delete':[]}
 
     """
     # this is just to havet the pk be username and not id
@@ -404,6 +495,12 @@ class SchoolViewSet(viewsets.ModelViewSet):
     #[ ] ensure POST is only setting masquerade
     queryset = School.objects.all()
     serializer_class = SchoolSerializer
+    permission_classes_by_action = {'create': [],
+                                    'list': [],
+                                    'retreive':[],
+                                    'update':[],
+                                    'partial_update':[],
+                                    'delete':[]}
 
 #    def perform_create(self, serializer):
 #        serializer.save(owner=self.request.user)
@@ -434,13 +531,15 @@ class SchoolViewSet(viewsets.ModelViewSet):
         """
 
     def post(self, request,*args, **kwargs):
-        print("postie")
+        print("posting")
         #if request.user.is_authenticated():
 
+        """
         #need to check if the post is for masquerade
         print(request.get_full_path())
         set_session(request)
         return(redirect(request.get_full_path()))
+        """
 
     def update(self, request, *args, **kwargs):
         print("update?")
@@ -480,7 +579,12 @@ class SubjectViewSet(viewsets.ModelViewSet):
 
     queryset = Subject.objects.all()
     serializer_class = SubjectSerializer
-
+    permission_classes_by_action = {'create': [],
+                                    'list': [],
+                                    'retreive':[],
+                                    'update':[],
+                                    'partial_update':[],
+                                    'delete':[]}
 #    def perform_create(self, serializer):
 #        serializer.save(owner=self.request.user)
     def list(self, request, *args, **kwargs):
@@ -509,10 +613,12 @@ class SubjectViewSet(viewsets.ModelViewSet):
 
     def post(self, request,*args, **kwargs):
         #if request.user.is_authenticated():
+        """
         #need to check if the post is for masquerade
         print(request.get_full_path())
         set_session(request)
         return(redirect(request.get_full_path()))
+        """
 
     def retrieve(self, request, *args, **kwargs):
         print(request.data)
@@ -528,11 +634,15 @@ class SubjectViewSet(viewsets.ModelViewSet):
 class NoticeViewSet(viewsets.ModelViewSet):
     """
     THIS IS A TEMPORARY COPY
-    This viewset automatically provides `list` and `detail` actions.
     """
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
-
+    permission_classes_by_action = {'create': [],
+                                    'list': [],
+                                    'retreive':[],
+                                    'update':[],
+                                    'partial_update':[],
+                                    'delete':[]}
     def perform_create(self, serializer):
         print("NoticeViewSet - perform_create trying to create Notice")
         #print(self.request.user) == username making request
@@ -547,7 +657,12 @@ class HomePage(APIView):
     # [ ] ensure POST is only setting masquerade
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'home_content.html'
-
+    permission_classes_by_action = {'create': [],
+                                    'list': [],
+                                    'retreive':[],
+                                    'update':[],
+                                    'partial_update':[],
+                                    'delete':[]}
 
     def get(self, request, *args, **kwargs):
         # # TODO:
@@ -577,35 +692,58 @@ class HomePage(APIView):
 #        return redirect(request.path)
 
 
+    def set_session(request):
+        print("set_session request.data",request.data)
+        try:
+            on_behalf_of = request.data['on_behalf_of']
+            print("found on_behalf_of in request.data ", on_behalf_of)
+            if on_behalf_of: # if its not none -> if exists then see if pennkey works
+                if validate_pennkey(on_behalf_of) == None: #if pennkey is good the user exists
+                    print("not valid input")
+                    messages.error(request,'Invalid Pennkey')
+                    on_behalf_of = None
+        except KeyError:
+            pass
+        # check if user is in the system
+        request.session['on_behalf_of'] = on_behalf_of
+        print("masquerading as:", request.session['on_behalf_of'])
+
 
     def post(self, request,*args, **kwargs):
         #if request.user.is_authenticated():
         #need to check if the post is for masquerade
-        print(request.get_full_path())
-        set_session(request)
+        print("posting in home")
+        print("\trequest.get_full_path()",request.get_full_path())
+        print("\trequest.META[''HTTP_REFERER'']",request.META['HTTP_REFERER'])
+        HomePage.set_session(request)
+        return(redirect(request.META['HTTP_REFERER']))
 
-        return(redirect(request.get_full_path()))
-
-
-    #print(redirect("/"))
-    #return redirect("/")
 
 
 
 class AutoAddViewSet(viewsets.ModelViewSet):
     """
-    THIS IS A TEMPORARY COPY
-    This viewset automatically provides `list` and `detail` actions.
+    provides list create and destroy actions only
+    no update or detail actions.
     """
     queryset = AutoAdd.objects.all()
     serializer_class = AutoAddSerializer
+    permission_classes_by_action = {'create': [],
+                                    'list': [],
+                                    'retreive':[],
+                                    'update':[],
+                                    'partial_update':[],
+                                    'delete':[]}
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
+        print("autoadd data",serializer.data) # {'url': 'http://127.0.0.1:8000/api/autoadds/1/', 'user': 'username_8', 'school': 'AN', 'subject': 'abbr_2', 'id': 1, 'role': 'ta'}
         response = Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+        email_processor.autoadd_contact({'user':serializer.data['user'], 'role':serializer.data['role'], 'school':School.objects.get(abbreviation=serializer.data['school']).name, 'subject':Subject.objects.get(abbreviation=serializer.data['subject']).name})
         print("got here")
         if request.accepted_renderer.format == 'html':
             response.template_name = 'admin/autoadd_list.html'
@@ -617,6 +755,7 @@ class AutoAddViewSet(viewsets.ModelViewSet):
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         print("1")
+
         if page is not None:
 
             serializer = self.get_serializer(page, many=True)
@@ -652,17 +791,30 @@ class AutoAddViewSet(viewsets.ModelViewSet):
 
 
 
-#class UpdateLogViewSet(viewsets.ModelViewSet):
+class UpdateLogViewSet(viewsets.ModelViewSet):
     """
     THIS IS A TEMPORARY COPY
     This viewset automatically provides `list` and `detail` actions.
     """
-    #queryset = UpdateLog.objects.all()
-    #serializer_class = UpdateLogSerializer
-    #def perform_create(self, serializer):
-        #print("NoticeViewSet - perform_create trying to create Notice")
-        #print(self.request.user) == username making request
-        #serializer.save(owner=self.request.user)
+    #permission_classes = (IsAdminUser,)
+    queryset = UpdateLog.objects.all()
+    serializer_class = UpdateLogSerializer
+    permission_classes_by_action = {'create': [],
+                                    'list': [],
+                                    'retreive':[],
+                                    'update':[],
+                                    'partial_update':[],
+                                    'delete':[]}
+    # CHECK PERMISSIONS!
+    def list(self, request, *args, **kwargs):
+        print("yeah ok")
+        return Response({'data': ''}, template_name='admin/log_list.html')
+
+
+
+
+
+# --------------- USERINFO view -------------------
 
 #@login_required(login_url='/accounts/login/')
 def userinfo(request):
@@ -674,10 +826,9 @@ def userinfo(request):
         if form.is_valid():
             form.save()
             return redirect('userinfo') # this should redirect to success page
-
-
     return render(request, "user_info.html", {'form':form})
 
+# --------------- CONTACT view -------------------
 # add to your views
 def contact(request):
     form_class = ContactForm
@@ -690,30 +841,25 @@ def contact(request):
 
             # Email the profile with the
             # contact information
-            template = get_template('emails/contact_template.txt')
             context = {'contact_name': contact_name,'contact_email': contact_email,'form_content': form_content,}
-            content = template.render(context)
-
-            email = EmailMessage(
-                subject="CRF Feedback from "+contact_name ,
-                body=content,
-                to=['mfhodges@upenn.edu'],
-                #headers = {'Reply-To': contact_email }
-            )
-            email.send()
+            email_processor.feedback(context)
             return redirect('contact')
-
     return render(request, 'contact.html', {'form': form_class,})
 
 
+# --------------- Temporary Email view -------------------
+"""
+This view is only for beta testing of the app
+"""
+import os
+from os import listdir
+def temporary_email_list(request):
+    filelist = os.listdir('course/static/emails/')
+    print(filelist)
+    return render(request, 'email/email_log.html', {'filelist':filelist})
 
-def send_notification():
-    email = EmailMessage(
-        subject="CRF Feedback from "+contact_name ,
-        body=content,
-        to=['mfhodges@upenn.edu'],
-        headers = {'Reply-To': contact_email }
-    )
+
+
 
 
 

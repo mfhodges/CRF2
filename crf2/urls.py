@@ -23,6 +23,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 
+from django.contrib.staticfiles.templatetags.staticfiles import static
 
 
 admin.site.site_header = 'Course Request Form Administration'

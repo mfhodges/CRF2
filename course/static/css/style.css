@@ -305,7 +305,9 @@ blockquote {
   display: flex !important;
 }
 
-
+.message {
+  margin:0px;
+}
 
 .close-notification {
   text-align: right;
@@ -621,7 +623,7 @@ a.full-button {
 table .button,table a.button,table button,table [type=submit],table [type=reset],table [type=button] {
   padding: .50rem .50rem;
   font-size: 0.75rem;
-  font-weight:400;
+  font-weight:500;
   margin: 4px 0px;
 }
 
@@ -833,10 +835,10 @@ header .flex-small {
 
 
 /*  course form */
-/* fieldset dd, fieldset dt*/
+/* fieldset dd, fieldset dt
  dd, dt {
   z-index: -1;
-}
+}*/
 
 /* Tables
   =============== */

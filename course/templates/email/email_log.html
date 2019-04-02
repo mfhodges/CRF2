@@ -1,0 +1,18 @@
+
+{% extends "../base_generic.html" %}
+{% load rest_framework %}
+
+
+{% block content %}
+<div class="medium-container" style="padding-top:3rem">
+
+
+<h4> List of emails </h4>
+<ol>
+{% for file in filelist %}
+<li>  <a href="/static/emails/{{file}}">{{ file }}</a></li>
+{% endfor %}
+</ol>
+</div>
+
+{% endblock %}

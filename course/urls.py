@@ -44,20 +44,24 @@ urlpatterns = [
     path('courses/', views.CourseViewSet.as_view(
         {'get': 'list'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
          name='UI-course-list'),
-    path('courses/<course_SRStitle>/', views.CourseViewSet.as_view(
+    path('courses/<course_code>/', views.CourseViewSet.as_view(
         {'get': 'retrieve'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
          name='UI-course-detail'),
 
     #path('courses/<int:pk>/request', views.CourseViewSet.as_view(
     #    {'get': 'retrieve'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
     #     name='UI-course-detail'),
+
     # --------------- Request list/detail view -------------------
     path('requests/', views.RequestViewSet.as_view(
         {'get': 'list'},renderer_classes=[renderers.TemplateHTMLRenderer]),
          name='UI-request-list'),
     path('requests/<str:pk>/', views.RequestViewSet.as_view(
-        {'get': 'retrieve'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
+        {'get': 'retrieve','put': 'update'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
         name='UI-request-detail'),
+    path('requests/<str:pk>/edit/', views.RequestViewSet.as_view(
+        {'get': 'retrieve'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
+        name='UI-request-detail-edit'),
 
 
     # --------------- School list/detail view -------------------
@@ -88,8 +92,11 @@ urlpatterns = [
     # --------------- USERINFO view -------------------
     path('accounts/userinfo/', views.userinfo, name='userinfo'),
     # --------------- UPDATE LOG view -------------------
-    #path('bulkupdates/', views.UpdateLogViewSet.as_view(
-    #    {'get':'list'},renderer_classes=[renderers.TemplateHTMLRenderer]),
-    #    name='UI-updatelog-list'),
+    path('logs/', views.UpdateLogViewSet.as_view(
+        {'get':'list'},renderer_classes=[renderers.TemplateHTMLRenderer]),
+        name='UI-updatelog-list'),
+
+    # --------------- Temporary Email view -------------------
+    path('emails/', views.temporary_email_list, name='temporary_email')
 ]
 #path('course', views.CourseViewSet.as_view({'get': 'list'})),

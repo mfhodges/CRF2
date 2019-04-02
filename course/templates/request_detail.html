@@ -1,27 +1,117 @@
 {% extends "base_generic.html" %}
-
-
+{% load rest_framework %}
+{% load template_extra %}
 {% block content %}
 <div class="medium-container">
-<h1>Request Detail</h1>
+<!--<h1>Request Detail</h1> -->
 
 
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
-
-{% for key, value in data.items %}
-  <p>  {{ key }}: {{ value }}</p>
-{% endfor %}
+<fieldset >
+  <legend>Request for {{request_instance.course_requested}}</legend>
 
 
 
-  <p> &lt button that links to admin view to edit &gt </p>
+  <dl class="row" style="line-height:1.1;">
+
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Status</dt>
+        <dd class="col-8 col-md-9"> {{ request_instance.status }}</dd>
+
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Requestor</dt>
+        <dd class="col-8 col-md-9"> {{ request_instance.owner }}
+          {% if request_instance.masquerade %}
+            ( as {{ request_instance.masquerade}} )
+          {% endif %}
+        </dd>
+
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Created</dt>
+        <dd class="col-8 col-md-9"> {{request_instance.created}}</dd>
 
 
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Updated</dt>
+        <dd class="col-8 col-md-9"> {{ request_instance.updated }}</dd>
+  </dl>
+
+  <div class="form-group ">
+    <label>Title override</label>
+    <input name="title_override" class="form-control" type="text" value="{{ request_instance.title_override }}" disabled>
+  </div>
+
+  <div class="form-group ">
+    <label>Copy from course</label>
+    <input name="copy_from_course" class="form-control" type="text" value="{{ request_instance.copy_from_course }}" disabled>
+  </div>
+
+<fieldset>
+  <legend><h6 style="margin:0;">Multi-Section Course Sites</h6></legend>
+    <div class="form-group ">
+      <b><p> ADD CONTENT HERE </p></b>
+    </div>
+</fieldset>
+
+  <fieldset>
+        <legend><h6 style="margin:0;">Library Services</h6></legend>
+        <dl class="row" style="line-height:1.1;">
+              <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Reserves</dt>
+              <dd class="col-8 col-md-9"> {{ request_instance.reserves }}</dd>
+        </dl>
+  </fieldset>
+
+  <fieldset>
+    <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
+    <b><p> ADD CONTENT HERE </p></b>
+    <p> this would be adding TA's, Instructors, Designers, Librarians ..NOT students</p>
+  </fieldset>
+
+  <div class="form-group ">
+    <label>Additional instructions</label>
+    <textarea name="additional_instructions" class="form-control" disabled>{{ request_instance.additional_instructions }}</textarea>
+  </div>
+
+
+  {% if request_instance.course_info.crosslisted %}
+  <div class="row" style="padding:0px 0px 0px 20px;">
+    <dt class="" style="padding-right: 0px;">Request includes Crosslistings:</dt>
+    <dd class="" style="padding-left: 10px;"> {{ request_instance.course_info.crosslisted| join:", " }}</dd>
+  </div>
+  {% endif %}
+
+
+  <!-- BUTTONS -->
+
+    <div class="row" style="margin-left:7px;margin-top:2.5rem;">
+
+
+    {% if 'lock' in permissions %}
+      <form action="{% url 'UI-request-detail' pk=request_instance.course_requested %}" method="put" >
+        <input type="hidden" name="status" value="LOCKED">
+        <input type="hidden" name="course_requested" value="{{request_instance.course_requested}}">
+        <input name="view_type" class="form-control" type="hidden" value="UI-request-detail">
+        <button type="submit" class="button accent-button" style="margin-right:20px;">Lock <i class='fas fa-lock'></i> </button>
+      </form>
+    {% endif %}
+    {% if 'unlock' in permissions %}
+      <form action="{% url 'UI-request-detail' pk=request_instance.course_requested %}" method="put" >
+      <input type="hidden" name="status" value="SUBMITTED">
+      <input type="hidden" name="course_requested" value="{{request_instance.course_requested}}">
+        <input name="view_type" class="form-control" type="hidden" value="UI-request-detail">
+      <button type="submit" class="button muted-button" style="margin-right:20px;">UNLOCK <i class='fas fa-unlock'></i> </button>
+      </form>
+    {% endif %}
+    {% if 'cancel' in permissions %}
+    <form action="{% url 'UI-request-detail' pk=request_instance.course_requested %}" method="put" >
+      <input type="hidden" name="status" value="CANCELED">
+      <input type="hidden" name="course_requested" value="{{request_instance.course_requested}}">
+      <input name="view_type" class="form-control" type="hidden" value="UI-request-detail">
+      <button type="submit"  style="margin-right:20px;background-color:#dc3545;border-color:#dc3545;">Cancel</button>
+    </form>
+    {% endif %}
+    {% if 'edit' in permissions %}
+      <a href="{% url 'UI-request-detail-edit' pk=request_instance.course_requested %}" class="button" style="margin-right:20px;">Edit Request <i class="fas fa-edit"></i></a>
+    {% endif %}
+
+  </div>
+<p> permissions should be: {{ permissions }} -- this will be removed later </p>
+
+</fieldset>
 </div>
 {% endblock %}

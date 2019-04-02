@@ -20,7 +20,7 @@
           <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">User: </dt>
           <dd class="col-8 col-md-9"> {{user.first_name }} {{user.last_name}} ({{user.username}})</dd>
           <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Email: </dt>
-          <dd class="col-8 col-md-9"> {{user.email|default:"None" }}</dd>
+          <dd class="col-8 col-md-9"> {{user.email|default:"Please add your email in the form below" }}</dd>
       </dl>
       {% endif %}
   </dl>

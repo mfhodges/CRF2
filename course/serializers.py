@@ -27,8 +27,8 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
 
     owner = serializers.ReadOnlyField(source='owner.username')
     # cant uncomment following line without resolving lookup for Request
-    course_SRStitle = serializers.CharField()
-
+    course_code = serializers.CharField()
+    crosslisted = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(), slug_field='course_code', required=False)
     #request_info = serializers.HyperlinkedRelatedField(many=False, lookup_field='course_requested',view_name='courses-detail',read_only=True)
 
     #request_status = serializers.HyperlinkedIdentityField(view_name='course-request', format='html')
@@ -47,8 +47,8 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
         model = Course
         fields = '__all__' # or a list of field from model like ('','')
         #read_only_fields = ('requested',)
-        # Ideally the requested field would be forced to be the default on creation
-        # or rather just not on the form but available in the -detail
+
+
 
 
     def create(self, validated_data):
@@ -59,9 +59,10 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
         instructors_data = validated_data.pop('instructors')
         schools_data = validated_data.pop('course_schools')
         subjects_data = validated_data.pop('course_subjects')
+        if 'crosslisted' in validated_data: crosslist = validated_data.pop('crosslisted')
         course = Course.objects.create(**validated_data)
         ##
-        ## must loop through adding instructors individually because we cannot do direct assignment
+        ## must loop through adding fields individually because we cannot do direct assignment
         ##
         for instructor_data in instructors_data:
             print(instructor_data.username, instructor_data)
@@ -75,6 +76,15 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
             print("subject data", subject_data)
             course.course_subjects.add(subject_data)
         #print(course.data)
+        if 'crosslisted' in validated_data:
+            print(crosslist)
+            for cross_course in crosslist:
+                print("crosslist data", cross_course)
+                course.crosslisted.add(cross_course)
+
+
+
+
         return course
 
     # this allows the object to be updated!
@@ -83,18 +93,76 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
         Update and return an existing 'Course' instance, given the validated_data.
         """
         print("validated_data", validated_data)
-        instance.course_SRStitle = validated_data.get('course_SRStitle', instance.course_SRStitle)
 
-        instance.requested = validated_data.get('requested',instance.requested)
-        #print("whoohooohho",instance.instructors, validated_data.get('instructors',instance.instructors))
+        # patching - just updating this one thing!
+        if len(validated_data) ==1 and 'crosslisted' in validated_data.keys():
+            instance.crosslisted.set(validated_data.get('crosslisted',instance.crosslisted))
+            instance.save()
+            crosslistings = validated_data.get('crosslisted',instance.crosslisted)
 
-        # since theses are nested they need to be treated a little differently
-        instance.course_schools.set(validated_data.get('course_schools', instance.course_schools))
-        instance.instructors.set(validated_data.get('instructors',instance.instructors))
-        instance.save()
-        print("instance",instance)
-        return instance
+            # this should really not be happening everytime the course is updated??
+            for ccourse in crosslistings:
+                print("crosslistings",crosslistings)
+                crosslistings.remove(ccourse)
+                # make sure to add to exisitng crosslistins and not overwrite them!
+                current = ccourse.crosslisted.all()
+                print("current, ccourse, crosslistings",current, ccourse, crosslistings)
+                new = list(current) + list(crosslistings)
+                print("new",new)
+                ccourse.crosslisted.set(new)
+                ccourse.requested = validated_data.get('requested',instance.requested)
+            print("instance serialized",instance)
+            return instance
+        else:
+            instance.course_code = validated_data.get('course_code', instance.course_code)
+            instance.requested = validated_data.get('requested',instance.requested)
+            #print("whoohooohho",instance.instructors, validated_data.get('instructors',instance.instructors))
+            # since theses are nested they need to be treated a little differently
+            instance.course_schools.set(validated_data.get('course_schools', instance.course_schools))
+            instance.instructors.set(validated_data.get('instructors',instance.instructors))
+            instance.crosslisted.set(validated_data.get('crosslisted',instance.crosslisted))
+            instance.save()
+            crosslistings = validated_data.get('crosslisted',instance.crosslisted)
 
+            # this should really not be happening everytime the course is updated??
+            for ccourse in crosslistings:
+                print("crosslistings",crosslistings)
+                crosslistings.remove(ccourse)
+                # make sure to add to exisitng crosslistins and not overwrite them!
+                current = ccourse.crosslisted.all()
+                print("current, ccourse, crosslistings",current, ccourse, crosslistings)
+                new = list(current) + list(crosslistings)
+                print("new",new)
+                ccourse.crosslisted.set(new)
+                ccourse.requested = validated_data.get('requested',instance.requested)
+            print("instance serialized",instance)
+            return instance
+
+    #def update_crosslists(crosslisted_courses):
+
+
+
+"""
+CROSS LISTING UPDATE ISSUE
+Currently bc of the ManyToMany self relationship of cross listing if we have course A and update it
+so it is cross listed with B, C and D the resulting courses crosslistings would be:
+
+    A       B       C          D
+   ---     ---     ---        ---
+    B       A       A          A
+    C
+    D
+
+But we want
+    A       B       C          D
+   ---     ---     ---        ---
+    B       A       A          A
+    C       C       B          B
+    D       D       D          C
+
+
+
+"""
 class UserSerializer(serializers.ModelSerializer):
     """
 
@@ -136,19 +204,11 @@ class UserSerializer(serializers.ModelSerializer):
 class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerializer
     #this adds a field that is not defined in the model
     #url = serializers.HyperlinkedIdentityField(view_name='UI-requests', looku
-    print("how???")
     owner = serializers.ReadOnlyField(source='owner.username')
     course_info = CourseSerializer(source='course_requested', read_only=True)
     masquerade = serializers.ReadOnlyField()
-    #course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.exclude(requested=True), slug_field='course_SRS_Title')
 
-    # the following line is needed to create the drop down
-    status= serializers.ReadOnlyField()
-    #test = CourseSerializer()
-    created = serializers.DateTimeField(read_only=True)
-    updated = serializers.DateTimeField(read_only=True)
-    course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='course_SRStitle' , style={'base_template': 'input.html'})
-
+    course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='course_code' , style={'base_template': 'input.html'})
     title_override = serializers.CharField(required=False , style={'base_template': 'input.html'})
 
     # IF REQUEST STATUS IS CHANGED TO CANCELED IT SHOULD BE DISASSOCIATED FROM COURSE INSTANCE
@@ -160,18 +220,29 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
         #exclude = ('masquerade',)
         #depth=2
 
+    def validate(self, data):
+        """
+        Check that:
+            owner/creator is a courseware support, instructor( or masqueraded)
+            ADD MORE
+        """
+        #print(data)
+        #print(self.instance)
+        #print('data[owner]',data['owner'])
+        #print('data[masquerade]', data['masquerade'])
+        #print("data['course_info']", data['course_info'])
+        #if data['owner'] in data['course_info']['instructors']:
+        #    raise serializers.ValidationError("you do not have permissions to request this course")
+
+        return data
+
+
     def create(self, validated_data):
         """
         Create and return a new 'Request' instance, given the validated_data.
         Also get associtated Course instance and set course.requested ==True
         """
         # it must also get associated Course instance and set course.requested = True
-
-        # check that the course is good to be requested
-        # - not already requested
-        # - user making request is an instructor or acting on behalf of other user
-
-
         #course_requested_data = validated_data.pop('course_requested')
         # check that this course.requested==False
         #print("course_requested_data", course_requested_data)
@@ -191,12 +262,19 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
         # TODO
         # [ ]must check that the course is not already requested?
         # [ ] better/more thorough validation
-        instance.course_status = validated_data.get('status',instance.status)
 
+        print("in serializer ", validated_data)
+        instance.status = validated_data.get('status',instance.status)
+        instance.title_override = validated_data.get('title_override',instance.title_override)
+        instance.copy_from_course = validated_data.get('copy_from_course',instance.copy_from_course)
+        instance.reserves = validated_data.get('reserves',instance.reserves)
+        instance.additional_instructions = validated_data.get('additional_instructions',instance.additional_instructions)
         print("instance.status", instance.status)
-
+        print("instance.title_override", instance.title_override)
         #instance.course = validated_data.get('course_requested', instance.course_requested)
         instance.save()
+        print('additional_instructions',validated_data.get('additional_instructions',instance.additional_instructions))
+        print('reserves',validated_data.get('reserves',instance.reserves))
         return instance
 
 
@@ -290,14 +368,11 @@ class NoticeSerializer(serializers.HyperlinkedModelSerializer):
 
 class AutoAddSerializer(serializers.HyperlinkedModelSerializer):
     # Eventually the queryset should also filter by Group = Instructors
-
     # for more info on base_template style see: https://www.django-rest-framework.org/topics/html-and-forms/#field-styles ( table at the end of page)
     user = serializers.SlugRelatedField(many=False,queryset=User.objects.all(), slug_field='username',  style={'base_template': 'input.html'})
     school = serializers.SlugRelatedField(many=False,queryset=School.objects.all(), slug_field='abbreviation')
     subject = serializers.SlugRelatedField(many=False,queryset=Subject.objects.all(), slug_field='abbreviation', style={'base_template': 'input.html'})
     id = serializers.ReadOnlyField()
-
-
     class Meta:
         model = AutoAdd
         fields = '__all__'
@@ -311,6 +386,28 @@ class AutoAddSerializer(serializers.HyperlinkedModelSerializer):
     def update(self, instance, validated_data):
         """
         Update and return an existing 'Notice' instance given the validated_data.
+        """
+        #instance.notice_text = validated_data.get('notice_text', instance.notice_text)
+        instance.save()
+        return instance
+
+
+class UpdateLogSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = UpdateLog
+        fields = '__all__'
+
+    def create(self, validated_data):
+        """
+        Create and return a new 'UpdateLog' instance, given the validated data.
+        """
+        return AutoAdd.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing 'UpdateLog' instance given the validated_data.
         """
         #instance.notice_text = validated_data.get('notice_text', instance.notice_text)
         instance.save()

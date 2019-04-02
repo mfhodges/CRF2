@@ -26,10 +26,11 @@
     <script src="{% static "rest_framework/js/jquery-3.3.1.min.js" %}"></script>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'images/favicon_book.ico' %}">
+
 </head>
   <body>
 
-    <header class="flex-row" style="margin-left:0px;margin-right:0px;">
+    <header class="flex-row" style="margin-left:0px;margin-right:0px;z-index:2;">
 
 
       <!-- REQUEST ON BEHALF OF // MASQUERADE -->
@@ -82,7 +83,7 @@
            </div>
            <div class="modal-body">
              {% if  user.is_authenticated %}
-             <form class="" method="POST" action="" style="display:inherit;max-width:500px;margin-left:auto;margin-right:auto;">
+             <form class="" method="POST" action="/" style="display:inherit;max-width:500px;margin-left:auto;margin-right:auto;">
                {% csrf_token %}
                <label for="name">User's Pennkey</label>
                <div class="input-group mb-3">
@@ -135,9 +136,12 @@
               <li class="title">Admin</li>
               <li><a href="/admin">Admin Portal</a></li>
               <li><a href="/autoadds" class="{% block autoadd %}{% endblock %}">Manage Auto-Adds</a></li>
-              <li><a href="/bulkupdates" class="{% block bulkupdates %}{% endblock %}">Manage Bulk Updates</a></li>
+              <li><a href="/logs" class="{% block bulkupdates %}{% endblock %}">Manage Logs/Updates</a></li>
 
               {% endif %}
+              <li class="title">temporary</li>
+              <li><a href="/emails">Emails</a></li>
+
 
               <!-- logout / login info -->
               <li id="side_sign_in">
@@ -155,7 +159,7 @@
         </nav>
 
           <div id="references" class="medium-container vertical-center" style="padding-bottom:25px;">
-              <a href="https://crf-doc.readthedocs.io/en/latest/?#">Docs </a>&nbsp;//&nbsp;
+              <a href="" aria-label="temporarily removed">Docs </a>&nbsp;//&nbsp;
               <a href="/contact"> Contact</a>
           </div>
       </aside>
@@ -170,7 +174,7 @@
 
 
 
-  <script src="https://taniarascia.github.io/primitive/js/prism.js"></script>
+  <!--<script src="https://taniarascia.github.io/primitive/js/prism.js"></script>-->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <!--  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

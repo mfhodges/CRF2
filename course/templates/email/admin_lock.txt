@@ -1,0 +1,6 @@
+{% comment %}
+Subject: CRF notification locked request
+Body:
+{% endcomment %}
+Request for {{course_code}} has been locked..
+See request here: {{ request_detail_url }}

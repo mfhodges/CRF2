@@ -1,0 +1,116 @@
+{% extends "base_generic.html" %}
+
+
+{% block content %}
+<div class="medium-container">
+<!--<h1>EDIT Request Detail</h1>-->
+
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<fieldset >
+  <legend>EDITING Request for {{request_instance.course_requested}}</legend>
+
+  <dl class="row" style="line-height:1.1;">
+
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Status</dt>
+        <dd class="col-8 col-md-9"> {{ request_instance.status }}</dd>
+
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Requestor</dt>
+        <dd class="col-8 col-md-9"> {{ request_instance.owner }}
+          {% if request_instance.masquerade %}
+            ( as {{ request_instance.masquerade}} )
+          {% endif %}
+        </dd>
+
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Created</dt>
+        <dd class="col-8 col-md-9"> {{ request_instance.created }}</dd>
+
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Updated</dt>
+        <dd class="col-8 col-md-9"> {{ request_instance.updated }}</dd>
+  </dl>
+
+  <form action="{% url 'UI-request-detail' pk=request_instance.course_requested %}" method="put" id="RequestForm">
+      {% csrf_token %}
+      <input name="view_type" class="form-control" type="hidden" value="UI-request-detail">
+      <input name='course_requested' value='{{request_instance.course_requested}}' type='hidden'>
+      <div class="form-group ">
+        <label>Title override</label>
+        <input name="title_override" class="form-control" type="text" value="{{ request_instance.title_override }}" >
+      </div>
+
+      <div class="form-group ">
+        <label>Copy from course</label>
+        <input name="copy_from_course" class="form-control" type="text" value="{{ request_instance.copy_from_course }}" >
+      </div>
+
+    <fieldset>
+      <legend><h6 style="margin:0;">Multi-Section Course Sites</h6></legend>
+        <div class="form-group ">
+          <b><p> ADD CONTENT HERE </p></b>
+        </div>
+    </fieldset>
+
+      <fieldset>
+            <legend><h6 style="margin:0;">Library Services</h6></legend>
+              <div class="form-group ">
+                <div class="checkbox">
+                  <label><input type="checkbox" name="reserves" {% if request_instance.reserves %}checked{% endif %}>
+                    Reserves
+                  </label>
+                </div>
+              </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
+        <b><p> ADD CONTENT HERE </p></b>
+        <p> this would be adding TA's, Instructors, Designers, Librarians ..NOT students</p>
+      </fieldset>
+
+
+      <div class="form-group ">
+        <label>Additional instructions</label>
+        <textarea name="additional_instructions" class="form-control" >{{ request_instance.additional_instructions }}</textarea>
+      </div>
+
+      {% if request_instance.course_info.crosslisted %}
+      <div class="row" style="padding:0px 0px 0px 20px;">
+        <dt class="" style="padding-right: 0px;">Request includes Crosslistings:</dt>
+        <dd class="" style="padding-left: 10px;"> {{ request_instance.course_info.crosslisted| join:", " }}</dd>
+      </div>
+      {% endif %}
+
+      <input type="submit" value="Update Request" />
+  </form>
+</fieldset>
+</div>
+{% endblock %}
+
+
+
+
+{% block template_page_js %}
+<script>
+$('form[method="put"]').submit(function(){
+  console.log("updated request values:");
+    $(this).find(':input:not([type=hidden])').each(function() {
+        var inp = $(this);
+        if (inp.val()) {
+            if (inp.val()=='None'){ inp.val('');}
+            //if(inp.attr("name"=='reserves'){ inp.val() = 'True' })
+            console.log(inp.attr("name"),": ", inp.val());
+        }
+      //  if (!inp.val()) {
+        //    inp.remove();}
+    });
+});
+</script>
+
+{% endblock %}
