@@ -97,6 +97,7 @@ urlpatterns = [
         name='UI-updatelog-list'),
 
     # --------------- Temporary Email view -------------------
-    path('emails/', views.temporary_email_list, name='temporary_email')
+    path('emails/', views.temporary_email_list, name='temporary_email'),
+    path('emails/<value>/', views.my_email, name='my_email'),
 ]
 #path('course', views.CourseViewSet.as_view({'get': 'list'})),

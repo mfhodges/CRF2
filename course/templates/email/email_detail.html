@@ -1,21 +1,18 @@
 
 {% extends "../base_generic.html" %}
 {% load rest_framework %}
-
+{% load template_extra %}
 
 {% block content %}
 <div class="medium-container" style="padding-top:3rem">
 
 
-<h4> List of emails </h4>
+<h4> Email Detail</h4>
 <p>
-  These emails are sorted chronologically
+{{email|linebreaksbr }}
 </p>
-<ol>
-{% for file in filelist %}
-<li>  <a href="/emails/{{file}}">{{ file }}</a></li>
-{% endfor %}
-</ol>
+
+<br> <a href='../'>Go Back </a>
 </div>
 
 {% endblock %}

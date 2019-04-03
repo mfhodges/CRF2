@@ -242,7 +242,7 @@ class RequestViewSet(viewsets.ModelViewSet):
     search_fields = ['$course_requested__course_name', '$course_requested__course_code']
     #permission_classes = (permissions.IsAuthenticatedOrReadOnly,
     #                      IsOwnerOrReadOnly,)
-    permission_classes_by_action = {'create': [ ],
+    permission_classes_by_action = {'create': [],
                                     'list': [],
                                     'retreive':[],
                                     'update':[],
@@ -855,10 +855,15 @@ import os
 from os import listdir
 def temporary_email_list(request):
     filelist = os.listdir('course/static/emails/')
-    print(filelist)
+
     return render(request, 'email/email_log.html', {'filelist':filelist})
 
+from django.http import HttpResponse
+def my_email(request,value):
 
+    email = open("course/static/emails/"+value, "rb").read()
+
+    return render(request, 'email/email_detail.html', {'email':email.decode("utf-8")} )
 
 
 
