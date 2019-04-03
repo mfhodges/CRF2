@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 from configparser import ConfigParser
-
+import django_heroku
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -26,7 +26,7 @@ SECRET_KEY = 'jy0jd74_tg&674cxbvocpl4@x87i@(ynk%)h*p12by4fd^ilgs'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['128.91.177.58'
+ALLOWED_HOSTS = [#'128.91.177.58'
 ]
 print=("BASE_DIR",BASE_DIR)
 
@@ -36,18 +36,18 @@ print=("BASE_DIR",BASE_DIR)
 STATIC_URL = '/static/'
 
 config = ConfigParser()
-config.read('config/config.ini')
+#config.read('config/config.ini')
 print=(BASE_DIR)
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = 'course/static/emails' # change this to a proper location
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # to have it sent to console
 #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # to actually use it
 EMAIL_USE_TLS = True
-EMAIL_HOST = config.get('email', 'emailhost')
+#EMAIL_HOST = config.get('email', 'emailhost')
 EMAIL_PORT = 587
-EMAIL_HOST_USER = config.get('email', 'emailhostuser')
-EMAIL_HOST_PASSWORD = config.get('email', 'password')
-DEFAULT_FROM_EMAIL = config.get('email', 'defaultfromemail')
+#EMAIL_HOST_USER = config.get('email', 'emailhostuser')
+#EMAIL_HOST_PASSWORD = config.get('email', 'password')
+#DEFAULT_FROM_EMAIL = config.get('email', 'defaultfromemail')
 
 
 
@@ -162,3 +162,4 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'drf_link_header_pagination.LinkHeaderPagination',
     'PAGE_SIZE': 30
 }
+django_heroku.settings(locals())
