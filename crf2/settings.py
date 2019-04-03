@@ -26,7 +26,7 @@ SECRET_KEY = 'jy0jd74_tg&674cxbvocpl4@x87i@(ynk%)h*p12by4fd^ilgs'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [#'128.91.177.58'
+ALLOWED_HOSTS = [#'demo-crf.herokuapp.com'#'128.91.177.58'
 ]
 print=("BASE_DIR",BASE_DIR)
 
@@ -162,4 +162,4 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'drf_link_header_pagination.LinkHeaderPagination',
     'PAGE_SIZE': 30
 }
-#django_heroku.settings(locals())
+django_heroku.settings(locals())
