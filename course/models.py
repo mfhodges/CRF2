@@ -101,7 +101,8 @@ class Course(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     #id = models.CharField(max_length=250) # this is a number
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='created', on_delete=models.CASCADE) #this is who edited it
+    # models.ForeignKey('auth.User', related_name='requests', on_delete=models.CASCADE)
+    owner = models.ForeignKey('auth.User', related_name='created', on_delete=models.CASCADE) #this is who edited it
     updated = models.DateTimeField(auto_now=True)
     instructors = models.ManyToManyField(User,related_name='courses') # should be allowed to be null --> "STAFF"
     course_term = models.CharField(
@@ -111,7 +112,6 @@ class Course(models.Model):
 
     # course_SRS_Title must not allow spaces
     course_code = models.CharField(max_length=250,unique=True, primary_key=True, blank=False) # unique and primary_key means that is the lookup_field
-
     course_subjects = models.ManyToManyField(Subject,related_name='courses') # one to many
     course_schools = models.ManyToManyField(School,related_name='courses')# one to many
     course_name = models.CharField(max_length=250) # Human Readable Name i.e. Late Antique Arts
@@ -237,7 +237,7 @@ class Request(models.Model):
     title_override = models.CharField(max_length=100,null=True,default=None) # previously SRS title override
     additional_instructions = models.TextField(blank=True,default=None, null=True)
     reserves = models.BooleanField(default=False)
-    canvas_instance = models.ForeignKey(CanvasSite,related_name='canvas', on_delete=models.CASCADE,default=None,null=True)
+    canvas_instance = models.ForeignKey(CanvasSite,related_name='canvas', on_delete=models.CASCADE,null=True, blank=True )
 
     # NOTE! needs something for multisection course sites!
 
@@ -301,9 +301,8 @@ class UpdateLog(models.Model):
     MANAGER_CHOICES = (
     ('a','A'),
     ('b','B'),
-    ('c','C')
+    ('c','C'),
     )
 
-    created = models.DateTimeField(auto_now_add=True)
-    process= models.CharField(
-            max_length=10,choices = MANAGER_CHOICES,)
+    created = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    process= models.CharField(max_length=10,choices = MANAGER_CHOICES)

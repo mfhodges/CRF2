@@ -676,6 +676,8 @@ class HomePage(APIView):
             notice = None
             print("no notices")
 
+
+        # for courses do instructors.courses since there is a manytomany relationship
         return Response({'data':
             {'notice':notice,
             'site_requests':'',

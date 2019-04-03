@@ -162,4 +162,4 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'drf_link_header_pagination.LinkHeaderPagination',
     'PAGE_SIZE': 30
 }
-django_heroku.settings(locals())
+#django_heroku.settings(locals())
