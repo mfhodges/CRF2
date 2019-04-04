@@ -31,6 +31,9 @@ URL pattern: ^courses/{pk}/$ Name: 'course-detail'
 This is fine because I want the API to be very generic
 
 """
+# URL SHOULD REALLY USE REGEX
+#SRS_SECTION_REGEX = re.compile(
+#    r'^(?P<subject>[A-Z]{2,4})(?P<course_number>\d{3}|)-?(?P<section_number>\d{3}|)-(?P<term>20[01][0-9][ABC])$')
 
 #schema_view = get_schema_view(title='Pastebin API') # new
 
