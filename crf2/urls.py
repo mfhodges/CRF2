@@ -31,6 +31,13 @@ admin.site.site_title = 'ADMIN: Site Request'
 # use re path to validate urls
 # https://docs.djangoproject.com/en/2.1/topics/http/urls/#using-regular-expressions
 
+
+#handler404 = 'course.views.not_found'
+#handler500 = 'course.views.server_error'
+#handler403 = 'course.views.permission_denied'
+#handler400 = 'course.views.bad_request'
+
+
 urlpatterns = [
 
     path('admin/doc/', include('django.contrib.admindocs.urls')),

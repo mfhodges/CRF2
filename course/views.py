@@ -4,12 +4,11 @@ from course.serializers import * #CourseSerializer, UserSerializer, NoticeSerial
 from rest_framework import generics, permissions
 from django.contrib.auth.models import User
 from course.permissions import IsOwnerOrReadOnly
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
-
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework.reverse import reverse
 
 from rest_framework import viewsets
-from rest_framework.decorators import action, api_view
+
 from django.contrib.auth.decorators import login_required
 
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
@@ -31,7 +30,7 @@ from rest_framework.pagination import PageNumberPagination
 from django.db.models import Q
 from rest_framework.utils.urls import replace_query_param, remove_query_param
 from django_filters import rest_framework as filters
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from course.forms import ContactForm, EmailChangeForm
 from django.template.loader import get_template
@@ -57,6 +56,55 @@ of Django REST Framework's class-based views and serializers'see: http://www.cdr
 # for more on viewsets see: https://www.django-rest-framework.org/api-guide/viewsets/
 # (slightly helpful ) or see: http://polyglot.ninja/django-rest-framework-viewset-modelviewset-router/
 
+#######################################
+########## ERROR VIEWS ###############
+######################################
+
+from rest_framework.views import exception_handler
+from rest_framework import status
+
+def not_found(request,  template_name='404.html'):
+
+    return render(request, '404.html')
+
+def server_error(request, template_name='500.html'):
+    print("kja ")
+    return render(request, '500.html')
+
+def permission_denied(request, template_name='403.html'):
+
+    return render(request, '403.html')
+
+def bad_request(request, template_name='400.html'):
+
+    return render(request, '400.html')
+
+
+
+
+def custom_exception_handler(exc, context):
+    # Call REST framework's default exception handler first,
+    # to get the standard error response.
+    print("helloooo","\n",exc,"\n",context)
+    response = exception_handler(exc, context)
+    #response = render({},'errors/403.html')
+
+
+    print("yeah okie,,",response.status_code)
+    # we need to be able to parse if they are doing a html request or not
+    # Now add the HTTP status code to the response.
+    print("hahhhh")
+    if response is not None:
+        response.data['status_code'] = response.status_code
+        response.data['error'] = response.data['detail']
+        del response.data['detail']
+
+    #response.template_name = 'base_blank.html'#'errors/'+str(response.status_code)+'.html'
+    print("we r barely ali", response.data['status_code'])
+    return response
+    #return render(response, 'errors/'+str(response.status_code) +'.html')
+
+
 def validate_pennkey(pennkey):
     # assumes usernames are valid pennkeys
     try:
@@ -66,25 +114,33 @@ def validate_pennkey(pennkey):
     return user
 
 
+class MixedPermissionModelViewSet(LoginRequiredMixin,viewsets.ModelViewSet):
+    '''
+    Mixed permission base model allowing for action level
+    permission control. Subclasses may define their permissions
+    by creating a 'permission_classes_by_action' variable.
 
-class MixedPermissionModelViewSet(viewsets.ModelViewSet):
-   '''
-   Mixed permission base model allowing for action level
-   permission control. Subclasses may define their permissions
-   by creating a 'permission_classes_by_action' variable.
-
-   Example:
-   permission_classes_by_action = {'list': [AllowAny],
+    Example:
+    permission_classes_by_action = {'list': [AllowAny],
                                    'create': [IsAdminUser]}
-   '''
-   permission_classes_by_action = {}
-   def get_permissions(self):
-      try:
-        # return permission_classes depending on `action`
-        return [permission() for permission in self.permission_classes_by_action[self.action]]
-      except KeyError:
-        # action is not set return default permission_classes
-        return [permission() for permission in self.permission_classes]
+
+    Since each viewset extends the modelviewset there are default actions that are included...
+        for each action there should be a defined permission.
+    see more here: http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html
+
+    THIS MODEL IS INHERITED BY EVERY VIEWSET ( except homepage... ) !!
+        - it also includes the loginrequired just to keep the code as clean as possible
+    '''
+    permission_classes_by_action = {}
+    login_url = '/accounts/login/'
+    def get_permissions(self):
+        try:
+            # return permission_classes depending on `action`
+            return [permission() for permission in self.permission_classes_by_action[self.action]]
+        except KeyError:
+            # action is not set return default permission_classes
+            return [permission() for permission in self.permission_classes]
+
 
 
 
@@ -105,7 +161,7 @@ class CourseFilter(filters.FilterSet):
         fields = ['activity','instructor','school','subject','term']
 
 
-class CourseViewSet(viewsets.ModelViewSet):
+class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions. see http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html
@@ -113,11 +169,11 @@ class CourseViewSet(viewsets.ModelViewSet):
     # # TODO:
     # [ ] create and test permissions
     # [x] on creation of request instance mutatate course instance so courese.requested = True
-    #[ ] ensure POST is only setting masquerade
+    #[x ] ensure POST is only setting masquerade
     lookup_field = 'course_code'
     queryset = Course.objects.filter(~Q(course_subjects__visible=False)).exclude(course_schools__visible=False,) #this should be filtered by the
     serializer_class = CourseSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly,)
+    #permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly,)
     filterset_class = CourseFilter
     search_fields = ['$course_name', '$course_code']
     # for permission_classes_by_action see: https://stackoverflow.com/questions/35970970/django-rest-framework-permission-classes-of-viewset-method
@@ -226,7 +282,7 @@ class RequestFilter(filters.FilterSet):
         #fields = ['activity','instructor','school','subject','term']
 
 
-class RequestViewSet(viewsets.ModelViewSet):
+class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions. see http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html
@@ -242,12 +298,12 @@ class RequestViewSet(viewsets.ModelViewSet):
     search_fields = ['$course_requested__course_name', '$course_requested__course_code']
     #permission_classes = (permissions.IsAuthenticatedOrReadOnly,
     #                      IsOwnerOrReadOnly,)
-    permission_classes_by_action = {'create': [],
-                                    'list': [],
-                                    'retreive':[],
-                                    'update':[],
-                                    'partial_update':[],
-                                    'delete':[]}
+    permission_classes_by_action = {'create': [IsAuthenticated],
+                                    'list': [IsAuthenticated],
+                                    'retreive':[IsAuthenticated],
+                                    'update':[IsOwnerOrReadOnly,IsAuthenticated],
+                                    'partial_update':[IsOwnerOrReadOnly,IsAuthenticated],
+                                    'delete':[IsAdminUser]}
 
     def create(self, request, *args, **kwargs):
         """
@@ -255,6 +311,7 @@ class RequestViewSet(viewsets.ModelViewSet):
             whenever a request is created this function updates the course instance and updates the crosslisted courses.
         """
         # putting this function inside create because it should only be accessible here.
+        # there does not need to be this in the delete of a request...
         def update_course(self,course):
             course.requested = True
             course.save()
@@ -281,11 +338,18 @@ class RequestViewSet(viewsets.ModelViewSet):
         """
 
         print("views.py in create: request.data", request.data)
+        # setting masquerade variable for later use
         try:
             masquerade = request.session['on_behalf_of']
         except KeyError:
             masquerade = ''
         print("masqueraded as:", masquerade)
+
+        course = Course.objects.get(course_code=request.data['course_requested'])# get Course instance
+        instructors = course.get_instructors()
+        print("course instructors", instructors)
+        #if request.user or masquerade
+
 
         print("request.data", request.data)
         serializer = self.get_serializer(data=request.data)
@@ -400,7 +464,7 @@ class RequestViewSet(viewsets.ModelViewSet):
         return response
 
     def destroy(self, request, *args, **kwargs):
-        print("OH MY GOLLY GEEE we r deleteing")
+        print("OH MY GOLLY GEEE we r deleteing a request")
         instance = self.get_object()
         # Must get Course and set .request to true
         course = Course.objects.get(course_code=instance.course_requested)# get Course instance
@@ -454,7 +518,7 @@ class RequestViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     """
     This viewset automatically provides `list` and `detail` actions. (READONLY)
     """
@@ -487,7 +551,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 
-class SchoolViewSet(viewsets.ModelViewSet):
+class SchoolViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     """
     This viewset only provides custom `list` actions
     """
@@ -570,7 +634,7 @@ class SchoolViewSet(viewsets.ModelViewSet):
         return response
 
 
-class SubjectViewSet(viewsets.ModelViewSet):
+class SubjectViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     """
     This viewset only provides custom `list` actions
     """
@@ -631,7 +695,7 @@ class SubjectViewSet(viewsets.ModelViewSet):
 
 
 
-class NoticeViewSet(viewsets.ModelViewSet):
+class NoticeViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     """
     THIS IS A TEMPORARY COPY
     """
@@ -649,7 +713,7 @@ class NoticeViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
 
-class HomePage(APIView):
+class HomePage(LoginRequiredMixin,APIView):
     # TODO
     # [ ] add table for site_request and srs_course
     # [x] add base case of empty responses
@@ -657,12 +721,7 @@ class HomePage(APIView):
     # [ ] ensure POST is only setting masquerade
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'home_content.html'
-    permission_classes_by_action = {'create': [],
-                                    'list': [],
-                                    'retreive':[],
-                                    'update':[],
-                                    'partial_update':[],
-                                    'delete':[]}
+    login_url = '/accounts/login/'
 
     def get(self, request, *args, **kwargs):
         # # TODO:
@@ -723,21 +782,23 @@ class HomePage(APIView):
 
 
 
-class AutoAddViewSet(viewsets.ModelViewSet):
+class AutoAddViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     """
     provides list create and destroy actions only
     no update or detail actions.
     """
+
     queryset = AutoAdd.objects.all()
     serializer_class = AutoAddSerializer
-    permission_classes_by_action = {'create': [],
-                                    'list': [],
-                                    'retreive':[],
-                                    'update':[],
-                                    'partial_update':[],
-                                    'delete':[]}
+    permission_classes_by_action = {'create': [IsAdminUser],
+                                    'list': [IsAdminUser],
+                                    'retreive':[IsAdminUser],
+                                    'update':[IsAdminUser],
+                                    'partial_update':[IsAdminUser],
+                                    'delete':[IsAdminUser]}
 
     def create(self, request, *args, **kwargs):
+        print(request.user.is_authenticated())
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -754,6 +815,7 @@ class AutoAddViewSet(viewsets.ModelViewSet):
 
 
     def list(self, request, *args, **kwargs):
+        print(request.user.is_authenticated())
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         print("1")
@@ -793,7 +855,7 @@ class AutoAddViewSet(viewsets.ModelViewSet):
 
 
 
-class UpdateLogViewSet(viewsets.ModelViewSet):
+class UpdateLogViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     """
     THIS IS A TEMPORARY COPY
     This viewset automatically provides `list` and `detail` actions.
@@ -801,12 +863,12 @@ class UpdateLogViewSet(viewsets.ModelViewSet):
     #permission_classes = (IsAdminUser,)
     queryset = UpdateLog.objects.all()
     serializer_class = UpdateLogSerializer
-    permission_classes_by_action = {'create': [],
-                                    'list': [],
-                                    'retreive':[],
-                                    'update':[],
-                                    'partial_update':[],
-                                    'delete':[]}
+    permission_classes_by_action = {'create': [IsAdminUser],
+                                    'list': [IsAdminUser],
+                                    'retreive':[IsAdminUser],
+                                    'update':[IsAdminUser],
+                                    'partial_update':[IsAdminUser],
+                                    'delete':[IsAdminUser]}
     # CHECK PERMISSIONS!
     def list(self, request, *args, **kwargs):
         print("yeah ok")
@@ -857,14 +919,11 @@ import os
 from os import listdir
 def temporary_email_list(request):
     filelist = os.listdir('course/static/emails/')
-
     return render(request, 'email/email_log.html', {'filelist':filelist})
 
 from django.http import HttpResponse
 def my_email(request,value):
-
     email = open("course/static/emails/"+value, "rb").read()
-
     return render(request, 'email/email_detail.html', {'email':email.decode("utf-8")} )
 
 

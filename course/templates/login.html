@@ -4,8 +4,8 @@
 
 {% block content %}
 
-    <div class="medium-container margin-top">
-      <div class="card">
+
+      <div class="card margin-top">
         <h5 class="card-header no-margin-top">Login</h5>
         <div class="card-body">
           {% if form.errors %}
@@ -16,7 +16,7 @@
               <p>Your account doesn't have access to this page. To proceed,
               please login with an account that has access.</p>
               {% else %}
-              <p>Please login to see this page.</p>
+              <p>Please login to see this page. If you do not have credentials and would like access to this site please contact mfhodges@upenn.edu </p>
               {% endif %}
               {% endif %}
 
@@ -32,7 +32,7 @@
             </form>
           </div>
         </div>
-    </div>
+
 
 
 {% endblock %}

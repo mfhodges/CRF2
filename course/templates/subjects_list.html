@@ -2,7 +2,7 @@
 {% load rest_framework %}
 {% block subjects %}active{% endblock %}
 {% block content %}
-<div class="medium-container">
+
 
   <h1> Subjects</h1>
 
@@ -12,40 +12,37 @@
   <p> num_pages{{ data.total_pages}} </p> -->
 
     <table class="striped-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Abbr.</th>
-          <th>Visibility</th>
+      <thead >
+        <tr >
+          <th style="width:40%;">Name</th>
+          <th style="width:20%;">Abbr.</th>
+          <th >Visibility</th>
         </tr>
       </thead>
       <tbody>
         {% for subject in results %}
-        <tr>
+        <tr >
           {% if subject.visible == True %}
-          <td><a href="/courses/?subject={{ subject.abbreviation }}">{{subject.name}}</a></td>
+          <td ><a href="/courses/?subject={{ subject.abbreviation }}">{{subject.name}}</a></td>
           {% else %}
-          <td>{{subject.name}}</td>
+          <td >{{subject.name}}</td>
           {% endif %}
-          <td>{{subject.abbreviation}}</td>
+          <td >{{subject.abbreviation}}</td>
           <td>
-
             <!-- <form action="{% url 'subject-detail' pk=1 %}" method="POST"> -->
-
             {% if user.is_staff %}
-
                 {% if subject.visible == True %}
                 <!--  -->
                 <button class="button" data-toggle="modal" data-target="#subjectModal" data-subject="{{subject.name}}" data-abbr="{{subject.abbreviation}}" data-id="{{ subject.id }}" data-visible='false'>
                   <b>REMOVE</b> <i class="fas fa-minus-square"></i>
                 </button>
-              TRUE (click button to remove)
+                <!--TRUE (click button to remove)-->
                 {% else %}
                 <!-- data-subject="{{subject.name}}" data-abbr="{{subject.abbreviation}}" data-id="{{ subject.id }}" data-visible='true' -->
                 <button class="button" data-toggle="modal" data-target="#subjectModal" data-subject="{{subject.name}}" data-abbr="{{subject.abbreviation}}" data-id="{{ subject.id }}" data-visible='true'>
                   <b>ADD</b> <i class="fas fa-plus-square"></i>
                 </button>
-                FALSE (click button to add)
+                  <!--FALSE (click button to add) -->
               {% endif %}
             {% else %}
               {% if subject.visible == True %}
@@ -103,8 +100,6 @@
     {% endif %}
 
 
-
-</div>
 {% endblock %}
 
 

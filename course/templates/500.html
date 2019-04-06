@@ -1,0 +1,12 @@
+<!-- templates/500.html -->
+{% extends "base_generic.html" %}
+
+
+{% block content %}
+
+<h1>500 Internal Server Error</h1>
+<p>context</p>
+
+authenticated: {% if user.is_authenticated %} True {% else %} False {% endif %}
+
+{% endblock %}

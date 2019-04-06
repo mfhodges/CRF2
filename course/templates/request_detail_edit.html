@@ -2,7 +2,7 @@
 
 
 {% block content %}
-<div class="medium-container">
+
 <!--<h1>EDIT Request Detail</h1>-->
 
 
@@ -68,17 +68,23 @@
               </div>
       </fieldset>
 
-      <fieldset>
-        <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
-        <b><p> ADD CONTENT HERE </p></b>
-        <p> this would be adding TA's, Instructors, Designers, Librarians ..NOT students</p>
-      </fieldset>
-
-
       <div class="form-group ">
         <label>Additional instructions</label>
         <textarea name="additional_instructions" class="form-control" >{{ request_instance.additional_instructions }}</textarea>
       </div>
+
+
+        {% if user.is_staff %}
+      <fieldset>
+        <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
+        <i> (this is visible to admins only) </i>
+        <b><p> ADD CONTENT HERE </p></b>
+
+        <p> this would be adding TA's, Instructors, Designers, Librarians ..NOT students</p>
+
+        <p> this field could also expland to have custom tool add ons
+      </fieldset>
+      {% endif %}
 
       {% if request_instance.course_info.crosslisted %}
       <div class="row" style="padding:0px 0px 0px 20px;">
@@ -90,7 +96,7 @@
       <input type="submit" value="Update Request" />
   </form>
 </fieldset>
-</div>
+
 {% endblock %}
 
 

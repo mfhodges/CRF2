@@ -2,7 +2,7 @@
 {% load rest_framework %}
 {% load template_extra %}
 {% block content %}
-<div class="medium-container">
+
 <!--<h1>Request Detail</h1> -->
 
 
@@ -56,16 +56,25 @@
         </dl>
   </fieldset>
 
-  <fieldset>
-    <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
-    <b><p> ADD CONTENT HERE </p></b>
-    <p> this would be adding TA's, Instructors, Designers, Librarians ..NOT students</p>
-  </fieldset>
 
   <div class="form-group ">
     <label>Additional instructions</label>
     <textarea name="additional_instructions" class="form-control" disabled>{{ request_instance.additional_instructions }}</textarea>
   </div>
+
+  {% masquerading request as masq %}
+  {% if user.is_staff and masq is False %}
+  <fieldset>
+    <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
+    <i> (this is visible to admins only) </i>
+    <b><p> ADD CONTENT HERE </p></b>
+    <!-- this would be the disabled section -->
+    <p> this would be adding TA's, Instructors, Designers, Librarians ..NOT students</p>
+
+    <p> this field could also expland to have custom tool add ons
+  </fieldset>
+{% endif %}
+
 
 
   {% if request_instance.course_info.crosslisted %}
@@ -113,5 +122,5 @@
 <p> permissions should be: {{ permissions }} -- this will be removed later </p>
 
 </fieldset>
-</div>
+
 {% endblock %}

@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans');
 /* font-family: 'Open Sans',serif; */
-/*@import url('https://fonts.googleapis.com/css?family=Ubuntu');*/
+@import url('https://fonts.googleapis.com/css?family=Ubuntu:400,700');
 
 
 
@@ -771,7 +771,7 @@ header .flex-small {
 
 #masquerade {
   z-index: 99;
-  max-width:fit-content;
+  /*max-width:fit-content;*/
   min-width:fit-content !important;
   background: #2965DE1a;
 
@@ -1083,7 +1083,7 @@ main {
     line-height: 60px;*/
   }
 
-.homepage .small-container {
+.homepage {
   border: 1px solid #eee;
   box-shadow: 0 4px 12px 0 rgba(0,0,0,.05) !important;
   padding: 1rem;
@@ -1091,7 +1091,15 @@ main {
 }
 
 
-
+div.alert-dismissible > p {
+  margin-bottom: 0;
+}
+.alert-dismissible {
+  font-size: 0.85rem;
+}
+.alert-heading{
+    margin: 5px 0px;
+}
 
   /* Desktop Styles */
 
@@ -1101,7 +1109,7 @@ main {
     box-shadow: 0 4px 12px 0 rgba(0,0,0,.05) !important;
 }
 
-  nav, ul {
+  nav ul {
     padding-top: 25px;
   }
 

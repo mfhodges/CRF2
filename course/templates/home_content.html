@@ -7,14 +7,14 @@
 
 <!-- this page is populated with the content from the UserSerializer -->
 
-<div class="medium-container homepage">
+
 
 {% if not user.is_authenticated %}
 <p style="padding-top:60px;"> you dont have permissions to see this page, please <a href="/accounts/login">login</a></p>
 
 {% else %}
     {% if data.notice %}
-    <div class="small-container" style="border: none;box-shadow: none !important;">
+    <div class="homepage small-container" style="border: none;box-shadow: none !important;">
 
 
     <blockquote class="show">
@@ -30,15 +30,17 @@
     </div>
     {% endif %}
 
-    <div class="small-container" style="border: none;box-shadow: none !important;">
+  <!--  <div class="homepage small-container" style="border: none;box-shadow: none !important;">
       <p>
         TEMPORARY TEXT:  this site is for Faculty/TAs/Staff to make requests for the creation Canvas Sites for SRS-sites.
-        This site pulls data from the registrar's site < LINK HERE > and stores data from the current term and the next two terms.
-        For the creation of non-SRS sites please see https://infocanvas.upenn.edu/about/policies/#non-course.
+        This site pulls data from the registrar's site and stores data from the current term and the next two terms.
+        For the creation of non-SRS sites please see <a href="https://infocanvas.upenn.edu/about/policies/#non-course"> https://infocanvas.upenn.edu/about/policies/#non-course </a>.
       </p>
     </div>
+-->
 
-    <div class="small-container">
+
+    <div class="homepage small-container">
       <dt style="margin-bottom: 1rem;">Contact Info</dt>
       {% if request.session.on_behalf_of %}
         {% get_user request.session.on_behalf_of as masq_user %}
@@ -57,12 +59,12 @@
         </dl>
         <p class="text-right" style="margin-bottom:0;font-weight:500;">(<a href="{% url 'userinfo' %}" class="" style="">Edit Info</a>)</p>
         {% endif %}
-      
+
     </div>
 
 
 
-    <div class="small-container">
+    <div class="homepage small-container">
       <dt>Request site on behalf of user:</dt>
     <form class="" method="POST" action="{% url 'home' %}" style="display:inherit;max-width:500px;margin-left:auto;margin-right:auto;">
       {% csrf_token %}
@@ -78,7 +80,7 @@
 
 
     <!-- have all of these tables be collapsible -->
-    <div class="small-container">
+    <div class="homepage small-container">
     <dl>
      <dt>Site Requests</dt>
      <dd> < descriptive text ></dd>
@@ -105,10 +107,10 @@
          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
        </tbody>
      </table>
-     <div class="vertical-center"><a href="/">see more </a></div>
+     <div class="vertical-center"><a href="{% url 'UI-request-list' %}?requestor={% if request.session.on_behalf_of %}{{request.session.on_behalf_of}}{% else %}{{user.username}}{% endif %}">see more </a></div>
     </div>
 
-    <div class="small-container">
+    <div class="homepage small-container">
     <dl>
       	<dt>Courses</dt>
       	<dd>SRS course assignments</dd>
@@ -133,12 +135,12 @@
            <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
          </tbody>
        </table>
-       <div class="vertical-center"><a href="/">see more </a></div>
+       <div class="vertical-center"><a href="{% url 'UI-course-list' %}?instructor={% if request.session.on_behalf_of %}{{request.session.on_behalf_of}}{% else %}{{user.username}}{% endif %}">see more </a></div>
     </div>
 
 
 
-    <div class="small-container">
+    <div class="homepage small-container">
      <dl>
      	<dt>Canvas Sites</dt>
      	<dd>Existing Canvas Sites</dd>
@@ -169,7 +171,6 @@
     </div>
 
 
-    </div>
 
 {% endif %}
  {% endblock %}

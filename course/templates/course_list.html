@@ -7,7 +7,7 @@
 
 {% block content %}
 
-<div class="medium-container">
+
 
   <!-- add filtering bit -->
 
@@ -77,11 +77,12 @@
       <tr>
 
         <td><a href='{% url "UI-course-detail" course_code=course.course_code %}'>{{course.course_code}} </a></td>
-        <td>{{course.course_name}}</td>
-        <td>{{course.course_activity}}</td>
+        <td>{{ course.course_name }}</td>
+        <td>{{ course.course_activity }}</td>
 
         <td id="instructors">
-          {{course.instructors| join:", "}}
+          {% if course.instructors|length == 0 %} STAFF {% else %}
+          {{ course.instructors| join:", "}} {% endif %}
         </td>
         <!-- some how the time is being stored as a string ... -->
   <!--      <td>{{ course.created }} a {{ course.created|time:'h:i' }} b {{ course.created|date:"SHORT_DATE_FORMAT" }} </td> -->
@@ -182,7 +183,6 @@
     </nav>
   {% endif %}
 
-</div>
 {% endblock %}
 
 

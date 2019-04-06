@@ -1,5 +1,5 @@
 {% load rest_framework %}
-
+{% load template_extra %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -30,13 +30,17 @@
 </head>
   <body>
 
+
+
+
     <header class="flex-row" style="margin-left:0px;margin-right:0px;z-index:2;">
+
 
 
       <!-- REQUEST ON BEHALF OF // MASQUERADE -->
       {% if request.session.on_behalf_of %}
         <div class="flex-small" id="masquerade" style="background:#f7d6a2">
-          <form method="POST" action="">
+          <form method="POST" action="/">
             {% csrf_token %}
           <small> Requesting as '{{ request.session.on_behalf_of }}' </small>
           <input type="hidden" id="name" value='' name="on_behalf_of" >
@@ -162,9 +166,9 @@
         </nav>
         <div style="flex-grow:1;"></div>
       <!--  <img src="{% static 'images/penn_logo.png' %}"> -->
-          <div id="references" class="medium-container vertical-center" style="padding-bottom:0px;">
-              <b><a href="" aria-label="temporarily removed">Docs</a></b>
-              <img src="{% static 'images/2016-shield-only-RGB-1k.png' %}" style="height:70px;width:70px;">
+          <div id="references" class="medium-container vertical-center" style="padding-bottom:10px;">
+              <b><a href="https://docs.google.com/document/d/1-VcUr70xOlAPwPH07CB61_CwVDw18QlrE_3KFPhYK7o/edit?usp=sharing" aria-label="temporary documentation">Docs</a></b>
+              <img src="{% static 'images/2016-shield-only-RGB-1k.png' %}" style="height:50px;width:50px;margin:0px 10px;">
               <!--&nbsp;//&nbsp; -->
               <b><a href="/contact">Contact</a></b>
           </div>
@@ -173,7 +177,35 @@
 
 
       <main class="content margin" id="main-content">
+        <div class="medium-container">
+          {% if messages %}
+            {% for message in messages %}
+              {% if message.tags == 'info' %}
+
+              <div class="alert alert-warning alert-dismissible fade show" role="alert" style="margin:10px;z-index:inherit;">
+              <h4 class="alert-heading">Welcome!</h4>
+              <!--<strong>strong text!</strong>-->
+              <p>
+              Courses taught through Graduate School of Education (GSE), Penn Law, The School of Veterinary Medicine and Wharton cannot be requested through our Course Request Form.
+              </p>
+              <p> For further assistance setting up your course site please contact the appropriate address below.  </p>
+              <ul>
+              <li>Graduate School of Education (GSE): gse-help@lists.upenn.edu | <a href="https://gseit.gse.upenn.edu/canvas/course-request">GSE Site Request Form </a></li>
+              <li>Law: itshelp@law.upenn.edu </li>
+              <li>Veterinary Medicine: phl-help@vet.upenn.edu </li>
+              <li>Wharton: courseware@wharton.upenn.edu </li>
+              </ul>
+            <!--  <hr>
+              <p class="mb-0">If you believe you are receiving this message in error, please contact canvas@pobox.upenn.edu</p> -->
+              <div class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true"><i class="fas fa-times"></i></span>
+              </div>
+              </div>
+              {% endif %}
+              {% endfor %}
+              {% endif %}
            {% block content %}{% endblock %}
+         </div>
       </main>
     </div> <!-- end flex-container -->
 </div> <!-- end primitive -->
@@ -238,13 +270,20 @@ $(function () {
 
 
 <!-- if there has been an issue with masquerade form -->
+
 {% if messages %}
-<script>
-$(document).ready(function(){
-    $("#AddOnBehalf").modal("toggle");
-});
-</script>
+  {% for message in messages %}
+    {% if message.tags == 'error' %}
+    <script>
+    $(document).ready(function(){
+        $("#AddOnBehalf").modal("toggle");
+    });
+    </script>
+    {% endif %}
+  {% endfor %}
 {% endif %}
+
+
 <script async="" defer="" src="https://buttons.github.io/buttons.js"></script>
 <script>
   window.drf = {

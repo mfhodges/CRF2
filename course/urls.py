@@ -8,6 +8,8 @@ from rest_framework import renderers
 
 
 
+
+
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
 router.register(r'courses', views.CourseViewSet)

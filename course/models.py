@@ -104,7 +104,7 @@ class Course(models.Model):
     # models.ForeignKey('auth.User', related_name='requests', on_delete=models.CASCADE)
     owner = models.ForeignKey('auth.User', related_name='created', on_delete=models.CASCADE) #this is who edited it
     updated = models.DateTimeField(auto_now=True)
-    instructors = models.ManyToManyField(User,related_name='courses') # should be allowed to be null --> "STAFF"
+    instructors = models.ManyToManyField(User,related_name='courses',blank=True) # should be allowed to be null --> "STAFF"
     course_term = models.CharField(
         max_length=1,choices = TERM_CHOICES,) # self.course_term would == self.SPRING || self.FALL || self.SUMMER
     course_activity = models.CharField(
@@ -154,14 +154,20 @@ class Course(models.Model):
                 print("Request.DoesNotExist!")
 
         #return error
-
+        
     def get_subjects(self):
         return ",\n".join([sub.abbreviation for sub in self.course_subjects.all()])
+
 
     def get_schools(self):
         return ",\n".join([sch.abbreviation for sch in self.course_schools.all()])
 
+
     def get_instructors(self):
+        #check if blank?
+        print("lets go to funkie town",self.instructors.all(), )
+        if not self.instructors.all().exists():
+            return("STAFF")
         return ",\n".join([inst.username for inst in self.instructors.all()])
 
 

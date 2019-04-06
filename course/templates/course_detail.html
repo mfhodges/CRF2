@@ -3,7 +3,7 @@
 
 
 {% block content %}
-<div class="medium-container">
+
   <!-- course info -->
   <fieldset>
   <legend>Course Info: {{ course.course_code}}</legend>
@@ -38,7 +38,7 @@
         </dd>
 
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Instructor</dt>
-        <dd class="col-8 col-md-9">{{course.instructors| join:", "}}</dd>
+        <dd class="col-8 col-md-9">{% if course.instructors|length == 0 %} STAFF {% else %}{{ course.instructors| join:", "}} {% endif %}</dd>
     </dl>
   </fieldset>
 <!-- end course info -->
@@ -75,11 +75,6 @@
       {% render_field request_form.reserves style=style %}
     </fieldset>
 
-    <fieldset>
-      <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
-      <b><p> ADD CONTENT HERE </p></b>
-      <p> this would be adding TA's, Instructors, Designers, Librarians ..NOT students</p>
-    </fieldset>
 
 
   {% render_field request_form.additional_instructions style=style %}
@@ -146,12 +141,6 @@
     </fieldset>
 
 
-    <fieldset>
-      <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
-      <b><p> ADD CONTENT HERE </p></b>
-      <p> this would be adding TA's, Instructors, Designers, Librarians ..NOT students</p>
-    </fieldset>
-
     <div class="form-group ">
       <label>Additional instructions</label>
       <textarea name="additional_instructions" class="form-control" value="{{ request_instance.additional_instructions }}" disabled></textarea>
@@ -196,7 +185,7 @@
 <!-- END Canvas Site info -->
 
 
-</div>
+
 
 
 

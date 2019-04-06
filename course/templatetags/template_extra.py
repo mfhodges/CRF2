@@ -1,5 +1,5 @@
 from django import template
-
+from django.contrib import messages
 
 
 
@@ -32,6 +32,7 @@ def get_item(qp, key):
         return ""
     else:
         return val
+
 @register.simple_tag
 def get_user(user):
     # qp is request.query_params
@@ -42,6 +43,24 @@ def get_user(user):
         user = None
     else:
         return user
+
+@register.simple_tag
+def masquerading(request):
+    if request.session['on_behalf_of']:
+        return True
+    return False
+
+@register.simple_tag
+def filter_messages(messages, type):
+    answer = []
+    if messages:
+        print("u",messages)
+        for message in messages:
+            if message.tags == type:
+                print(message.tags)
+                answer += [message]
+    return answer
+
 
 
 """

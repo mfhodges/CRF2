@@ -4,18 +4,22 @@
 
 
 {% block content %}
-<div class="medium-container" style="padding-top:3rem">
 
 
 <h4> List of emails </h4>
 <p>
   These emails are sorted chronologically. This page is just to demo what emails would have been sent without sending them and clogging up everyone's inboxes.
 </p>
-<ol>
-{% for file in filelist %}
-<li>  <a href="/emails/{{file}}">{{ file }}</a></li>
-{% endfor %}
-</ol>
-</div>
+{% if filelist %}
+  <ol>
 
+  {% for file in filelist %}
+    <li>  <a href="/emails/{{file}}">{{ file }}</a></li>
+  {% endfor %}
+  </ol>
+{% else %}
+
+<center><p><i> ...no emails to display... </i></p></center>
+
+{% endif %}
 {% endblock %}
