@@ -13,49 +13,15 @@
 
 <h1>Courses</h1>
 <!--   <i class="fas fa-info-circle"></i> -->
-{% if filter %}
-<nav class="filter" style="padding-bottom:10px;padding-top:0px;">
-<div id="searchgroup">
-  <!--<p> SEARCH
-    <i class="fas fa-search" data-toggle="collapse" href="#search"></i>
-  <p>-->
-    <div id="search" > <!-- class="collapse" -->
-      <div class="input-group mb-3">
-      <form action="" method="GET">
-      <input name="search" type="text" class="form-control" placeholder="Course Section or Name" aria-label="Course's SRS code or title " required>
-      <div class="input-group-append">
-        <button ></button> <!-- contents handled in css -->
-      </div>
-    </form>
-    </div>
-  </div>
-</div>
-  <div style="width:100%;">
-  <button class="muted-button" data-toggle="modal" data-target="#FilterModal">Filter
-      <i class="fas fa-filter"  data-toggle="tooltip" data-placement="right" title="" data-original-title="click to filter results"></i>
-  </button>
-</div>
 
 
-<div style='padding-top:10px;'> <!-- param badges -->
-{% for filter,value in request.query_params.items %}
- {% if filter != "page" %}
-  <span class="badge" > {{ filter }}: {{ value }}
-    <span aria-hidden="true">
-      <a href="{% delete_query_param request filter %}">
-        <i class="fa fa-times" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="" data-original-title="click to remove filter"></i>
-      </a>
-    </span>
-  </span>
-  {% endif %}
-{% endfor %}
-</div>
+<!-- FILTERING -->
+{% include "bits/filter_content.html" %}
+
 <!--  <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
     <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
     <p> {{request}}</p>
   </button> -->
-</nav>
-{% endif %}
 
 
 
@@ -76,7 +42,7 @@
       {% for course in results %}
       <tr>
 
-        <td><a href='{% url "UI-course-detail" course_code=course.course_code %}'>{{course.course_code}} </a></td>
+        <td><a href='{% url "UI-course-detail" course_code=course.course_code %}'>{{ course|asrepr }} </a></td>
         <td>{{ course.course_name }}</td>
         <td>{{ course.course_activity }}</td>
 
@@ -98,7 +64,7 @@
             <!--  <input type="hidden" name="requested" value="true">
               <button type="submit" class="button" >Request</button>-->
               <!-- Button trigger modal -->
-              <button class="button" data-toggle="modal" data-target="#CourseModal" data-course="{{course.course_code}}">
+              <button class="button" data-toggle="modal" data-target="#CourseModal" data-course="{{ course|asrepr }}">
                 Request
               </button>
           {% endif %}
@@ -124,7 +90,7 @@
             <i class="fas fa-times"></i>
           </div>
         </div>
-        <form action="{% url 'request-list' %}" method="POST">
+        <form action="{% url 'UI-request-list' %}" method="post">
           {% csrf_token %}
             <div class="modal-body">
               <label for="inputCanvasID">Copy From Canvas Site </label>
@@ -151,6 +117,8 @@
 
 <!-- MODAL FILTERING -->
 
+  {% include "bits/filter_modal.html" %}
+<!--
 <div class="modal fade" id="FilterModal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -171,17 +139,15 @@
       </form>
     </div>
   </div>
-</div>
+</div>-->
 <!-- END MODAL FILTERING -->
 
 
 
+
+
   <!-- PAGINATION -->
-  {% if paginator %}
-    <nav aria-label="Page navigation" class="vertical-center">
-      {% get_pagination_html paginator %}
-    </nav>
-  {% endif %}
+  {% include "bits/paginator.html" %}
 
 {% endblock %}
 
@@ -192,12 +158,14 @@
 $('#CourseModal').on('show.bs.modal', function (event) {
   var button = $(event.relatedTarget) // Button that triggered the modal
   var course = button.data('course') // Extract info from data-* attributes
+  var short_course = course.replace(/_/g,'')
   // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
   // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  console.log(course.replace('_',''))
   var modal = $(this)
   modal.find('.modal-title').text('Basic Request for ' + course)
-  modal.find(".modal-footer input[name='course_requested']").val(course)
-  modal.find(".modal-footer a").attr("href", '/courses/'+course+'#RequestForm')
+  modal.find(".modal-footer input[name='course_requested']").val(short_course)
+  modal.find(".modal-footer a").attr("href", '/courses/'+ short_course +'#RequestForm')
 })
 
 //$('#CourseModal').on('show.bs.modal', function (event) {

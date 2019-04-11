@@ -1,0 +1,45 @@
+
+{% load rest_framework %}
+{% load template_extra %}
+
+
+{% if filter %}
+<nav class="filter" style="padding-bottom:10px;padding-top:0px;">
+<div id="searchgroup">
+  <!--<p> SEARCH
+    <i class="fas fa-search" data-toggle="collapse" href="#search"></i>
+  <p>-->
+    <div id="search" > <!-- class="collapse" -->
+      <div class="input-group mb-3">
+      <form action="" method="GET">
+      <input name="search" type="text" class="form-control" placeholder="Course Section or Name" aria-label="Course's SRS code or title " required>
+      <div class="input-group-append">
+        <button ></button> <!-- contents handled in css -->
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+  <div style="width:100%;">
+  <button class="muted-button" data-toggle="modal" data-target="#FilterModal">Filter
+      <i class="fas fa-filter"  data-toggle="tooltip" data-placement="right" title="" data-original-title="click to filter results"></i>
+  </button>
+</div>
+
+
+
+<div style='padding-top:10px;'> <!-- param badges -->
+{% for filter,value in request.query_params.items %}
+ {% if filter != "page" %}
+  <span class="badge" > {{ filter }}: {{ value }}
+    <span aria-hidden="true">
+      <a href="{% delete_query_param request filter %}">
+        <i class="fa fa-times" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="" data-original-title="click to remove filter"></i>
+      </a>
+    </span>
+  </span>
+  {% endif %}
+{% endfor %}
+</div>
+</nav>
+{% endif %}

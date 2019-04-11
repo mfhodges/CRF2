@@ -372,6 +372,26 @@ GET,HEAD,POST,OPTIONS
 """
 
 
+
+"""
+data
+
+<subj><course_num> <section> <year><term>
+subj = 'AFRC' #swap this for crosslisted
+course = '002' #swap this for crosslisted
+sections = ['401','402','403','404','405','406','407']
+activity = 'LEC' # well the first is lec and the rest are REC
+year = '2019'
+term = 'A'
+
+"""
+
+
+
+
+
+
+
 """
 data = {'username':'mfhodges','password':'Jessica69!'}
 r = requests.post(url,json=data,headers={'Content-Type': 'application/json' })

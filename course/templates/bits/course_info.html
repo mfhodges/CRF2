@@ -1,0 +1,45 @@
+
+
+
+{% load rest_framework %}
+{% load template_extra %}
+
+
+<!-- course info -->
+<fieldset>
+<legend>Course Info: {{ course|asrepr }}</legend>
+<dl class="row" style="line-height:1.1;">
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">SRS Title</dt>
+      <dd class="col-8 col-md-9"> {{ course.course_name }}</dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Subject Area</dt>
+      <dd class="col-8 col-md-9">{{course.course_subjects| join:", "}}</dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">School</dt>
+      <dd class="col-8 col-md-9">{{course.course_schools| join:", "}}</dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Activity</dt>
+      <dd class="col-8 col-md-9">{{course.course_activity }}</dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Term</dt>
+      <dd class="col-8 col-md-9">{{course.year}}{{ course.course_term }}</dd>
+
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Cross Listing</dt>
+      <dd class="col-8 col-md-9">
+        {% if course.crosslisted %}
+          {% for crosscourse in course.crosslisted %}
+            {% if forloop.last %}<a href='{% url "UI-course-detail" course_code=crosscourse %}'>{{ crosscourse }}</a>{% else %}
+              <a href='{% url "UI-course-detail" course_code=crosscourse %}'>{{ crosscourse }}</a>,{% endif %}
+          {% endfor %}
+        {% else %}
+          None
+        {% endif %}
+
+      </dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Instructor</dt>
+      <dd class="col-8 col-md-9">{% if course.instructors|length == 0 %} STAFF {% else %}{{ course.instructors| join:", "}} {% endif %}</dd>
+  </dl>
+</fieldset>
+<!-- end course info -->

@@ -61,6 +61,13 @@ def filter_messages(messages, type):
                 answer += [message]
     return answer
 
+@register.filter
+def asrepr(course):
+    term = course['year'] + course['course_term']
+    print(course['course_section'])
+    return "_".join([course['course_primary_subject'], course['course_number'],course['course_section'], term ])
+
+
 
 
 """

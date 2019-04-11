@@ -9,11 +9,8 @@
 
 
 
-{% if not user.is_authenticated %}
-<p style="padding-top:60px;"> you dont have permissions to see this page, please <a href="/accounts/login">login</a></p>
 
-{% else %}
-    {% if data.notice %}
+  {% if data.notice %}
     <div class="homepage small-container" style="border: none;box-shadow: none !important;">
 
 
@@ -83,31 +80,45 @@
     <div class="homepage small-container">
     <dl>
      <dt>Site Requests</dt>
-     <dd> < descriptive text ></dd>
+     <dd> Here are site requests completed by the current user or on their behalf </dd>
     </dl>
+    {% if data.site_requests %}
      <table class="striped-table">
        <thead>
          <tr>
-           <th>No.</th>
+           <th>Section</th>
+           <th>Title</th>
            <th>Requestor</th>
            <th>Date Requested</th>
            <th>Status</th>
          </tr>
        </thead>
        <tbody>
-         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-         <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+         {% for request_instance in data.site_requests %}
+         <tr>
+           <td><a href="{% url 'UI-request-detail' pk=request_instance.course_requested %}"> {{request_instance.course_requested}} </a></td>
+           <td>{{request_instance.course_info.course_name}}</td>
+           <td>{{request_instance.owner}}
+             {% if request_instance.masquerade %}
+             ({{request_instance.masquerade}})
+             {% endif %}
+           </td>
+
+           <td> {{ request_instance.created|time:'h:ia' }} {{ request_instance.created|date:"SHORT_DATE_FORMAT" }}</td>
+           <td>{{request_instance.status}}
+             {% if request_instance.status == 'LOCKED' %}
+               <i class="fas fa-lock" data-toggle="tooltip" data-placement="top" title="" data-original-title="this request will not be processed until unlocked by admin"></i>
+             {% endif %}
+           </td>
+         </tr>
+           {% endfor %}
        </tbody>
      </table>
      <div class="vertical-center"><a href="{% url 'UI-request-list' %}?requestor={% if request.session.on_behalf_of %}{{request.session.on_behalf_of}}{% else %}{{user.username}}{% endif %}">see more </a></div>
+     {% else %}
+    <p> No requests for this user... </p>
+    {% endif %}
+
     </div>
 
     <div class="homepage small-container">
@@ -115,27 +126,45 @@
       	<dt>Courses</dt>
       	<dd>SRS course assignments</dd>
      </dl>
+      {% if data.srs_courses %}
        <table class="striped-table">
          <thead>
            <tr>
-             <th>SIS ID</th>
-             <th>Name</th>
-             <th>???</th>
-             <th>???</th>
-             <th>???</th>
+             <th>Section</th>
+             <th>Title</th>
+             <th>Activity</th>
+             <th id="instructors">Instructor</th>
+             <th>Request Status</th>
            </tr>
          </thead>
          <tbody>
-           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+           {% for course in data.srs_courses %}
+           <tr>
+             <td><a href='{% url "UI-course-detail" course_code=course.course_code %}'>{{course.course_code}} </a></td>
+             <td>{{ course.course_name }}</td>
+             <td>{{ course.course_activity }}</td>
+
+             <td id="instructors">
+               {{ course.get_instructors }}
+             </td>
+
+             <td style="padding-left:1%;">
+               {% if course.requested == True %}
+                   <a  href='{% url "UI-request-detail" pk=course.course_code %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details" style="padding: 0.35rem 0.35rem;">Requested</a>
+               {% else %}
+                   <button class="button" data-toggle="modal" data-target="#CourseModal" data-course="{{course.course_code}}" style="padding:0.35rem 0.35rem;">
+                     Request
+                   </button>
+               {% endif %}
+             </td>
+           </tr>
+          {% endfor %}
          </tbody>
        </table>
        <div class="vertical-center"><a href="{% url 'UI-course-list' %}?instructor={% if request.session.on_behalf_of %}{{request.session.on_behalf_of}}{% else %}{{user.username}}{% endif %}">see more </a></div>
+       {% else %}
+       <p> No courses for this user... </p>
+       {% endif %}
     </div>
 
 
@@ -149,10 +178,10 @@
       <table class="striped-table">
         <thead>
           <tr>
-            <th>SIS ID </th>
+            <th>Title </th>
             <th>Title</th>
-            <th>Content</th>
-            <th>Workflow State</th>
+            <th>Title</th>
+            <th>Title</th>
           </tr>
         </thead>
         <tbody>
@@ -164,7 +193,6 @@
           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
           <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-
         </tbody>
       </table>
       <div class="vertical-center"><a href="/">see more </a></div>
@@ -172,5 +200,57 @@
 
 
 
-{% endif %}
+    <!-- Modal -->
+    <!-- simplify with this https://getbootstrap.com/docs/4.0/components/modal/#varying-modal-content -->
+
+    <div class="modal fade" id="CourseModal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle"> Basic Request For </h5>
+            <div class="close" data-dismiss="modal" aria-label="Close">
+              <i class="fas fa-times"></i>
+            </div>
+          </div>
+          <form action="{% url 'UI-request-list' %}" method="post">
+            {% csrf_token %}
+              <div class="modal-body">
+                <label for="inputCanvasID">Copy From Canvas Site </label>
+                <input type="text" id="inputCanvasID" name="copy_from_course" class="form-control" placeholder="CANVAS SITE ID" aria-describedby="textHelpInline">
+                <small id="passwordHelpInline" class="text-muted">
+                  Canvas Site ID is found in `https://canvas.upenn.edu/courses/&lt;CANVAS_ID&gt;`
+                  If left blank, the course created will have no content copied.
+                </small>
+              </div>
+              <div class="modal-footer">
+                <input name="course_requested" type="hidden"class="form-control" type="text" value="">
+                <input name="status" class="form-control" type="hidden" value="SUBMITTED">
+                <input name="view_type" class="form-control" type="hidden" value="UI-course-list">
+                <a href='' type="button" class="button accent-button" style="font-weight: 600;">Custom Request</a> <!-- Custom Request takes you to the full page form -->
+                <button type="submit" value="save" style="font-weight: 600;">Submit request</button>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  <!-- END COURSE REQUEST MODAL -->
+
+
+ {% endblock %}
+
+
+ {% block template_page_js %}
+ <script>
+ // For the Course List View
+ $('#CourseModal').on('show.bs.modal', function (event) {
+   var button = $(event.relatedTarget) // Button that triggered the modal
+   var course = button.data('course') // Extract info from data-* attributes
+   // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+   // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+   var modal = $(this)
+   modal.find('.modal-title').text('Basic Request for ' + course)
+   modal.find(".modal-footer input[name='course_requested']").val(course)
+   modal.find(".modal-footer a").attr("href", '/courses/'+course+'#RequestForm')
+ })
+ </script>
  {% endblock %}

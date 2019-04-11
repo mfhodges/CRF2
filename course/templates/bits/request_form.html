@@ -1,0 +1,38 @@
+
+
+{% load rest_framework %}
+{% load template_extra %}
+
+
+
+<p> Course site title will default to <i> {{ course.course_name }}  </i>. You may modify it in the box provided below. </p>
+{% render_field request_form.title_override style=style %}
+
+<p> If you would like to copy content from an existing course site, please select the source from the list below.</p>
+{% render_field request_form.copy_from_course style=style %}
+
+<fieldset>
+  <legend><h6 style="margin:0;">Mulit-Section Course Sites </h6></legend>
+  <div class="form-group ">
+    <p style="font-size:0.9rem;"> Sections of a course can share a single Canvas site. If you are teaching a large introductory course
+      or several sections of a course, you can have the sections broken out into a single site. please select all sections you would like included.
+    </p>
+    {% if course.get_sections %} <!-- if there are sections -->
+    <b><p> ADD CONTENT HERE </p></b>
+
+    <small> </small>
+    {% else %}
+    <center><i><p>There are no other sections associated with this course. </p></i></center>
+      {% endif %}
+  </div>
+</fieldset>
+
+  <fieldset>
+    <legend><h6 style="margin:0;">Library Services</h6></legend>
+    <p> Course Reserve services are available to your course. See <a href="http://www.library.upenn.edu/reserves/reserves.html"> http://www.library.upenn.edu/reserves/reserves.html</a></p>
+    {% render_field request_form.reserves style=style %}
+  </fieldset>
+
+
+
+{% render_field request_form.additional_instructions style=style %}

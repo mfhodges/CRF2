@@ -16,6 +16,7 @@
         <tr >
           <th style="width:40%;">Name</th>
           <th style="width:20%;">Abbr.</th>
+          <th style="width:20%;">School</th>
           <th >Visibility</th>
         </tr>
       </thead>
@@ -28,6 +29,7 @@
           <td >{{subject.name}}</td>
           {% endif %}
           <td >{{subject.abbreviation}}</td>
+          <td> {{subject.schools}}</td>
           <td>
             <!-- <form action="{% url 'subject-detail' pk=1 %}" method="POST"> -->
             {% if user.is_staff %}
@@ -93,11 +95,7 @@
 
 
     <!-- PAGINATION -->
-    {% if paginator %}
-      <nav aria-label="Page navigation" class="vertical-center">
-        {% get_pagination_html paginator %}
-      </nav>
-    {% endif %}
+    {% include "bits/paginator.html" %}
 
 
 {% endblock %}
@@ -114,8 +112,8 @@ $('#subjectModal').on('show.bs.modal', function (event) {
   var abbr = button.data('abbr')
   // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
   // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-  console.log(subject,id,vis)
-  $('#form').attr('action', '/subjects/' + id + '/')
+  console.log(subject,id,vis,abbr)
+  $('#form').attr('action', '/subjects/' + abbr + '/')
   var modal = $(this)
 
   modal.find('.modal-title').text('Change Visibility for: ' + subject)

@@ -24,7 +24,7 @@ print(BASE_DIR)
 SECRET_KEY = 'jy0jd74_tg&674cxbvocpl4@x87i@(ynk%)h*p12by4fd^ilgs'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True#False
 
 ALLOWED_HOSTS = ['127.0.0.1:8000','127.0.0.1','localhost'#'demo-crf.herokuapp.com'#'128.91.177.58'
 ]
@@ -34,7 +34,7 @@ print=("BASE_DIR",BASE_DIR)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 config = ConfigParser()
 #config.read('config/config.ini')
@@ -167,4 +167,4 @@ REST_FRAMEWORK = {
 }
 
 
-django_heroku.settings(locals())
+#django_heroku.settings(locals())

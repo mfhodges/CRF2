@@ -1,0 +1,75 @@
+
+{% load rest_framework %}
+{% load template_extra %}
+
+
+<!-- NOTE: this template does not include the main fieldset div -->
+
+<dl class="row" style="line-height:1.1;">
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Status</dt>
+      <dd class="col-8 col-md-9"> {{ request_instance.status }}</dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Requestor</dt>
+      <dd class="col-8 col-md-9"> {{ request_instance.owner }}
+        {% if request_instance.masquerade %}
+          ( as {{ request_instance.masquerade}} )
+        {% endif %}
+      </dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Created</dt>
+      <dd class="col-8 col-md-9"> {{request_instance.created}}</dd>
+
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Updated</dt>
+      <dd class="col-8 col-md-9"> {{ request_instance.updated }}</dd>
+</dl>
+
+{% if request_instance.course_info.crosslisted %}
+<div class="row" style="padding:0px 0px 0px 20px;">
+  <dt class="" style="padding-right: 0px;">Request includes Crosslistings:</dt>
+  <dd class="" style="padding-left: 10px;"> {{ request_instance.course_info.crosslisted| join:", " }}</dd>
+</div>
+{% endif %}
+
+
+<div class="form-group ">
+  <label>Title override</label>
+  <input name="title_override" class="form-control" type="text" value="{{ request_instance.title_override }}" disabled>
+</div>
+
+<div class="form-group ">
+  <label>Copy from course</label>
+  <input name="copy_from_course" class="form-control" type="text" value="{{ request_instance.copy_from_course }}" disabled>
+</div>
+
+<fieldset>
+<legend><h6 style="margin:0;">Multi-Section Course Sites</h6></legend>
+  <div class="form-group ">
+    <p style="font-size:0.9rem;"> Sections of a course can share a single Canvas site. If you are teaching a large introductory course
+      or several sections of a course, you can have the sections broken out into a single site. please select all sections you would like included.
+    </p>
+    {% if course.get_sections %} <!-- if there are sections -->
+    <b><p> ADD CONTENT HERE </p></b>
+
+    <small> </small>
+    {% else %}
+    <center><i><p>There are no other sections associated with this course. </p></i></center>
+      {% endif %}
+  </div>
+</fieldset>
+
+<fieldset>
+      <legend><h6 style="margin:0;">Library Services</h6></legend>
+      <p> Course Reserve services are available to your course. See <a href="http://www.library.upenn.edu/reserves/reserves.html"> http://www.library.upenn.edu/reserves/reserves.html</a></p>
+      <dl class="row" style="line-height:1.1;">
+            <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Reserves</dt>
+            <dd class="col-8 col-md-9"> {{ request_instance.reserves }}</dd>
+      </dl>
+</fieldset>
+
+
+<div class="form-group ">
+  <label>Additional instructions</label>
+  <textarea name="additional_instructions" class="form-control" disabled>{{ request_instance.additional_instructions }}</textarea>
+</div>

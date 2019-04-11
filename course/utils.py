@@ -10,6 +10,16 @@ about how users are added
 
 
 
+def check_site(sis_id,canvas_course_id):
+    """
+    with this function it can be verified if the course
+
+
+
+    """
+    return None
+
+
 
 def get_template_sites(user):
     """

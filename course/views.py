@@ -36,6 +36,8 @@ from course.forms import ContactForm, EmailChangeForm
 from django.template.loader import get_template
 import datetime
 from course import email_processor
+from rest_framework.exceptions import PermissionDenied
+
 #class CourseView(TemplateView):
 #    template_name = "index.html"
 
@@ -63,6 +65,8 @@ of Django REST Framework's class-based views and serializers'see: http://www.cdr
 from rest_framework.views import exception_handler
 from rest_framework import status
 
+
+"""
 def not_found(request,  template_name='404.html'):
 
     return render(request, '404.html')
@@ -72,13 +76,12 @@ def server_error(request, template_name='500.html'):
     return render(request, '500.html')
 
 def permission_denied(request, template_name='403.html'):
-
+    print("what the heckie")
     return render(request, '403.html')
 
 def bad_request(request, template_name='400.html'):
-
     return render(request, '400.html')
-
+"""
 
 
 
@@ -134,11 +137,15 @@ class MixedPermissionModelViewSet(LoginRequiredMixin,viewsets.ModelViewSet):
     permission_classes_by_action = {}
     login_url = '/accounts/login/'
     def get_permissions(self):
+
         try:
+            print("self.action", self.action)
             # return permission_classes depending on `action`
+            print([permission() for permission in self.permission_classes_by_action[self.action]])
             return [permission() for permission in self.permission_classes_by_action[self.action]]
         except KeyError:
             # action is not set return default permission_classes
+            print("KeyError for permission: ", self.action)
             return [permission() for permission in self.permission_classes]
 
 
@@ -178,8 +185,8 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     search_fields = ['$course_name', '$course_code']
     # for permission_classes_by_action see: https://stackoverflow.com/questions/35970970/django-rest-framework-permission-classes-of-viewset-method
     permission_classes_by_action = {'create': [IsAdminUser],
-                                    'list': [IsAuthenticatedOrReadOnly],
-                                    'retreive':[IsOwnerOrReadOnly,IsAdminUser],
+                                    'list': [IsAuthenticated],
+                                    'retrieve':[IsAuthenticated,IsAdminUser],
                                     'update':[IsAdminUser],
                                     'partial_update':[IsAdminUser],
                                     'delete':[IsAdminUser]}
@@ -198,7 +205,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     # I AM NOT SURE IF THIS IS OKAY WITH AUTHENTICATION
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-        print("query_set", queryset)
+        print("course query_set", queryset)
         page = self.paginate_queryset(queryset)
 
         #print(",,",self.filter_backends[0].get_filterset(request,self.get_queryset(),self))
@@ -237,7 +244,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         """
 
     def retrieve(self, request, *args, **kwargs):
-        print('CourseViewSet.retreive lookup field', self.lookup_field)
+        print('CourseViewSet.retrieve lookup field', self.lookup_field)
         response = super(CourseViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
             print("bye george(detail)!\n",response.data)
@@ -252,7 +259,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 #NOTE there must be an associated course and if there isnt... we r in trouble!
                 request_instance = course_instance.get_request()
                 print("hfaweuifh ",request_instance)
-                this_form =''
+                this_form = ''#RequestSerializer()
             else:
                 # course detail needs to get form
                 # URGENT is this creating many copies of the ob?
@@ -296,13 +303,13 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     serializer_class = RequestSerializer
     filterset_class = RequestFilter
     search_fields = ['$course_requested__course_name', '$course_requested__course_code']
-    #permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+    permission_classes = (permissions.IsAuthenticated,)
     #                      IsOwnerOrReadOnly,)
     permission_classes_by_action = {'create': [IsAuthenticated],
                                     'list': [IsAuthenticated],
-                                    'retreive':[IsAuthenticated],
-                                    'update':[IsOwnerOrReadOnly,IsAuthenticated],
-                                    'partial_update':[IsOwnerOrReadOnly,IsAuthenticated],
+                                    'retrieve':[IsAuthenticated],
+                                    'update':[IsAuthenticated],
+                                    'partial_update':[IsAuthenticated],
                                     'delete':[IsAdminUser]}
 
     def create(self, request, *args, **kwargs):
@@ -319,7 +326,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 for crosslisted in course.crosslisted.all():
                     crosslisted.requested = True
                     crosslisted.request = course.request
-                    print(":::::",crosslisted.request , course.request)
+                    print("crosslisted.request , course.request",crosslisted.request , course.request)
                     crosslisted.save()
             print(course.course_code, course.requested)
             #get crosslisted courses
@@ -343,15 +350,17 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             masquerade = request.session['on_behalf_of']
         except KeyError:
             masquerade = ''
-        print("masqueraded as:", masquerade)
+        print("Request create; masqueraded as:", masquerade)
 
         course = Course.objects.get(course_code=request.data['course_requested'])# get Course instance
         instructors = course.get_instructors()
         print("course instructors", instructors)
-        #if request.user or masquerade
+
+        # CHECK PERMISSIONS custom_permissions(request,request_obj,masquerade,instructors)
+        permission = self.custom_permissions(None,masquerade,instructors)
+        print("permission, ", permission)
 
 
-        print("request.data", request.data)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.validated_data['masquerade'] = masquerade
@@ -361,34 +370,26 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         # updates the course instance #
         course = Course.objects.get(course_code=request.data['course_requested'])# get Course instance
         update_course(self,course)
-        # update course instance
         # this allow for the redirect to the UI and not the API endpoint. 'view_type' should be defined in the form that submits this request
-
         # the following should have redirect pages which say something like "you have created X see item, go back to list"
         if 'view_type' in request.data:
             if request.data['view_type'] == 'UI-course-list':
                 return redirect('UI-course-list')
             if request.data['view_type'] == 'UI-request-detail':
-                return redirect('UI-request-detail', pk=course.course_code)
+                #return Response({'course':course},template_name='request_success.html')
+                return redirect('UI-request-detail-success', pk=course.course_code, )
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-
-        #if self.request.query_params['view_type'] == 'UI':
-        #HttpResponseRedirect(redirect_to='http://127.0.0.1:8000/courses/')
-        #return redirect('UI-course-list')
 
 
     def perform_create(self, serializer):
         print("Request perform_create")
         serializer.save(owner=self.request.user)
-        print("no prob here")
         serializer.save(masquerade="test")# NOTE fix this!
-        print("2. no prob here")
 
-    # below allows for it to be passed to the template !!!!
-    # I AM NOT SURE IF THIS IS OKAY WITH AUTHENTICATION
+
     def list(self, request, *args, **kwargs):
-        print('rrr', self.lookup_field)
+        print('self.lookup_field', self.lookup_field)
 
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
@@ -417,6 +418,67 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         """
 
 
+    def custom_permissions(self,request_obj,masquerade,instructors):
+        """
+            This should handle both creating and retrieving
+            Keep in mind that instructors can be blank.
+            Here 403 errors will be raised
+        """
+
+        print("masquerade: ", masquerade)
+        if request_obj:
+            print("request_obj['masquerade']: ", request_obj['masquerade'])
+            print("request_obj['owner']: ", request_obj['owner'])
+        print("no request_obj: ")
+        print("instructors: ", instructors)
+
+        if self.request.user.is_staff:
+            return True
+
+        if self.request.method =="GET":
+            # scenario - we are asking to see a request
+            # user or masq is in the Request Instance
+            # if the user is the owner of the request obj or the listed masquerade
+            if not masquerade:
+                print("no masq set")
+                if self.request.user.username == request_obj['owner'] or self.request.user.username == request_obj['masquerade']:
+                    print("")
+                    return True
+                else:
+                    print("raising error1")
+                    raise PermissionDenied({"message":"You don't have permission to access"})
+                    return False
+
+            # if the current masquerade is the owner or the masquerade of the request.
+            elif masquerade == request_obj['owner'] or masquerade == request_obj['masquerade']:
+                return True
+            else:
+                print("raising error2")
+                raise PermissionDenied({"message":"You don't have permission to access"})
+                return False
+
+        if self.request.method =="POST":
+            # scenario - we are asking to create a request from a course, request_obj=None
+            if instructors: # there are instructors
+                print("we have intsructors")
+                if self.request.user.username in instructors:
+                    print("self.request.user.username in instructors: ", self.request.user.username, "in ", instructors, "==",self.request.user.username in instructors)
+                    #("masquerade in instructors: ", masquerade," in ", instructors, "== ", masquerade in instructors)
+                    return True
+                elif masquerade and masquerade in instructors:
+                    return True
+                else:
+                    print("raising error3")
+                    raise PermissionDenied({"message":"You don't have permission to access"})
+                    return False
+            # no instructors then anyone can create a request for it
+            else:
+                print("no instructors then anyone can create a request for it")
+                return True
+        else:
+            print("OHH BUDY WE HAVE A PROBLEM")
+            return False
+
     def check_request_update_permissions(request,response_data):
         request_status = response_data['status']
         request_owner = response_data['owner']
@@ -429,8 +491,15 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         elif request_status == "IN_PROCESS": permissions = {'staff':[''],'owner':['']}
         elif request_status == "COMPLETED": permissions = {'staff':[''],'owner':['']}
         else: permissions = {'staff':[''],'owner':['']} # throw error!???
+
+        #if request.session['on_behalf_of']:
+            # you have you're masq set
+
+
+        #else:
         if request.user.is_staff:
             return permissions['staff']
+
         if request.user.username == request_owner or (request.user.username == request_masquerade and request_masquerade !=''):
             print("yeahh buddy",request.user.username)
             return permissions['owner']
@@ -440,26 +509,38 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         """
-            can retreive for /requests/<COURSE_CODE>/ or /requests/<COURSE_CODE/edit
+            can retrieve for /requests/<COURSE_CODE>/ or /requests/<COURSE_CODE/edit
         """
-        print("ok in retreive self,,",self.request.session.get('on_behalf_of','None'))
+        print("ok in retrieve self,,",self.request.session.get('on_behalf_of','None'))
         print("ok in ret,,", request.session.get('on_behalf_of','None'))
         print("Request.retrieve")
         print(request.data)
+        print("request.resolver_match.url_name",request.resolver_match.url_name)
+
 
         response = super(RequestViewSet, self).retrieve(request, *args, **kwargs)
         print("response",response.data)
+        if request.resolver_match.url_name == "UI-request-detail-success":
+            return Response({'request_instance': response.data}, template_name='request_success.html')
+
+        # CHECK PERMISSIONS custom_permissions(request_obj, current_masquerade,instructors)
+        obj_permission = self.custom_permissions(response.data,request.session.get('on_behalf_of','None'),response.data['course_info']['instructors'])
+        print("permission, ", obj_permission)
+
         if request.accepted_renderer.format == 'html':
             #print("bye george(UI-request-detail)!\n",response.data)
             permissions = RequestViewSet.check_request_update_permissions(request, response.data)
-
-            if 'edit' in request.path.split('/') : # this is possibly the most unreliable code ive ever written
+            if request.resolver_match.url_name == "UI-request-detail-edit":
+            #if 'edit' in request.path.split('/') : # this is possibly the most unreliable code ive ever written
                 # we want the edit form
-
-
                 # CHECK PERMISSIONS -> must be creator and not be masquerading as creator
                 # CHECK IF request status is submitted ( for requestor ) or submitted/locked( for admin)
-                return Response({'request_instance': response.data,'permissions':permissions}, template_name='request_detail_edit.html')
+                #print("object",self.get_object())
+                here= RequestSerializer(self.get_object(), context={'request':request})
+
+                #print(here.title_override)
+                #print("RequestSerializer(response.data)",here)
+                return Response({'request_instance': response.data,'permissions':permissions,'request_form':here,'style':{'template_pack': 'rest_framework/vertical/'}}, template_name='request_detail_edit.html') #data={'course_requested':response.data['course_requested']},partial_update=True
             return Response({'request_instance': response.data, 'permissions':permissions}, template_name='request_detail.html')
         return response
 
@@ -529,7 +610,7 @@ class UserViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     lookup_field = 'username'
     permission_classes_by_action = {'create': [],
                                     'list': [],
-                                    'retreive':[],
+                                    'retrieve':[],
                                     'update':[],
                                     'partial_update':[],
                                     'delete':[]}
@@ -561,7 +642,7 @@ class SchoolViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     serializer_class = SchoolSerializer
     permission_classes_by_action = {'create': [],
                                     'list': [],
-                                    'retreive':[],
+                                    'retrieve':[],
                                     'update':[],
                                     'partial_update':[],
                                     'delete':[]}
@@ -627,6 +708,7 @@ class SchoolViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         print("this is dumb",request.method)
+        print("self.lookup_field: ",self.lookup_field)
         response = super(SchoolViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
             #print("bye george(UI-request-detail)!\n",response.data)
@@ -641,17 +723,33 @@ class SubjectViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     # # TODO:
     #[ ] ensure POST is only setting masquerade
 
+    #lookup_field = 'abbreviation'
     queryset = Subject.objects.all()
     serializer_class = SubjectSerializer
     permission_classes_by_action = {'create': [],
                                     'list': [],
-                                    'retreive':[],
+                                    'retrieve':[],
                                     'update':[],
                                     'partial_update':[],
                                     'delete':[]}
 #    def perform_create(self, serializer):
 #        serializer.save(owner=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        print("request.data", request.data)
+        serializer = self.get_serializer(data=request.data)
+        print(serializer)
+        serializer.is_valid(raise_exception=True)
+        print("ok")
+        self.perform_create(serializer)
+        print("ok2")
+        headers = self.get_success_headers(serializer.data)
+        print("serializer.data",serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
     def list(self, request, *args, **kwargs):
+        print("in list")
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         print("1")
@@ -660,6 +758,7 @@ class SubjectViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             serializer = self.get_serializer(page, many=True)
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
             print("template_name",response.template_name)
+
             if request.accepted_renderer.format == 'html':
                 response.template_name = 'subjects_list.html'
                 response.data = {'results': response.data,'paginator':self.paginator}
@@ -677,6 +776,7 @@ class SubjectViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
     def post(self, request,*args, **kwargs):
         #if request.user.is_authenticated():
+
         """
         #need to check if the post is for masquerade
         print(request.get_full_path())
@@ -703,7 +803,7 @@ class NoticeViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     serializer_class = NoticeSerializer
     permission_classes_by_action = {'create': [],
                                     'list': [],
-                                    'retreive':[],
+                                    'retrieve':[],
                                     'update':[],
                                     'partial_update':[],
                                     'delete':[]}
@@ -714,19 +814,16 @@ class NoticeViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
 
 class HomePage(LoginRequiredMixin,APIView):
-    # TODO
-    # [ ] add table for site_request and srs_course
-    # [x] add base case of empty responses
-    # [ ] add method for setting session info
-    # [ ] ensure POST is only setting masquerade
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'home_content.html'
     login_url = '/accounts/login/'
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
         # # TODO:
         # [ ] Check that valid pennkey
         # [ ] handles if there are no notice instances in the db
+        print(request.user)
         print("in home")
         try:
             notice = Notice.objects.latest()
@@ -735,12 +832,24 @@ class HomePage(LoginRequiredMixin,APIView):
             notice = None
             print("no notices")
 
+        # this should get the courses from this term !
+        # currently we are just getting the courses that have not been requested
+        masquerade = request.session['on_behalf_of']
+        if masquerade:
+            user = User.objects.get(username=masquerade)
+        else:
+            user = request.user
 
+        courses= Course.objects.filter(instructors=user,requested=False)[:15]
+        print(courses)
+        print("1",user,"2",user.username)
+        site_requests = Request.objects.filter(Q(owner=user) | Q(masquerade=user))[:15]
+        print(site_requests)
         # for courses do instructors.courses since there is a manytomany relationship
         return Response({'data':
             {'notice':notice,
-            'site_requests':'',
-            'srs_course':'',
+            'site_requests':site_requests,
+            'srs_courses': courses,
             'username':request.user}})
 
     # get the user id and then do three queries to create these tables
@@ -769,7 +878,6 @@ class HomePage(LoginRequiredMixin,APIView):
         request.session['on_behalf_of'] = on_behalf_of
         print("masquerading as:", request.session['on_behalf_of'])
 
-
     def post(self, request,*args, **kwargs):
         #if request.user.is_authenticated():
         #need to check if the post is for masquerade
@@ -778,8 +886,6 @@ class HomePage(LoginRequiredMixin,APIView):
         print("\trequest.META[''HTTP_REFERER'']",request.META['HTTP_REFERER'])
         HomePage.set_session(request)
         return(redirect(request.META['HTTP_REFERER']))
-
-
 
 
 class AutoAddViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
@@ -792,17 +898,19 @@ class AutoAddViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     serializer_class = AutoAddSerializer
     permission_classes_by_action = {'create': [IsAdminUser],
                                     'list': [IsAdminUser],
-                                    'retreive':[IsAdminUser],
+                                    'retrieve':[IsAdminUser],
                                     'update':[IsAdminUser],
                                     'partial_update':[IsAdminUser],
                                     'delete':[IsAdminUser]}
 
     def create(self, request, *args, **kwargs):
-        print(request.user.is_authenticated())
+        print(self.request.user)
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
+        print("headers",headers)
         print("autoadd data",serializer.data) # {'url': 'http://127.0.0.1:8000/api/autoadds/1/', 'user': 'username_8', 'school': 'AN', 'subject': 'abbr_2', 'id': 1, 'role': 'ta'}
         response = Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
@@ -815,7 +923,7 @@ class AutoAddViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
 
     def list(self, request, *args, **kwargs):
-        print(request.user.is_authenticated())
+        #print(request.user.is_authenticated())
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         print("1")
@@ -852,9 +960,6 @@ class AutoAddViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
 
 
-
-
-
 class UpdateLogViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     """
     THIS IS A TEMPORARY COPY
@@ -865,7 +970,7 @@ class UpdateLogViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     serializer_class = UpdateLogSerializer
     permission_classes_by_action = {'create': [IsAdminUser],
                                     'list': [IsAdminUser],
-                                    'retreive':[IsAdminUser],
+                                    'retrieve':[IsAdminUser],
                                     'update':[IsAdminUser],
                                     'partial_update':[IsAdminUser],
                                     'delete':[IsAdminUser]}
@@ -873,9 +978,6 @@ class UpdateLogViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         print("yeah ok")
         return Response({'data': ''}, template_name='admin/log_list.html')
-
-
-
 
 
 # --------------- USERINFO view -------------------
@@ -925,8 +1027,6 @@ from django.http import HttpResponse
 def my_email(request,value):
     email = open("course/static/emails/"+value, "rb").read()
     return render(request, 'email/email_detail.html', {'email':email.decode("utf-8")} )
-
-
 
 
 #SEE MORE: https://docs.djangoproject.com/en/2.1/topics/email/

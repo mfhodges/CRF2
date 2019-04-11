@@ -277,43 +277,12 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
         print('reserves',validated_data.get('reserves',instance.reserves))
         return instance
 
-
-class SchoolSerializer(serializers.HyperlinkedModelSerializer):
+class SubjectSerializer(serializers.ModelSerializer):
     """
 
     """
-    id = serializers.ReadOnlyField() # allows in templates to call school.id to get pk
+    #id = serializers.ReadOnlyField()# allows in templates to call subject.id to get pk
 
-    class Meta:
-        model = School
-        fields = '__all__'
-
-    def create(self,validated_data):
-        """
-        Create and return a new 'School' instance, given the validated data.
-        """
-        return School.objects.create(**validated_data)
-
-
-    def update(self, instance, validated_data):
-        """
-        Update and return an existing 'School' instance given the validated_data.
-        """
-        print("(serializer.py ATTEMPTING TO UPDATE SCHOOL")
-        print("conext['format']",self.context['format'])
-
-        instance.name = validated_data.get('name', instance.name)
-        instance.abbreviation = validated_data.get('abbreviation', instance.abbreviation)
-        instance.visible = validated_data.get('visible', instance.visible)
-        instance.save()
-
-        return instance
-
-class SubjectSerializer(serializers.HyperlinkedModelSerializer):
-    """
-
-    """
-    id = serializers.ReadOnlyField()# allows in templates to call subject.id to get pk
     class Meta:
         model = Subject
         fields = '__all__'
@@ -322,6 +291,11 @@ class SubjectSerializer(serializers.HyperlinkedModelSerializer):
         """
         Create and return a new 'Subject' instance, given the validated data.
         """
+        print("subject validated_data", validated_data)
+        #something for school?
+        #schools_data = validated_data.pop('schools')
+        #print(schools_data)
+        #print("validated_data", validated_data)
         return Subject.objects.create(**validated_data)
 
 
@@ -335,9 +309,59 @@ class SubjectSerializer(serializers.HyperlinkedModelSerializer):
         instance.name = validated_data.get('name', instance.name)
         instance.abbreviation = validated_data.get('abbreviation', instance.abbreviation)
         instance.visible = validated_data.get('visible', instance.visible)
+        #instance.subject = validated_data.get('school',instance.school)
+        #something for school?
         instance.save()
 
         return instance
+
+
+
+class SchoolSerializer(serializers.ModelSerializer):
+    """
+
+    """
+    #id = serializers.ReadOnlyField() # allows in templates to call school.id to get pk
+    #associated =  serializers.SlugRelatedField(many=False,queryset=Subject.objects.all(), slug_field='abbreviation', style={'base_template': 'input.html'})
+    #subjects = serializers.SlugRelatedField(many=False,queryset=Subject.objects.all(), slug_field='abbreviation', style={'base_template': 'input.html'})
+
+    subjects = SubjectSerializer(many=True,read_only=True)
+    #subjects = serializers.PrimaryKeyRelatedField(many=True, read_only=True)#serializers.StringRelatedField(many=True)#SubjectSerializer(many=True, source='schools_associated')
+
+    class Meta:
+        model = School
+        fields = ('name','abbreviation','visible','subjects')#'__all__'
+
+    def create(self,validated_data):
+        """
+        Create and return a new 'School' instance, given the validated data.
+        """
+        print("validated_data", validated_data)
+        #subjects = validated_data.pop('subjects')
+        #print("subjects",subjects)
+
+        #something for subjects?
+
+
+        return School.objects.create(**validated_data)
+
+
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing 'School' instance given the validated_data.
+        """
+        print("(serializer.py ATTEMPTING TO UPDATE SCHOOL")
+        print("conext['format']",self.context['format'])
+
+        instance.name = validated_data.get('name', instance.name)
+        instance.abbreviation = validated_data.get('abbreviation', instance.abbreviation)
+        instance.visible = validated_data.get('visible', instance.visible)
+        #instance.subject = validated_data.get('')
+        #something for subjects
+        instance.save()
+
+        return instance
+
 
 
 

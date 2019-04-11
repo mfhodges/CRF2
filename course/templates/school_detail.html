@@ -4,10 +4,170 @@
 
 {% block content %}
 
-  <h1> Schools</h1>
-  {% for key, value in data.items %}
-    <p>  <b>{{ key }}</b>: {{ value }}</p>
-  {% endfor %}
-<a href="/schools/"> Go Back to School List </a>
+  <h1>{{data.name }}</h1>
+
+    <p><b>Abbreviation </b>: {{data.abbreviation}}</p>
+
+    <button class="button" data-toggle="modal" data-target="#SchoolModal">
+      {% if data.visible == True %}
+        <b>REMOVE ALL</b> <i class="fas fa-minus-square"></i>
+        {% else %}
+<b>ADD</b> <i class="fas fa-plus-square"></i>
+        {% endif %}
+    </button><br>
+
+<p><a href="/schools/"><i class="fas fa-arrow-left"></i>  Go Back to School List </a></p>
+
+<table class="striped-table">
+  <thead >
+    <tr >
+      <th style="width:40%;">Name</th>
+      <th style="width:20%;">Abbr.</th>
+      <th >Visibility</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for subject in data.subjects %}
+    <tr >
+      {% if subject.visible == True %}
+      <td ><a href="/courses/?subject={{ subject.abbreviation }}">{{subject.name}}</a></td>
+      {% else %}
+      <td >{{subject.name}}</td>
+      {% endif %}
+      <td >{{subject.abbreviation}}</td>
+      <td>
+        <!-- <form action="{% url 'subject-detail' pk=1 %}" method="POST"> -->
+        {% if user.is_staff %}
+            {% if subject.visible == True %}
+            <!--  -->
+            <button class="button" data-toggle="modal" data-target="#subjectModal" data-subject="{{subject.name}}" data-abbr="{{subject.abbreviation}}" data-id="{{ subject.id }}" data-visible='false'>
+              <b>REMOVE</b> <i class="fas fa-minus-square"></i>
+            </button>
+            <!--TRUE (click button to remove)-->
+            {% else %}
+            <!-- data-subject="{{subject.name}}" data-abbr="{{subject.abbreviation}}" data-id="{{ subject.id }}" data-visible='true' -->
+            <button class="button" data-toggle="modal" data-target="#subjectModal" data-subject="{{subject.name}}" data-abbr="{{subject.abbreviation}}" data-id="{{ subject.id }}" data-visible='true'>
+              <b>ADD</b> <i class="fas fa-plus-square"></i>
+            </button>
+              <!--FALSE (click button to add) -->
+          {% endif %}
+        {% else %}
+          {% if subject.visible == True %}
+          TRUE
+          {% else %}
+            FALSE
+          {% endif %}
+      {% endif %}
+
+      </td>
+    </tr>
+      {% endfor %}
+  </tbody>
+</table>
+
+
+<!-- PAGINATION -->
+{% include 'bits/paginator.html' %}
+
+
+<!-- Modal -->
+<!-- simplify with this https://getbootstrap.com/docs/4.0/components/modal/#varying-modal-content -->
+
+<div class="modal fade" id="subjectModal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"> Change Visibility </h5>
+        <div class="close" data-dismiss="modal" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </div>
+      </div>
+      <form id="form" action="" data-method="PUT" enctype="multipart/form-data">
+        {% csrf_token %}
+          <div class="modal-body">
+            <p> Are you sure that you want to change the visibility ? </p>
+          </div>
+          <div class="modal-footer">
+            <input name="name" type="hidden" class="form-control" type="text" value="">
+            <input name="abbreviation" type="hidden" class="form-control" type="text" value="">
+            <input name="visible" type="hidden" class="form-control" type="text" value="">
+
+            <button type="submit" value="save" style="font-weight: 600;">Submit</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<!-- simplify with this https://getbootstrap.com/docs/4.0/components/modal/#varying-modal-content -->
+
+<div class="modal fade" id="SchoolModal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle"> Change Visibility </h5>
+        <div class="close" data-dismiss="modal" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </div>
+      </div>
+      <form id="form" action="/schools/{{data.abbreviation}}/" data-method="PUT" enctype="multipart/form-data">
+        {% csrf_token %}
+          <div class="modal-body">
+            <p> Are you sure that you want to change the visibility for {{data.name}}?
+              This will change the visibility for all of the schools subjects as well.
+
+            </p>
+          </div>
+          <div class="modal-footer">
+            <input name="name" type="hidden" class="form-control" type="text" value="{{data.name}}">
+            <input name="abbreviation" type="hidden" class="form-control" type="text" value="{{data.abbreviation}}">
+            <input name="visible" type="hidden" class="form-control" type="text" value="{% if data.visible == True%}false{% else %}true{% endif %}">
+
+            <button type="submit" value="save" style="font-weight: 600;">Submit</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+{% endblock %}
+
+
+
+{% block template_page_js %}
+<script>
+
+$('#subjectModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var subject = button.data('subject') // Extract info from data-* attributes
+  var id = button.data('id')
+  var vis = button.data('visible')
+  var abbr = button.data('abbr')
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  console.log(subject,id,vis,abbr)
+  $('#form').attr('action', '/subjects/' + abbr + '/')
+  var modal = $(this)
+
+  modal.find('.modal-title').text('Change Visibility for: ' + subject)
+  modal.find(".modal-footer input[name='name']").val(subject)
+  modal.find(".modal-footer input[name='abbreviation']").val(abbr)
+  modal.find(".modal-footer input[name='visible']").val(vis)
+})
+</script>
+
+
+
+
+<script>
+$(document).ready(function() {
+        $('form').ajaxForm();
+    });
+</script>
+
 
 {% endblock %}

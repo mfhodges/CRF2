@@ -36,7 +36,7 @@ This is fine because I want the API to be very generic
 # URL SHOULD REALLY USE REGEX
 #SRS_SECTION_REGEX = re.compile(
 #    r'^(?P<subject>[A-Z]{2,4})(?P<course_number>\d{3}|)-?(?P<section_number>\d{3}|)-(?P<term>20[01][0-9][ABC])$')
-
+#)
 #schema_view = get_schema_view(title='Pastebin API') # new
 
 
@@ -59,7 +59,7 @@ urlpatterns = [
 
     # --------------- Request list/detail view -------------------
     path('requests/', views.RequestViewSet.as_view(
-        {'get': 'list'},renderer_classes=[renderers.TemplateHTMLRenderer]),
+        {'get': 'list','post':'create'},renderer_classes=[renderers.TemplateHTMLRenderer]),
          name='UI-request-list'),
     path('requests/<str:pk>/', views.RequestViewSet.as_view(
         {'get': 'retrieve','put': 'update'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
@@ -67,7 +67,9 @@ urlpatterns = [
     path('requests/<str:pk>/edit/', views.RequestViewSet.as_view(
         {'get': 'retrieve'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
         name='UI-request-detail-edit'),
-
+    path('requests/<str:pk>/success/', views.RequestViewSet.as_view(
+        {'get': 'retrieve'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
+        name='UI-request-detail-success'),
 
     # --------------- School list/detail view -------------------
     path('schools/', views.SchoolViewSet.as_view(

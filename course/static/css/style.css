@@ -670,6 +670,11 @@ fieldset {
   padding: 1rem;
   margin: 1.5rem 0; }
 
+
+fieldset p {
+  margin: 0;
+}
+
 legend {
   padding: 0 .5rem;
   font-weight: 600;
@@ -932,6 +937,7 @@ caption {
   	margin: 0;
   	padding: 0;
   	list-style: none;
+    width:100%; /*this may cause me some troubles down the line */
   }
 
   aside nav {
@@ -979,6 +985,7 @@ caption {
 
   #references {
     display:none;
+    /*font-family: 'Ubuntu';*/
   }
 
   .fa {

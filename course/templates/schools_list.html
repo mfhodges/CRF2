@@ -15,8 +15,8 @@
     <table class="striped-table">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Abbr.</th>
+          <th style="width:40%;">Name</th>
+          <th style="width:25%;">Abbr.</th>
           <th>Visibility</th>
         </tr>
       </thead>
@@ -24,7 +24,7 @@
         {% for school in results %}
         <tr>
           {% if school.visible == True %}
-          <td><a href="/courses/?school={{ school.abbreviation }}">{{school.name}}</a></td>
+          <td><a href="/schools/{{ school.abbreviation }}/">{{school.name}}</a></td>
           {% else %}
           <td>{{school.name}}</td>
           {% endif %}
@@ -77,7 +77,8 @@
           <form id="form" action="" data-method="PUT" enctype="multipart/form-data">
             {% csrf_token %}
               <div class="modal-body">
-                <p> Are you sure that you want to change the visibility ? </p>
+                <p> Are you sure that you want to change the visibility? This will change the visibility
+                of all of the subjects associated with this school too. </p>
               </div>
               <div class="modal-footer">
                 <input name="name" type="hidden" class="form-control" type="text" value="">
@@ -94,14 +95,8 @@
 
 
 
-
     <!-- PAGINATION -->
-    {% if paginator %}
-      <nav aria-label="Page navigation" class="vertical-center">
-        {% get_pagination_html paginator %}
-      </nav>
-    {% endif %}
-
+    {% include "bits/paginator.html" %}
 
 
 
@@ -120,7 +115,7 @@ $('#SchoolModal').on('show.bs.modal', function (event) {
   // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
   // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
   console.log(school,id,vis)
-  $('#form').attr('action', '/schools/' + id + '/')
+  $('#form').attr('action', '/schools/' + abbr + '/')
   var modal = $(this)
 
   modal.find('.modal-title').text('Change Visibility for: ' + school)

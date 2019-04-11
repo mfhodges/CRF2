@@ -28,6 +28,9 @@ will look up thier email in the system.
 def get_email(pennkey):
     try:
         user_email = User.objects.get(username=pennkey).email
+        if user_email == '':
+            user_email = 'None'
+            # alert some process ? 
         print("found %s email for %s" % ( user_email, pennkey))
     except User.DoesNotExist:
         user_email = ''

@@ -40,15 +40,45 @@ class User(User):
 class School(models.Model):
     """
     mapping of School (i.e. 'Arts & Sciences') to SubjectArea objects
-    requires list_asView but not individual object view
+    and their associated subjects
     """
 
     name = models.CharField(max_length=50,unique=True)
-    abbreviation = models.CharField(max_length=10,unique=True)
+    abbreviation = models.CharField(max_length=10,unique=True,primary_key=True)
     visible = models.BooleanField(default=True)
+
+
+    def get_subjects(self):
+        return self.subjects
+
+    #def set_subjects(self,visibility):
+
+    def save(self, *args, **kwargs):
+        """
+        some text
+        """
+        print("saving school instance")
+        #print(self.subjects)
+        #print(self.get_subjects())
+        print(args,kwargs)
+        subjects = Subject.objects.filter(schools=self.abbreviation)
+        print(subjects)
+
+        for subject in subjects:
+            subject.visible = self.visible
+            subject.save()
+        print("self.pk",self.pk)
+        super().save(*args,**kwargs) #super(Course, self)
+
+
+
 
     def __str__(self):
         return '%s (%s)' % (self.name, self.abbreviation)
+
+    class Meta:
+        ordering = ('name',)
+
 
 class Subject(models.Model):
     """
@@ -57,23 +87,44 @@ class Subject(models.Model):
     """
 
     name = models.CharField(max_length=50, unique=True)
-    abbreviation = models.CharField(max_length=10,unique=True)
+    abbreviation = models.CharField(max_length=10,unique=True, primary_key=True)
     visible = models.BooleanField(default=True)
+    schools = models.ForeignKey(School,related_name='subjects', on_delete=models.CASCADE, blank=True,null=True)
 
     def __str__(self):
         return '%s (%s)' % (self.name, self.abbreviation)
+
+    class Meta:
+        ordering = ('name',)
+
+
 
 class CanvasSite(models.Model):
     """
     this contains all the relevant info about the canvas site once it has been created
     """
     url = models.URLField()
+    #name = models.CharField(max_length=50,unique=True)#BMIN 521 2019C AI II: Machine Learning
+    """
+    sis_course_id = #SRS_BMIN-521-401 2019C
+    sis_section_id = #SRS_BMIN-521-401 2019C
+    section_name = #BMIN 521-401 2019C AI II: Machine Learning
+    subaccount = #Perelman School of Medicine
+    term = #2019C
+    additional_enrollments = models.  #https://stackoverflow.com/questions/1110153/what-is-the-most-efficient-way-to-store-a-list-in-the-django-models
+    """
+
+    #
+    #def get_additional_enrollements(self):
+
 
 
 
 class CourseManager(models.Manager):
     def has_request(self):
         return super().get_queryset().filter(requested=True)
+
+
 
     #def submitted(self)
 
@@ -107,16 +158,21 @@ class Course(models.Model):
     instructors = models.ManyToManyField(User,related_name='courses',blank=True) # should be allowed to be null --> "STAFF"
     course_term = models.CharField(
         max_length=1,choices = TERM_CHOICES,) # self.course_term would == self.SPRING || self.FALL || self.SUMMER
-    course_activity = models.CharField(
-        max_length=3,choices = ACTIVITY_CHOICES,)
+    course_activity = models.CharField(max_length=3,choices = ACTIVITY_CHOICES,)
 
-    # course_SRS_Title must not allow spaces
-    course_code = models.CharField(max_length=250,unique=True, primary_key=True, blank=False) # unique and primary_key means that is the lookup_field
+
+
+    #  r'^(?P<subject>[A-Z]{2,4})(?P<course_number>\d{3}|)-?(?P<section_number>\d{3}|)-(?P<term>20[01][0-9][ABC])$')
+    course_code = models.CharField(max_length=150,unique=True, primary_key=True, editable=False) # unique and primary_key means that is the lookup_field
     course_subjects = models.ManyToManyField(Subject,related_name='courses') # one to many
+    course_primary_subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     course_schools = models.ManyToManyField(School,related_name='courses')# one to many
+    course_number = models.CharField(max_length=4, blank=False)
+    course_section = models.CharField(max_length=4,blank=False)# can courses not have associated sections?
     course_name = models.CharField(max_length=250) # Human Readable Name i.e. Late Antique Arts
-    crosslisted = models.ManyToManyField("self", blank=True, symmetrical=True, default=None)
 
+    year = models.CharField(max_length=4,blank=False)
+    crosslisted = models.ManyToManyField("self", blank=True, symmetrical=True, default=None)
     requested =  models.BooleanField(default=False)# False -> not requested
 
 
@@ -124,10 +180,13 @@ class Course(models.Model):
     class Meta:
         ordering = ('created',)
 
+
     def save(self, *args, **kwargs):
         """
         some text
         """
+        #<subject><course_number><section><year><term>
+        self.course_code = self.course_primary_subject.abbreviation + self.course_number + self.course_section + self.year + self.course_term
         print("saving Course instance")
         print("self.pk",self.pk)
         super().save(*args,**kwargs) #super(Course, self)
@@ -147,14 +206,14 @@ class Course(models.Model):
 
         for course in possibilities:
             try:
-                print("course",course)
+                #print("course",course)
                 requestinfo = course.request
                 return requestinfo
             except Request.DoesNotExist:
                 print("Request.DoesNotExist!")
 
         #return error
-        
+
     def get_subjects(self):
         return ",\n".join([sub.abbreviation for sub in self.course_subjects.all()])
 
@@ -165,17 +224,25 @@ class Course(models.Model):
 
     def get_instructors(self):
         #check if blank?
-        print("lets go to funkie town",self.instructors.all(), )
+        #print("lets go to funkie town",self.instructors.all(), )
         if not self.instructors.all().exists():
             return("STAFF")
         return ",\n".join([inst.username for inst in self.instructors.all()])
 
 
+    def get_sections(self):
+        # when all but the course code is the same ?
+        # filter all courses that have the same
+        return None
+
+
     def __str__(self):
-        return self.course_code
+        return "_".join([self.course_primary_subject.abbreviation, self.course_number, self.course_section, self.year, self.course_term])
 
     def __unicode__(self):
-        return self.course_code
+        return "_".join([self.course_primary_subject.abbreviation, self.course_number, self.course_section, self.year, self.course_term])
+
+        #return self.course_code
 
     objects = models.Manager()
     CourseManager = CourseManager()
@@ -287,7 +354,7 @@ class AutoAdd(models.Model):
     ('designer','Designer'),
     ('librarian','Librarian'),)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False)
-    school = models.ForeignKey(School,on_delete=models.CASCADE, blank=False)
+    school = models.ForeignKey(School, on_delete=models.CASCADE, blank=False)
     subject = models.ForeignKey(Subject,on_delete=models.CASCADE, blank=False)
     role = models.CharField(
             max_length=10,choices = ROLE_CHOICES,)

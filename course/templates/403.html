@@ -1,11 +1,21 @@
 <!-- templates/403.html -->
 
-{% extends "base_geneic.html" %}
+{% extends "base_generic.html" %}
 {% load rest_framework %}
 
 {% block content %}
 
 
-<h1>403 </h1>
-<p>context</p>
+<h1>403 - Permssions Error </h1>
+<p>
+  You do not have permission to see this page/make that action. If you are acting on behalf of another user
+  please check that you have set that in the in the form above or from the homepage. For more information on this error
+  please refer to the documentation here: < LINK >.
+</p>
+<p>
+  If this error seems like a mistake please contact Maddy Hodges at mfhodges@upenn.edu.
+</p>
+
+
+<a href='../'> <i class="fas fa-arrow-left"></i> Go Back </a>
 {% endblock %}

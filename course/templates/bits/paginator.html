@@ -1,0 +1,9 @@
+
+{% load rest_framework %}
+{% load template_extra %}
+
+{% if paginator %}
+  <nav aria-label="Page navigation" class="vertical-center">
+    {% get_pagination_html paginator %}
+  </nav>
+{% endif %}

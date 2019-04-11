@@ -1,0 +1,24 @@
+{% load rest_framework %}
+{% load template_extra %}
+<fieldset>
+  <legend>Canvas Site</legend>
+ {% if request_instance.canvas_instance %}
+  <dl class="row" style="line-height:1.1;">
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Name</dt>
+        <dd class="col-8 col-md-9"> </dd>
+
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Workflow State</dt>
+        <dd class="col-8 col-md-9"> </dd>
+
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">SIS Course ID</dt>
+        <dd class="col-8 col-md-9"> </dd>
+
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">URL</dt>
+        <dd class="col-8 col-md-9"> </dd>
+        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">additional enrollments</dt>
+        <dd class="col-8 col-md-9"> </dd>
+  </dl>
+  {% else %}
+  <p> no canvas instance created yet </p>
+  {% endif %}
+</fieldset>
