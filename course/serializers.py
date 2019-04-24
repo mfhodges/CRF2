@@ -2,7 +2,8 @@ from rest_framework import serializers
 from course.models import Course, Notice, Request, School, Subject, AutoAdd, UpdateLog
 from django.contrib.auth.models import User
 import datetime
-
+from django.contrib import messages
+from canvas import api
 # Serializer Classes provide a way of serializing and deserializing
 # the model instances into representations such as json. We can do this
 # by declaring serializers that work very similar to Django forms
@@ -37,7 +38,7 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
     # Eventually the queryset should also filter by Group = Instructors
     instructors = serializers.SlugRelatedField(many=True,queryset=User.objects.all(), slug_field='username')
     course_schools = serializers.SlugRelatedField(many=True,queryset=School.objects.all(), slug_field='abbreviation')
-    course_subjects = serializers.SlugRelatedField(many=True,queryset=Subject.objects.all(), slug_field='abbreviation')
+    course_subject = serializers.SlugRelatedField(many=False,queryset=Subject.objects.all(), slug_field='abbreviation')
 
     id = serializers.ReadOnlyField()
     #course_requested = serializers.HyperlinkedRelatedField(many=True, view_name='request-detail',read_only=True)
@@ -58,7 +59,7 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
         print("CourseSerializer validated_data", validated_data)
         instructors_data = validated_data.pop('instructors')
         schools_data = validated_data.pop('course_schools')
-        subjects_data = validated_data.pop('course_subjects')
+        #subjects_data = validated_data.pop('course_subjects')
         if 'crosslisted' in validated_data: crosslist = validated_data.pop('crosslisted')
         course = Course.objects.create(**validated_data)
         ##
@@ -72,14 +73,14 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
             print("school_data",school_data)
             course.course_schools.add(school_data)
 
-        for subject_data in subjects_data:
-            print("subject data", subject_data)
-            course.course_subjects.add(subject_data)
+        #for subject_data in subjects_data:
+        #    print("subject data", subject_data)
+        #    course.course_subjects.add(subject_data)
         #print(course.data)
         if 'crosslisted' in validated_data:
-            print(crosslist)
+            #print(crosslist)
             for cross_course in crosslist:
-                print("crosslist data", cross_course)
+                #print("crosslist data", cross_course)
                 course.crosslisted.add(cross_course)
 
 
@@ -223,9 +224,34 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
     def validate(self, data):
         """
         Check that:
-            owner/creator is a courseware support, instructor( or masqueraded)
-            ADD MORE
+            CourseCopy Course has user or masquerade listed as an instructor
         """
+        if data['copy_from_course']:
+            #go get course
+            print("data['copy_from_course']",data['copy_from_course'])
+            instructors = api.get_course_users(data['copy_from_course'])
+            user = self.context['request'].user
+            masquerade =self.context['request'].session['on_behalf_of']
+            #print(instructors)
+            #print(user)
+            #print(masquerade)
+            if user in instructors:
+                #validate!
+                print("you taught the course")
+                pass
+            if masquerade:
+                if masquerade in instructors:
+                    #validate!
+                    print("you are masqued as some1 who taught the course")
+                    pass
+            else:
+                print("found error")
+                #messages.add_message(request, messages.ERROR, 'errror text')
+                raise serializers.ValidationError(_("an error occurred please add the course information to the additional instructions field"))
+            #if not in the instructors raise an error
+            # error message should be like "an error occurred please add the course information to the additional instructions field"
+
+
         #print(data)
         #print(self.instance)
         #print('data[owner]',data['owner'])
@@ -233,7 +259,7 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
         #print("data['course_info']", data['course_info'])
         #if data['owner'] in data['course_info']['instructors']:
         #    raise serializers.ValidationError("you do not have permissions to request this course")
-
+        print("data was fine")
         return data
 
 
@@ -247,9 +273,14 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
         # check that this course.requested==False
         #print("course_requested_data", course_requested_data)
         print("validated_Data",validated_data)
-        #validated_data['masquerade'] = "fucku"
+
+        add_enrolls_data = validated_data.pop('additional_enrollments')
         request_object = Request.objects.create(**validated_data)
         #validated_data['course_requested'].requested = False
+
+        for enroll_data in add_enrolls_data:
+            #print("subject data", subject_data)
+            request_object.additional_enrollments.add(enroll_data)
 
         print("RequestSerializer.create", validated_data)
         return request_object

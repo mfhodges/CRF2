@@ -1,5 +1,5 @@
 
-
+from course.models import *
 """
 
 None of these files are good yet, purely copied from last
@@ -13,11 +13,32 @@ about how users are added
 def check_site(sis_id,canvas_course_id):
     """
     with this function it can be verified if the course
-
-
-
+    use the function get_course in canvas/api.py and if u get a result then you know it exists?
     """
+
     return None
+
+
+
+def update_request_status():
+    request_set = Request.objects.all() # should be filtered to status = approved
+    print(request_set)
+    string = ''
+    if request_set:
+        print("\t some requests - lets process them ")
+        string = "\t some requests - dw I processed them "
+        for request_obj in request_set:
+            st ="\t"+request_obj.course_requested.course_code+" "+ request_obj.status
+            print(st)
+            # process request ( create course)
+
+    else:
+        string= "\t no requests"
+        print("\t no requests")
+    #print("how-do!")
+    return "how-dy!"
+
+
 
 
 

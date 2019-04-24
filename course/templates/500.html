@@ -1,6 +1,8 @@
 <!-- templates/500.html -->
 {% extends "base_generic.html" %}
 
+{% block pennkey %} {% endblock %}
+{% block pennkey_error %} {% endblock %}
 
 {% block content %}
 
@@ -8,6 +10,15 @@
 <p>Something has gone wrong with the webserver. Please notify Maddy Hodges at mfhodges@upenn.edu if you recieve this error.</p>
 
 
+{% if messages %}
+<ul class="messages">
+  <h5 style="margin-bottom:0px;"> Messages </h5>
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
 
-<a href='../'> <i class="fas fa-arrow-left"></i> Go Back </a>
+
+<a href='{{request.META.HTTP_REFERER}}'> <i class="fas fa-arrow-left"></i> Go Back </a>
 {% endblock %}

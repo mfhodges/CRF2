@@ -1,6 +1,8 @@
 <!-- templates/400.html -->
 {% extends "base_generic.html" %}
 
+{% block pennkey %} {% endblock %}
+{% block pennkey_error %} {% endblock %}
 
 {% block content %}
 
@@ -11,5 +13,16 @@ Please check that you submitted valild inputs.
 <p>
   If this error seems like a mistake please contact Maddy Hodges at mfhodges@upenn.edu.
 </p>
-<a href='../'> <i class="fas fa-arrow-left"></i> Go Back </a>
+
+
+{% if messages %}
+<ul class="messages">
+    <h5 style="margin-bottom:0px;"> Messages </h5>
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<a href='{{request.META.HTTP_REFERER}}'> <i class="fas fa-arrow-left"></i> Go Back </a>
 {% endblock %}

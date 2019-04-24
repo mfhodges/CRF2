@@ -1,6 +1,8 @@
+from __future__ import absolute_import, unicode_literals
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.dispatch import receiver
 from django.contrib import messages
+
 
 @receiver(user_logged_in)
 def on_login(sender, user, request, **kwargs):
@@ -15,6 +17,19 @@ def on_login(sender, user, request, **kwargs):
 
 #@receiver(user_logged_out)
 #def on_logout(sender, user, request, **kwargs):
+
+
+# This will make sure the app is always imported when
+# Django starts so that shared_task will use this app.
+from .celery import app as celery_app
+
+__all__ = ('celery_app',)
+
+
+
+
+
+
 
 
 """

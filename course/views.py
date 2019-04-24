@@ -38,6 +38,7 @@ import datetime
 from course import email_processor
 from rest_framework.exceptions import PermissionDenied
 
+#from rest_framework.filters import SearchFilter
 #class CourseView(TemplateView):
 #    template_name = "index.html"
 
@@ -117,7 +118,7 @@ def validate_pennkey(pennkey):
     return user
 
 
-class MixedPermissionModelViewSet(LoginRequiredMixin,viewsets.ModelViewSet):
+class MixedPermissionModelViewSet(viewsets.ModelViewSet): #LoginRequiredMixin, -- causes problems with API
     '''
     Mixed permission base model allowing for action level
     permission control. Subclasses may define their permissions
@@ -161,7 +162,7 @@ class CourseFilter(filters.FilterSet):
     activity = filters.ChoiceFilter(choices=Course.ACTIVITY_CHOICES, field_name='course_activity', label='Activity')
     instructor = filters.CharFilter(field_name='instructors__username', label='Instructor')
     school = filters.CharFilter(field_name='course_schools__abbreviation',label='School (abbreviation)')
-    subject = filters.CharFilter(field_name='course_subjects__abbreviation', label='Subject (abbreviation)')
+    subject = filters.CharFilter(field_name='course_subject__abbreviation', label='Subject (abbreviation)')
     term = filters.ChoiceFilter(choices=Course.TERM_CHOICES, field_name='course_term', label='Term')
     class Meta:
         model = Course
@@ -178,11 +179,16 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     # [x] on creation of request instance mutatate course instance so courese.requested = True
     #[x ] ensure POST is only setting masquerade
     lookup_field = 'course_code'
-    queryset = Course.objects.filter(~Q(course_subjects__visible=False)).exclude(course_schools__visible=False,) #this should be filtered by the
+
+
+    queryset = Course.objects.filter(~Q(course_subject__visible=False)).exclude(course_schools__visible=False,) #this should be filtered by the
     serializer_class = CourseSerializer
     #permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly,)
+    #filter_backends = ( SearchFilter)
+    search_fields = ('$course_name','$course_code',)
     filterset_class = CourseFilter
-    search_fields = ['$course_name', '$course_code']
+
+
     # for permission_classes_by_action see: https://stackoverflow.com/questions/35970970/django-rest-framework-permission-classes-of-viewset-method
     permission_classes_by_action = {'create': [IsAdminUser],
                                     'list': [IsAuthenticated],
@@ -209,10 +215,10 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         page = self.paginate_queryset(queryset)
 
         #print(",,",self.filter_backends[0].get_filterset(request,self.get_queryset(),self))
-        for backend in list(self.filter_backends):
+        #for backend in list(self.filter_backends):
             #django_filters.rest_framework.backends.DjangoFilterBackend - https://github.com/carltongibson/django-filter/blob/master/django_filters/rest_framework/backends.py
-            print("...",backend.filterset_base.form) # <class 'django_filters.rest_framework.filterset.FilterSet'>
-            print("...1",backend.filterset_base.get_form_class)
+            #print("...",backend.filterset_base.form) # <class 'django_filters.rest_framework.filterset.FilterSet'>
+            #print("...1",backend.filterset_base.get_form_class)
             #print("...1",backend.filterset_base.filters)
 
         if page is not None:
@@ -221,7 +227,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             print("template_name",response.template_name)
             if request.accepted_renderer.format == 'html':
                 response.template_name = 'course_list.html'
-                print(request.get_full_path())
+                print("pp",request.get_full_path())
                 print("kwargs",kwargs)
                 print("args",args)
 
@@ -230,8 +236,8 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 print('filterfield', CourseFilter.Meta.fields)
                 print('request.query_params', request.query_params.keys())
                 response.data = {'results': response.data,'paginator':self.paginator, 'filter':CourseFilter, 'request':request}
-            print("yeah ok1",response.items())
-
+            #print("yeah ok1",response.items())
+            #print("o")
             return response
         """
         serializer = self.get_serializer(queryset, many=True)
@@ -258,7 +264,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
                 #NOTE there must be an associated course and if there isnt... we r in trouble!
                 request_instance = course_instance.get_request()
-                print("hfaweuifh ",request_instance)
+                #print("hfaweuifh ",request_instance)
                 this_form = ''#RequestSerializer()
             else:
                 # course detail needs to get form
@@ -302,7 +308,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     queryset = Request.objects.all()
     serializer_class = RequestSerializer
     filterset_class = RequestFilter
-    search_fields = ['$course_requested__course_name', '$course_requested__course_code']
+    search_fields = ['$course_requested__course_name', '$course_requested__course_code',]
     permission_classes = (permissions.IsAuthenticated,)
     #                      IsOwnerOrReadOnly,)
     permission_classes_by_action = {'create': [IsAuthenticated],
@@ -328,10 +334,10 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                     crosslisted.request = course.request
                     print("crosslisted.request , course.request",crosslisted.request , course.request)
                     crosslisted.save()
-            print(course.course_code, course.requested)
+            print("-",course.course_code, course.requested)
             #get crosslisted courses
             crosslisted = course.crosslisted
-            print(crosslisted,"help me!!!")
+            #print(crosslisted,"help me!!!")
 
 
         """
@@ -362,7 +368,13 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
 
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        serializer.is_valid()
+        if not serializer.is_valid():
+            print(serializer.errors)
+            (serializer.errors)
+            messages.add_message(request, messages.ERROR, serializer.errors['non_field_errors'])
+            raise serializers.ValidationError(serializer.errors)
+
         serializer.validated_data['masquerade'] = masquerade
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
@@ -397,7 +409,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         if page is not None:
 
             serializer = self.get_serializer(page, many=True)
-            print(serializer.data)
+            print(";",serializer.data)
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
             print("template_name",response.template_name)
             if request.accepted_renderer.format == 'html':
@@ -442,7 +454,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             if not masquerade:
                 print("no masq set")
                 if self.request.user.username == request_obj['owner'] or self.request.user.username == request_obj['masquerade']:
-                    print("")
+                    #print("")
                     return True
                 else:
                     print("raising error1")
@@ -514,7 +526,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         print("ok in retrieve self,,",self.request.session.get('on_behalf_of','None'))
         print("ok in ret,,", request.session.get('on_behalf_of','None'))
         print("Request.retrieve")
-        print(request.data)
+        print("request.data",request.data)
         print("request.resolver_match.url_name",request.resolver_match.url_name)
 
 
@@ -709,6 +721,7 @@ class SchoolViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         print("this is dumb",request.method)
         print("self.lookup_field: ",self.lookup_field)
+        # this response should probably be paginated but thats a lot of work ..
         response = super(SchoolViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
             #print("bye george(UI-request-detail)!\n",response.data)
@@ -738,7 +751,7 @@ class SubjectViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         print("request.data", request.data)
         serializer = self.get_serializer(data=request.data)
-        print(serializer)
+        print("serializer",serializer)
         serializer.is_valid(raise_exception=True)
         print("ok")
         self.perform_create(serializer)
@@ -785,7 +798,7 @@ class SubjectViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         """
 
     def retrieve(self, request, *args, **kwargs):
-        print(request.data)
+        print("request.data",request.data)
         response = super(SubjectViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
             #print("bye george(UI-request-detail)!\n",response.data)
@@ -823,7 +836,7 @@ class HomePage(LoginRequiredMixin,APIView):
         # # TODO:
         # [ ] Check that valid pennkey
         # [ ] handles if there are no notice instances in the db
-        print(request.user)
+        print("request.user",request.user)
         print("in home")
         try:
             notice = Notice.objects.latest()
@@ -840,16 +853,23 @@ class HomePage(LoginRequiredMixin,APIView):
         else:
             user = request.user
 
-        courses= Course.objects.filter(instructors=user,requested=False)[:15]
+        courses= Course.objects.filter(instructors=user)
+        courses_count = courses.count()
+        courses = courses[:15] #requested=False
         print(courses)
         print("1",user,"2",user.username)
-        site_requests = Request.objects.filter(Q(owner=user) | Q(masquerade=user))[:15]
-        print(site_requests)
+        site_requests = Request.objects.filter(Q(owner=user) | Q(masquerade=user))
+        site_requests_count = site_requests.count()
+        site_requests= site_requests[:15]
+
+        #print(site_requests, site_requests[0].course_requested.course_name)
         # for courses do instructors.courses since there is a manytomany relationship
         return Response({'data':
             {'notice':notice,
             'site_requests':site_requests,
+            'site_requests_count':site_requests_count,
             'srs_courses': courses,
+            'srs_courses_count': courses_count,
             'username':request.user}})
 
     # get the user id and then do three queries to create these tables
@@ -951,7 +971,7 @@ class AutoAddViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         response = Response(status=status.HTTP_204_NO_CONTENT)
         if 'UI' in request.data:
             if request.data['UI'] == 'true':
-                print("eya")
+
                 response.template_name = 'admin/autoadd_list.html'
                 return(redirect('UI-autoadd-list'))
         return response

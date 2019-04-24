@@ -13,22 +13,28 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 from configparser import ConfigParser
 import django_heroku
+
+
+config = ConfigParser()
+config.read('config/config.ini')
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-print(BASE_DIR)
+#print(BASE_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'jy0jd74_tg&674cxbvocpl4@x87i@(ynk%)h*p12by4fd^ilgs'
+SECRET_KEY = config.get('django','secret_key',raw=True)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True#False
 
+
 ALLOWED_HOSTS = ['127.0.0.1:8000','127.0.0.1','localhost'#'demo-crf.herokuapp.com'#'128.91.177.58'
 ]
-print=("BASE_DIR",BASE_DIR)
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
@@ -36,9 +42,9 @@ print=("BASE_DIR",BASE_DIR)
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-config = ConfigParser()
-#config.read('config/config.ini')
-print=(BASE_DIR)
+
+
+
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = 'course/static/emails' # change this to a proper location
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # to have it sent to console
@@ -67,6 +73,8 @@ INSTALLED_APPS = [
 	'rest_framework',
     'django_filters',
     'admin_auto_filters',
+    'django_celery_beat',
+    'django_extensions',
 
 ]
 
@@ -141,15 +149,15 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+
 
 USE_I18N = True
 
 USE_L10N = True
 
+
 USE_TZ = True
-
-
+TIME_ZONE = 'America/New_York'
 
 
 REST_FRAMEWORK = {
@@ -159,12 +167,32 @@ REST_FRAMEWORK = {
         #'rest_framework.renderers.TemplateHTMLRenderer', # this line messes up the browsable api
         'rest_framework.renderers.BrowsableAPIRenderer',
     ),
-    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.SearchFilter','django_filters.rest_framework.DjangoFilterBackend',),
     #'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'DEFAULT_PAGINATION_CLASS': 'drf_link_header_pagination.LinkHeaderPagination',
     'PAGE_SIZE': 30#,
     #'EXCEPTION_HANDLER': 'course.views.custom_exception_handler'
 }
+
+from celery.schedules import crontab
+
+# Celery application definition
+#
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+# Other Celery settings
+
+CELERY_BEAT_SCHEDULE = {
+    'task-number-one': {
+        'task': 'course.tasks.task_process_approved',
+        'schedule': crontab(minute='*/1')#,
+        #'args': (*args)
+    }
+}
+CELERY_BEAT_SCHEDULER: 'django_celery_beat.schedulers:DatabaseScheduler'
 
 
 django_heroku.settings(locals())

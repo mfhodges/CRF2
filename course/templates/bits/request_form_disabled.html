@@ -7,6 +7,9 @@
 
 <dl class="row" style="line-height:1.1;">
 
+
+
+
       <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Status</dt>
       <dd class="col-8 col-md-9"> {{ request_instance.status }}</dd>
 
@@ -23,6 +26,19 @@
 
       <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Updated</dt>
       <dd class="col-8 col-md-9"> {{ request_instance.updated }}</dd>
+
+
+      {% comment %}
+      {% if request.user.is_staff %}
+        {% if request_instance.status=='COMPLETED' %}
+        {% else %}
+
+          <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;"><i class="fas fa-check-circle" style="color:#03C148;"></i></dt>
+          <dd class="col-8 col-md-9">Does NOT exist in Canvas</dd>
+        <!-- <i class="fas fa-exclamation-circle" style="color:#DE9C28;"></i> -->
+        {% endif %}
+      {% endif %}
+      {% endcomment %}
 </dl>
 
 {% if request_instance.course_info.crosslisted %}

@@ -37,6 +37,7 @@
 
 
 
+      {% block pennkey %}
       <!-- REQUEST ON BEHALF OF // MASQUERADE -->
       {% if request.session.on_behalf_of %}
         <div class="flex-small" id="masquerade" style="background:#f7d6a2">
@@ -60,6 +61,8 @@
         </div>
       {% endif %}
 
+      {% endblock %}
+
       <!-- logout / login info -->
       <div class="flex-small text-right" id="sign_in">
         {% if user.is_authenticated %}
@@ -73,6 +76,8 @@
         {% endif %}
       </div>
      </header>
+
+
 
      <!-- MASQUERADE Modal START -->
      <!-- i like the example from here:https://getbootstrap.com/docs/4.3/components/forms/#auto-sizing -->
@@ -247,7 +252,7 @@ $(function () {
 
 
 <!-- if there has been an issue with masquerade form -->
-
+{% block pennkey_error %}
 {% if messages %}
   {% for message in messages %}
     {% if message.tags == 'error' %}
@@ -259,7 +264,7 @@ $(function () {
     {% endif %}
   {% endfor %}
 {% endif %}
-
+{% endblock %}
 
 <script async="" defer="" src="https://buttons.github.io/buttons.js"></script>
 <script>

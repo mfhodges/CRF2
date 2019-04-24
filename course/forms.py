@@ -35,7 +35,7 @@ class EmailChangeForm(forms.Form):
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
-        print(self.user)
+        #print(self.user)
         super(EmailChangeForm, self).__init__(*args, **kwargs)
 
     def clean_new_email1(self):
@@ -54,7 +54,7 @@ class EmailChangeForm(forms.Form):
         new_email2 = self.cleaned_data.get('new_email2')
         if new_email1 and new_email2:
             if new_email1 != new_email2:
-                print("yeahgggggg")
+                #print("yeahgggggg")
                 raise forms.ValidationError(
                     self.error_messages['email_mismatch'],
                     code='email_mismatch',

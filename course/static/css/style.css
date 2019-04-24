@@ -872,7 +872,7 @@ td {
 th,
 td {
   text-align: left;/*center;*/
-  padding: .1rem; }
+  padding: .1rem .3rem; }
 
 tr td:nth-child(1){
   padding-left: 15px;
@@ -1090,11 +1090,12 @@ main {
     line-height: 60px;*/
   }
 
-.homepage {
+.homepage-container {
   border: 1px solid #eee;
   box-shadow: 0 4px 12px 0 rgba(0,0,0,.05) !important;
   padding: 1rem;
   margin: 2.3rem 0;
+  max-width: 950px;
 }
 
 

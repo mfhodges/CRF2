@@ -24,7 +24,7 @@ class CourseAdmin(admin.ModelAdmin):
 
 
     def save_model(self, request, obj, form, change):
-        print("checkin save")
+        #print("checkin save")
         obj.owner = request.user
         obj.save()
 
@@ -49,7 +49,7 @@ class RequestAdmin(admin.ModelAdmin):
         return object.owner.username
 
     def save_model(self, request, obj, form, change):
-        print("checkin save")
+        #print("checkin save")
         obj.owner = request.user
         obj.save()
 

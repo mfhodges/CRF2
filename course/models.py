@@ -46,7 +46,7 @@ class School(models.Model):
     name = models.CharField(max_length=50,unique=True)
     abbreviation = models.CharField(max_length=10,unique=True,primary_key=True)
     visible = models.BooleanField(default=True)
-
+    opendata_abbr = models.CharField(max_length=2)
 
     def get_subjects(self):
         return self.subjects
@@ -60,9 +60,9 @@ class School(models.Model):
         print("saving school instance")
         #print(self.subjects)
         #print(self.get_subjects())
-        print(args,kwargs)
+        print("args,kwargs",args,kwargs)
         subjects = Subject.objects.filter(schools=self.abbreviation)
-        print(subjects)
+        print("subjects",subjects)
 
         for subject in subjects:
             subject.visible = self.visible
@@ -104,7 +104,10 @@ class CanvasSite(models.Model):
     this contains all the relevant info about the canvas site once it has been created
     """
     url = models.URLField()
-    #name = models.CharField(max_length=50,unique=True)#BMIN 521 2019C AI II: Machine Learning
+    request_instance = models.ForeignKey(
+        'Request',
+        on_delete=models.CASCADE,null=False)
+        #name = models.CharField(max_length=50,unique=True)#BMIN 521 2019C AI II: Machine Learning
     """
     sis_course_id = #SRS_BMIN-521-401 2019C
     sis_section_id = #SRS_BMIN-521-401 2019C
@@ -147,7 +150,17 @@ class Course(models.Model):
     ACTIVITY_CHOICES = (
         ('LEC', 'Lecture'),
         ('SEM', 'Seminar'),
-        ('LAB', 'Laboratory')
+        ('LAB', 'Laboratory'),
+        ('CLN', 'Clinic'),
+        ('IND', 'Independent Study'),
+        ('ONL', 'Online Course'),
+        ('PRC', 'SCUE Preceptorial'),
+        ('PRO', 'NSO Proseminar'),
+        ('REC', 'Recitation'),
+        ('SEM', 'Seminar'),
+        ('SRT', 'Senior Thesis'),
+        ('STU', 'Studio'),
+        ('MST', 'Masters Thesis')
     )
 
     created = models.DateTimeField(auto_now_add=True)
@@ -164,7 +177,7 @@ class Course(models.Model):
 
     #  r'^(?P<subject>[A-Z]{2,4})(?P<course_number>\d{3}|)-?(?P<section_number>\d{3}|)-(?P<term>20[01][0-9][ABC])$')
     course_code = models.CharField(max_length=150,unique=True, primary_key=True, editable=False) # unique and primary_key means that is the lookup_field
-    course_subjects = models.ManyToManyField(Subject,related_name='courses') # one to many
+    course_subject = models.ForeignKey(Subject,on_delete=models.CASCADE,related_name='courses') # one to many
     course_primary_subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     course_schools = models.ManyToManyField(School,related_name='courses')# one to many
     course_number = models.CharField(max_length=4, blank=False)
@@ -178,7 +191,7 @@ class Course(models.Model):
 
 
     class Meta:
-        ordering = ('created',)
+        ordering = ('course_code',)
 
 
     def save(self, *args, **kwargs):
@@ -186,7 +199,7 @@ class Course(models.Model):
         some text
         """
         #<subject><course_number><section><year><term>
-        self.course_code = self.course_primary_subject.abbreviation + self.course_number + self.course_section + self.year + self.course_term
+        self.course_code = self.course_subject.abbreviation + self.course_number + self.course_section + self.year + self.course_term
         print("saving Course instance")
         print("self.pk",self.pk)
         super().save(*args,**kwargs) #super(Course, self)
@@ -196,9 +209,9 @@ class Course(models.Model):
 
     def get_request(self):
         possibilities = self.crosslisted.all()
-        print("possibilities",possibilities)
+        #print("possibilities",possibilities)
         try:
-            print("course",self)
+            #print("course",self)
             requestinfo = self.request
             return requestinfo
         except Request.DoesNotExist:
@@ -215,7 +228,9 @@ class Course(models.Model):
         #return error
 
     def get_subjects(self):
-        return ",\n".join([sub.abbreviation for sub in self.course_subjects.all()])
+        return self.course_subject
+        #should get all crosslisted and the
+        #return ",\n".join([sub.abbreviation for sub in self.course_subjects.all()])
 
 
     def get_schools(self):
@@ -321,6 +336,8 @@ class Request(models.Model):
 
     owner = models.ForeignKey('auth.User', related_name='requests', on_delete=models.CASCADE)#should not delete when user is deleted
     masquerade = models.CharField(max_length=20,null=True)
+    additional_enrollments = models.ManyToManyField(User,related_name='additional_enrollments',blank=True)
+
 
     class Meta:
         ordering = ('created',)
@@ -329,13 +346,13 @@ class Request(models.Model):
         """
         some text
         """
-        print(self.status,args,kwargs)
-        print("(Model.py) Request self.pk",self.pk)
+        #print("..",self.status,args,kwargs)
+        #print("(Model.py) Request self.pk",self.pk)
         super(Request, self).save(*args,**kwargs)
 
 
-    def __str__(self):
-        return " \"%s\" site request" % ( self.course_requested.course_code)
+    #def __str__(self):
+    #    return " \"%s\" site request" % ( self.course_requested.course_code)
 
 #class SubjectArea(models.Model):
 """
@@ -363,7 +380,8 @@ class AutoAdd(models.Model):
     #    return self.
 
 
-
+    class Meta:
+        ordering = ('user',)
 
 
 
@@ -379,3 +397,18 @@ class UpdateLog(models.Model):
 
     created = models.DateTimeField(auto_now_add=True,null=True, blank=True)
     process= models.CharField(max_length=10,choices = MANAGER_CHOICES)
+
+
+class Tools(models.Model):
+    """
+    this is a table of all tools that we can configure in Canvas
+    this should only include tools that can be used in any course at penn
+    these are tools that would show up in the side navigation menu
+    """
+    name = models.CharField(max_length=25,blank=False)
+
+
+    visibility = models.BooleanField(default=True)
+
+
+    #schools

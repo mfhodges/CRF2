@@ -30,12 +30,12 @@
   <table class="striped-table">
     <thead>
       <tr>
-        <th>Section</th>
-        <th>Title</th>
+        <th style="width:20%;">Section</th>
+        <th style="width:25%;">Title</th>
         <th>Activity</th>
         <th id="instructors">Instructor</th>
         <!--<th>Created Date</th> -->
-        <th>Request Status</th>
+        <th style="white-space: nowrap;">Request Status</th>
       </tr>
     </thead>
     <tbody>
@@ -54,7 +54,7 @@
   <!--      <td>{{ course.created }} a {{ course.created|time:'h:i' }} b {{ course.created|date:"SHORT_DATE_FORMAT" }} </td> -->
 
         <!--<td>{{course.created|date:'m/d/Y'}} {{course.created|time:'h:i' }}</td> -->
-        <td style="padding-left:1%;">
+        <td style="padding-left:4%;">
           <!-- REQUEST MODAL -->
         <!--  {{course.requested}} -->
           {% if course.requested == True %}

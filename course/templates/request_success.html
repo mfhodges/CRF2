@@ -1,25 +1,25 @@
 {% extends "base_generic.html" %}
 {% load rest_framework %}
-
+{% load template_extra %}
 {% block content %}
 
 
 <h1> Request Created </h1>
 <p>
-  You have successfully submitted a Request for a Canvas Site for the Course {{request_instance.course_requested}}.
+  You have successfully submitted a Request for a Canvas Site for the Course {{ request_instance.course_info|asrepr }}.
 </p>
 
 <p>
-You can see the request <a href="{% url 'UI-request-detail' pk=request_instance.course_requested %}">here</a>.
-When the cousre site has been created you will be sent a notification email from librarycrf@pobox.upenn.
+  {{ settings.BASE_URL }}
+You can see the request here: <a href="{% url 'UI-request-detail' pk=request_instance.course_requested %}">{{ request.META.HTTP_HOST }}{% url 'UI-request-detail' pk=request_instance.course_requested %}</a>.
+When the course site has been created, you will be sent a notification email from librarycrf@pobox.upenn.
 </p>
 
 <p>
-  Please refer to the <a href="https://infocanvas.upenn.edu/guides/canvas-for-facultystafftas/course-design-and-setup/">Canvas Documentation for Faculty, Staff, and TAs</a>
-  for more information about course design and Canvas features.
+Please visit <a href="https://infocanvas.upenn.edu/">Canvas at Penn</a> (<a href="https://infocanvas.upenn.edu/">https://infocanvas.upenn.edu/</a>) for Canvas instructions, news, and help.
 </p>
 
-<p> ADD CONTENT ABOUT LIBRARY LOUNGE </p>
+<h5 style="margin-bottom:0;">Other Canvas Features Here at Upenn</h5>
 <p>
   Library Lounge is a Penn Libraries initiative that incorporates instructional videos on research skills and methods into Canvas course sites.
    Would you like a librarian to reach out to you about using Library Lounge in your course?
