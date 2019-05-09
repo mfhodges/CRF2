@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7b7b4220-2081-4c59-a82f-4a5287d538ff" name="Default Changelist" comment="" />
+    <list default="true" id="7b7b4220-2081-4c59-a82f-4a5287d538ff" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OpenData/srs_ingest.py" beforeDir="false" afterPath="$PROJECT_DIR$/OpenData/srs_ingest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/course/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crf2/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/crf2/settings.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -12,10 +18,12 @@
     <session id="-551124105">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="2" />
+          <entry key="project.closed" value="4" />
+          <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.3" value="1" />
+          <entry key="project.open.time.4" value="1" />
           <entry key="project.open.time.5" value="1" />
-          <entry key="project.opened" value="2" />
+          <entry key="project.opened" value="4" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -35,21 +43,21 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="13" />
-          <entry key="py" value="8300" />
+          <entry key="py" value="8410" />
           <entry key="txt" value="37" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="50" />
-          <entry key="Python" value="8280" />
+          <entry key="Python" value="8390" />
           <entry key="Scratch" value="20" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.83562994">
+    <splitter split-orientation="horizontal" split-proportion="0.81690145">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="false">
@@ -64,8 +72,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/OpenData/testing.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="140">
-                  <caret line="145" column="18" lean-forward="true" selection-start-line="145" selection-start-column="18" selection-end-line="145" selection-end-column="18" />
+                <state relative-caret-position="-1560">
+                  <caret line="6" column="61" selection-start-line="6" selection-start-column="54" selection-end-line="6" selection-end-column="61" />
                   <folding>
                     <element signature="e#148#159#0" expanded="true" />
                   </folding>
@@ -76,14 +84,12 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/OpenData/srs_ingest.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-484">
-                  <caret line="206" column="30" selection-start-line="206" selection-start-column="30" selection-end-line="206" selection-end-column="30" />
+                <state relative-caret-position="1433">
+                  <caret line="214" column="30" selection-start-line="214" selection-start-column="30" selection-end-line="214" selection-end-column="30" />
                   <folding>
                     <element signature="e#148#159#0" expanded="true" />
-                    <marker date="1555971846389" expanded="true" signature="5139:5140" ph="..." />
-                    <marker date="1555971846389" expanded="true" signature="5867:6071" ph="..." />
-                    <marker date="1555971846389" expanded="true" signature="6089:9856" ph="..." />
-                    <marker date="1555971846389" expanded="true" signature="9797:9818" ph="..." />
+                    <marker date="1556293302996" expanded="true" signature="5139:5140" ph="..." />
+                    <marker date="1556293302996" expanded="true" signature="5867:6071" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -101,8 +107,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/OpenData/loading_with_api.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="439">
-                  <caret line="277" column="9" selection-start-line="277" selection-start-column="4" selection-end-line="277" selection-end-column="9" />
+                <state relative-caret-position="4624">
+                  <caret line="280" column="9" selection-start-line="280" selection-start-column="9" selection-end-line="280" selection-end-column="9" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -125,7 +131,7 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/canvas/api.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="136">
+                <state relative-caret-position="85">
                   <caret line="8" selection-start-line="8" selection-end-line="8" />
                   <folding>
                     <element signature="e#2#13#0" expanded="true" />
@@ -137,11 +143,11 @@
         </leaf>
       </split-first>
       <split-second>
-        <leaf>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_8.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2344">
+                <state relative-caret-position="627">
                   <caret line="241" selection-start-line="241" selection-end-line="241" />
                 </state>
               </provider>
@@ -182,6 +188,9 @@
       <find>cross</find>
       <find>400</find>
       <find>WE HAVE A BIG</find>
+      <find>section_tit</find>
+      <find>section</find>
+      <find>section_t</find>
     </findStrings>
     <replaceStrings>
       <replace>&quot;</replace>
@@ -203,13 +212,14 @@
         <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_8.py" />
         <option value="$PROJECT_DIR$/OpenData/srs_ingest.py" />
         <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_9.py" />
+        <option value="$PROJECT_DIR$/OpenData/testing.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="278" />
+    <option name="x" value="73" />
     <option name="y" value="23" />
-    <option name="width" value="1300" />
+    <option name="width" value="1247" />
     <option name="height" value="877" />
   </component>
   <component name="ProjectView">
@@ -234,30 +244,6 @@
               <item name="crf2" type="b2602c69:ProjectViewProjectNode" />
               <item name="crf2" type="462c0819:PsiDirectoryNode" />
               <item name="config" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="crf2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="crf2" type="462c0819:PsiDirectoryNode" />
-              <item name="course" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="crf2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="crf2" type="462c0819:PsiDirectoryNode" />
-              <item name="course" type="462c0819:PsiDirectoryNode" />
-              <item name="management" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="crf2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="crf2" type="462c0819:PsiDirectoryNode" />
-              <item name="course" type="462c0819:PsiDirectoryNode" />
-              <item name="management" type="462c0819:PsiDirectoryNode" />
-              <item name="commands" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="crf2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="crf2" type="462c0819:PsiDirectoryNode" />
-              <item name="course" type="462c0819:PsiDirectoryNode" />
-              <item name="migrations" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="crf2" type="b2602c69:ProjectViewProjectNode" />
@@ -301,7 +287,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.srs_ingest">
+  <component name="RunManager" selected="Python.srs_course">
     <configuration name="api" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="crf2" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -394,8 +380,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.srs_ingest" />
         <item itemvalue="Python.srs_course" />
+        <item itemvalue="Python.srs_ingest" />
         <item itemvalue="Python.test_suite" />
         <item itemvalue="Python.api" />
       </list>
@@ -405,14 +391,13 @@
     <configuration />
   </component>
   <component name="ToolWindowManager">
-    <frame x="278" y="23" width="1300" height="877" extended-state="0" />
-    <editor active="true" />
+    <frame x="73" y="23" width="1247" height="877" extended-state="0" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2056294" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21451876" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.33702338" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.8167282" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3990461" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -474,9 +459,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2412">
           <caret line="15" column="1" lean-forward="true" selection-start-line="15" selection-start-column="1" selection-end-line="15" selection-end-column="1" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -492,13 +474,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/OpenData/OpenDataSchools.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-line="1" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/OpenData/OpenDataSchools.txt" />
     <entry file="file://$PROJECT_DIR$/canvas/notes.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="34">
@@ -510,23 +486,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
           <caret line="16" selection-start-line="16" selection-end-line="16" />
-          <folding>
-            <marker date="1555535156238" expanded="true" signature="127:129" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/OpenData/OpenData.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" selection-start-line="1" selection-end-line="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_8.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2344">
-          <caret line="241" selection-start-line="241" selection-end-line="241" />
         </state>
       </provider>
     </entry>
@@ -537,10 +496,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/OpenData/OpenData.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" selection-start-line="1" selection-end-line="1" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_9.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
           <caret line="3" selection-start-line="3" selection-end-line="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/OpenData/loading_with_api.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4624">
+          <caret line="280" column="9" selection-start-line="280" selection-start-column="9" selection-end-line="280" selection-end-column="9" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -556,7 +532,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/canvas/api.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
+        <state relative-caret-position="85">
           <caret line="8" selection-start-line="8" selection-end-line="8" />
           <folding>
             <element signature="e#2#13#0" expanded="true" />
@@ -564,34 +540,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/OpenData/loading_with_api.py">
+    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_8.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="439">
-          <caret line="277" column="9" selection-start-line="277" selection-start-column="4" selection-end-line="277" selection-end-column="9" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="627">
+          <caret line="241" selection-start-line="241" selection-end-line="241" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/OpenData/srs_ingest.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-484">
-          <caret line="206" column="30" selection-start-line="206" selection-start-column="30" selection-end-line="206" selection-end-column="30" />
+        <state relative-caret-position="1433">
+          <caret line="214" column="30" selection-start-line="214" selection-start-column="30" selection-end-line="214" selection-end-column="30" />
           <folding>
             <element signature="e#148#159#0" expanded="true" />
-            <marker date="1555971846389" expanded="true" signature="5139:5140" ph="..." />
-            <marker date="1555971846389" expanded="true" signature="5867:6071" ph="..." />
-            <marker date="1555971846389" expanded="true" signature="6089:9856" ph="..." />
-            <marker date="1555971846389" expanded="true" signature="9797:9818" ph="..." />
+            <marker date="1556293302996" expanded="true" signature="5139:5140" ph="..." />
+            <marker date="1556293302996" expanded="true" signature="5867:6071" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/OpenData/testing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="145" column="18" lean-forward="true" selection-start-line="145" selection-start-column="18" selection-end-line="145" selection-end-column="18" />
+        <state relative-caret-position="-1560">
+          <caret line="6" column="61" selection-start-line="6" selection-start-column="54" selection-end-line="6" selection-end-column="61" />
           <folding>
             <element signature="e#148#159#0" expanded="true" />
           </folding>

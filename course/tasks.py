@@ -9,7 +9,7 @@ def task_process_approved():
     # if it doesnt work then it is locked
     #print("howdy!")
     time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    f = open("course/static/emails/test.log", "a")
+    f = open("course/static/logs/test.log", "a")
 
     ans = utils.update_request_status()
     print(ans)

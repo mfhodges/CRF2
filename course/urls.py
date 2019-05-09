@@ -2,11 +2,11 @@ from django.conf.urls import include, url
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 from course import views
-
+from rest_framework_swagger.views import get_swagger_view
 from rest_framework import renderers
 #from rest_framework.schemas import get_schema_view # new
 
-
+schema_view = get_swagger_view(title='Pastebin API')
 
 
 
@@ -45,6 +45,7 @@ This is fine because I want the API to be very generic
 # NOTE : pk = course_SRS_Title
 urlpatterns = [
     url(r'^api/', include(router.urls)),
+    url(r'^api_doc/', schema_view),
     # --------------- Course list/detail view -------------------
     path('courses/', views.CourseViewSet.as_view(
         {'get': 'list'}, renderer_classes=[renderers.TemplateHTMLRenderer]),

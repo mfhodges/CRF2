@@ -1,8 +1,8 @@
 from django.contrib import admin
 from . models import *
 from admin_auto_filters.filters import AutocompleteFilter
-
-
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
 
 """
 can implement EXACT search by instructor username, course code, or course title
@@ -52,6 +52,21 @@ class RequestAdmin(admin.ModelAdmin):
         #print("checkin save")
         obj.owner = request.user
         obj.save()
+
+
+
+
+class ProfileInline(admin.StackedInline):
+    model = Profile
+    can_delete = False
+
+class UserAdmin(BaseUserAdmin):
+    inlines = [ProfileInline]
+
+# unregister old user admin
+admin.site.unregister(User)
+# register new user admin
+admin.site.register(User, UserAdmin)
 
 
 admin.site.register(Course, CourseAdmin)

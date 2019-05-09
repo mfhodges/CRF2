@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from course.models import Course, Notice, Request, School, Subject, AutoAdd, UpdateLog
+from course.models import Course, Notice, Request, School, Subject, AutoAdd, UpdateLog,Profile
 from django.contrib.auth.models import User
 import datetime
 from django.contrib import messages
@@ -174,11 +174,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     #course_list = CourseSerializer(many=True,read_only=True)
     # this allows to link all the courses with a user
-    id = serializers.ReadOnlyField()
+    penn_id = serializers.CharField(source='profile.penn_id')
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'courses','requests', 'email')#,'course_list')
+        fields = ('id', 'penn_id','username', 'courses','requests', 'email')#,'course_list')
         read_only_fields = ('courses',)
         # because courses is a REVERSE relationship on the User model,
         # it will not be included by default when using the ModelSerializer class
@@ -188,14 +188,20 @@ class UserSerializer(serializers.ModelSerializer):
         """
         Create and return a new 'User' instance, given the validated data.
         """
-        return User.objects.create(**validated_data)
+        print(validated_data)
+        pennid_data = validated_data.pop('profile')['penn_id']
+        user = User.objects.create(**validated_data)
+        Profile.objects.create(user=user,penn_id=pennid_data)
+        return user
 
 
     def update(self, instance, validated_data):
         """
         Update and return an existing 'User' instance given the validated_data.
         """
+        #instance.profile.penn_id = validated_data.get('penn_id', instance.profile.penn_id)
         instance.name = validated_data.get('username', instance.username)
+
         instance.save()
 
         return instance

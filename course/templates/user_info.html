@@ -10,17 +10,29 @@
     {% if request.session.on_behalf_of %}
       {% get_user request.session.on_behalf_of as masq_user %}
       <dl class="row" style="line-height:1.1;margin-bottom:0;">
+        {% if masq_user.last_name and masq_user.first_name %}
           <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">User: </dt>
-          <dd class="col-8 col-md-9"> {{masq_user.first_name }} {{masq_user.last_name}} ({{masq_user.username}})</dd>
+          <dd class="col-8 col-md-9"> {{masq_user.first_name }} {{masq_user.last_name}} </dd>
+        {% endif %}
+          <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Penn Key: </dt>
+          <dd class="col-8 col-md-9"> {{masq_user.username}}</dd>
+          <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Penn ID: </dt>
+          <dd class="col-8 col-md-9"> {{ mmasq_user.profile.penn_id}}</dd>
           <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Email: </dt>
           <dd class="col-8 col-md-9"> {{ masq_user.email|default:"None" }}</dd>
       </dl>
       {% else %}
       <dl class="row" style="line-height:1.1;margin-bottom:0;">
+        {% if user.first_name and user.last_name %}
           <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">User: </dt>
-          <dd class="col-8 col-md-9"> {{user.first_name }} {{user.last_name}} ({{user.username}})</dd>
+          <dd class="col-8 col-md-9"> {{user.first_name }} {{user.last_name}} </dd>
+        {% endif %}
+          <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Penn Key: </dt>
+          <dd class="col-8 col-md-9"> {{user.username}} </dd>
+          <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Penn ID: </dt>
+          <dd class="col-8 col-md-9"> {{user.profile.penn_id}}</dd>
           <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Email: </dt>
-          <dd class="col-8 col-md-9"> {{user.email|default:"Please add your email in the form below" }}</dd>
+          <dd class="col-8 col-md-9"> {{user.email|default:"None" }}</dd>
       </dl>
       {% endif %}
   </dl>

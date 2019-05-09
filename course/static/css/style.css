@@ -629,6 +629,33 @@ table .button,table a.button,table button,table [type=submit],table [type=reset]
 }
 
 
+button.cancel {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+button.cancel:hover,button.cancel:active {
+
+  background-color:#d32535;
+  border-color: #d32535;
+
+}
+
+button.create {
+  background-color: #428365;
+  border-color: #428365;
+  /* #369667*/
+}
+
+
+button.create:hover,button.create:active {
+
+  background-color:#397258;
+  border-color: #397258;
+
+}
+
+
 .badge {
   background: #c1deff;
   padding: 0.5em;
@@ -667,7 +694,7 @@ textarea {
 fieldset {
   border: 1px solid #dedede;
   border-radius: 4px;
-  padding: 1rem;
+  padding: 1rem 2rem 1rem 2rem;
   margin: 1.5rem 0; }
 
 
@@ -723,6 +750,16 @@ textarea.has-error:active {
 :-moz-placeholder,
 :-ms-input-placeholder {
   color: #9a9a9a; }
+
+
+#RequestForm input[type=text], #RequestForm textarea {
+  margin-left: 6%;
+  width:90%;
+}
+
+/*.form-group{
+  margin-top:5px;
+}*/
 
 
 /* search bar */

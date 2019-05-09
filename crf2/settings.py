@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     'admin_auto_filters',
     'django_celery_beat',
     'django_extensions',
+    'rest_framework_swagger',
 
 ]
 

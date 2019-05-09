@@ -37,7 +37,7 @@ from django.template.loader import get_template
 import datetime
 from course import email_processor
 from rest_framework.exceptions import PermissionDenied
-
+from django_celery_beat.models import PeriodicTask, IntervalSchedule, CrontabSchedule
 #from rest_framework.filters import SearchFilter
 #class CourseView(TemplateView):
 #    template_name = "index.html"
@@ -67,22 +67,6 @@ from rest_framework.views import exception_handler
 from rest_framework import status
 
 
-"""
-def not_found(request,  template_name='404.html'):
-
-    return render(request, '404.html')
-
-def server_error(request, template_name='500.html'):
-    print("kja ")
-    return render(request, '500.html')
-
-def permission_denied(request, template_name='403.html'):
-    print("what the heckie")
-    return render(request, '403.html')
-
-def bad_request(request, template_name='400.html'):
-    return render(request, '400.html')
-"""
 
 
 
@@ -115,6 +99,8 @@ def validate_pennkey(pennkey):
         user = User.objects.get(username=pennkey)
     except User.DoesNotExist:
         user = None
+
+    # do a lookup in the data warehouse ?
     return user
 
 
@@ -497,16 +483,18 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         request_masquerade = response_data['masquerade']
             # owner is also considered masquerade
         if request_status == "SUBMITTED": permissions = {'staff':['lock','cancel','edit'],'owner':['cancel','edit']}
-        elif request_status == "APPROVED": permissions = {'staff':['cancel','edit'],'owner':['cancel']}
+        elif request_status == "APPROVED": permissions = {'staff':['cancel','edit','lock','create'],'owner':['cancel']}
         elif request_status == "LOCKED": permissions = {'staff':['cancel','edit','unlock'],'owner':['']}
         elif request_status == "CANCELED": permissions = {'staff':['lock'],'owner':['']}
-        elif request_status == "IN_PROCESS": permissions = {'staff':[''],'owner':['']}
+        elif request_status == "IN_PROCESS": permissions = {'staff':['lock'],'owner':['']}
         elif request_status == "COMPLETED": permissions = {'staff':[''],'owner':['']}
         else: permissions = {'staff':[''],'owner':['']} # throw error!???
 
+        # permission - 'create' pushes the request into the in_process queue
+        # permission - 'unlock' sets it as submitted again
+
         #if request.session['on_behalf_of']:
             # you have you're masq set
-
 
         #else:
         if request.user.is_staff:
@@ -620,6 +608,8 @@ class UserViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
+    #filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('profile__penn_id',)
     permission_classes_by_action = {'create': [],
                                     'list': [],
                                     'retrieve':[],
@@ -997,7 +987,10 @@ class UpdateLogViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     # CHECK PERMISSIONS!
     def list(self, request, *args, **kwargs):
         print("yeah ok")
-        return Response({'data': ''}, template_name='admin/log_list.html')
+        # see more about the models here https://django-celery-beat.readthedocs.io/en/latest/index.html
+        #https://medium.com/the-andela-way/crontabs-in-celery-d779a8eb4cf
+        periodic_tasks = PeriodicTask.objects.all()
+        return Response({'data': periodic_tasks}, template_name='admin/log_list.html')
 
 
 # --------------- USERINFO view -------------------
@@ -1007,7 +1000,6 @@ def userinfo(request):
     form = EmailChangeForm(request.user)
     print(request.method)
     if request.method=='POST':
-        print("we in the POST")
         form = EmailChangeForm(request.user, request.POST)
         if form.is_valid():
             form.save()

@@ -1,5 +1,5 @@
 
-
+# doc https://esb.isc-seo.upenn.edu/8091/
 # https://esb.isc-seo.upenn.edu/8091/open_data/course_info/
 
 
@@ -20,9 +20,11 @@ from loading_with_api import *
 
 config = ConfigParser()
 config.read('../config/config.ini')
+
+
+
 domain = config.get('opendata', 'domain')
 id = config.get('opendata', 'id')
-
 key = config.get('opendata', 'key')
 headers = {
     'Authorization-Bearer' : id,
@@ -30,31 +32,10 @@ headers = {
 }
 
 
+# I WISH I HAD KNOWN ABOUT THIS https://github.com/pennlabs/penn-sdk-python
 
 
-#course_info/ACCT/
-"""
-url = domain + 'course_section_search_parameters/'
-print(url)
-response = requests.get(url,headers=headers)
-r_json = response.json()
-r_json = r_json['result_data'][0]
-pp.pprint(r_json)
-pp.pprint(r_json['activity_map'])
 
-pp.pprint(r_json['available_terms_map'])
-
-pp.pprint(r_json['departments_map'])
-pp.pprint(r_json['program_map'])
-
-url = domain + 'course_section_search'
-print(url)
-response = requests.get(url,headers=headers,params={'course_id':'ENGL'})
-print(response.links,response.url)
-pp.pprint(response.headers)
-r_json = response.json()
-#pp.pprint(r_json)
-"""
 
 
 
@@ -62,6 +43,11 @@ r_json = response.json()
 # ['DM', 'ED', 'EG', 'VM', 'AN', 'FA', 'AS', 'WH', 'MD', 'PV', 'SW', 'LW', 'NU']
 
 
+
+#######################################################################
+## The Data below is not exhaustive and there is probably more
+## data than
+#######################################################################
 school_data = [
 {"abbreviation":"AN", "name": "Annenberg School For Communication", "visibility": True, "opendata_abbr":"AN"},
 {"abbreviation":"SAS", "name": "Arts & Sciences", "visibility": True, "opendata_abbr":"AS"},
@@ -109,10 +95,15 @@ programs= {'BFS': 'Ben Franklin Seminars',
  'WPWP': 'Wharton Programs for Working Professionals'
  }
 
+
+
+# mapping of two char School code to subjects
 school_subj = {'AS': ['AAMW', 'AFRC', 'AFST', 'ALAN', 'AMCS', 'ANCH', 'ANEL', 'ANTH', 'APOP', 'ARAB', 'ARTH', 'ASAM', 'ASTR', 'BCHE', 'BDS', 'BENF', 'BENG', 'BIBB', 'BIOL', 'CHEM', 'CHIN', 'CIMS', 'CLCH', 'CLST', 'COGS', 'COML', 'CRIM', 'CRWR', 'DATA', 'DEMG', 'DTCH', 'DYNM', 'EALC', 'ECON', 'EEUR', 'ENGL', 'ENVS', 'FOLK', 'FREN', 'GAFL', 'GAS', 'GEOL', 'GLBS', 'GREK', 'GRMN', 'GSWS', 'GUJR', 'HEBR', 'HIND', 'HIST', 'HSOC', 'HSSC', 'ICOM', 'IMPA', 'INTR', 'ITAL', 'JPAN', 'JWST', 'KORN', 'LALS', 'LATN', 'LEAD', 'LGIC', 'LING', 'MATH', 'MCS', 'MLA', 'MLYM', 'MMP', 'MODM', 'MTHS', 'MUSC', 'NELC', 'NEUR', 'ORGC', 'PERS', 'PHIL', 'PHYS', 'PPE', 'PROW', 'PRTG', 'PSCI', 'PSYC', 'PUNJ', 'QUEC', 'RELC', 'RELS', 'ROML', 'RUSS', 'SAST', 'SCND', 'SKRT', 'SLAV', 'SOCI', 'SPAN', 'SPRO', 'STSC', 'TAML', 'TELU', 'THAR', 'TURK', 'URBS', 'URDU', 'VIPR', 'VLST', 'WRIT', 'YDSH'], 'WH': ['ACCT', 'BEPP', 'FNCE', 'HCMG', 'INTS', 'LGST', 'LSMP', 'MGEC', 'MGMT', 'MKTG', 'OIDD', 'REAL', 'STAT', 'WH', 'WHCP'], 'MD': ['ANAT', 'BIOE', 'BIOM', 'BMB', 'BMIN', 'BSTA', 'CAMB', 'EPID', 'GCB', 'HCIN', 'HPR', 'IMUN', 'MED', 'MPHY', 'MTR', 'NGG', 'PHRM', 'PUBH', 'REG'], 'FA': ['ARCH', 'CPLN', 'ENMG', 'FNAR', 'HSPV', 'LARP', 'MUSA'], 'EG': ['BE', 'BIOT', 'CBE', 'CIS', 'CIT', 'DATS', 'EAS', 'ENGR', 'ENM', 'ESE', 'IPD', 'MEAM', 'MSE', 'NANO', 'NETS'], 'AN': ['COMM'], 'DM': ['DADE', 'DCOH', 'DEND', 'DENT', 'DOMD', 'DORT', 'DOSP', 'DPED', 'DRST'], 'ED': ['EDUC'], 'PV': ['INTL', 'MSCI', 'NSCI'], 'LW': ['LAW', 'LAWM'], 'SW': ['MSSP', 'NPLD', 'SWRK'], 'NU': ['NURS'], 'VM': ['VBMS', 'VCSN', 'VCSP', 'VISR', 'VMED', 'VPTH']}
 
-
-
+########################################################################################
+## there is a bit of an issue where ther is not a mapping of schools to subjects ...  ##
+## here is a good start. the rest will have to be done ad hoc                         ##
+#########################################################################################
 
 def update_school_subj():
     with open('OpenData.txt') as json_file:
@@ -137,94 +128,150 @@ def find_school(subject):
     for school in school_subj:
         if subject in school_subj[school]:
             return opendata_crf_school_mappings[school]
+    return None
+    # this should be logged
     print("Couldnt find %s in the current subject lists" % (subject))
 
+def check_activity(abbr):
+    activity_map = {
+      "LEC" : "Lecture",
+      "REC" : "Recitation",
+      "LAB" : "Laboratory",
+      "IND" : "Independent Study",
+      "SEM" : "Seminar",
+      "SRT" : "Senior Thesis",
+      "STU" : "Studio",
+      "CLN" : "Clinic",
+      "PRC" : "SCUE Preceptorial",
+      "PRO" : "NSO Proseminar"
+    }
+    if abbr in [*activity_map]: return True
+    else: return False
 
 
 def get_courses():
-    term = '2019B'
-    url = domain +'course_section_search'
-    params = {'term':term,'number_of_results_per_page':'20'}
 
-    LAST_PAGE = False
-    PAGE = 1
-    while not LAST_PAGE:
-        params['page_number'] = str(PAGE)
+    # create OpenData API wrapper object
+    OpenData = library.OpenData()
+    terms = OpenData.get_available_terms()
 
-        response=requests.get(url,headers=headers,params=params)
-        r_json = response.json()
-        data = r_json['result_data']
-        service_meta = r_json["service_meta"]
+    for term in terms:
+        next = True
+        while next:
+        #
 
 
-        for course in data:
-            pp.pprint(course)
-            if course['crosslistings']:
-                pp.pprint(course['crosslistings'])
-                #if course['crosslistings']['is_crosslist_primary']:
-                #    # the cross list must be c
-            else:
-                print("no crosslistings")
-            #check_instructors(data['instructors'])
-            course_school = find_school(course['course_department'])
-            if course['crosslist_primary']: #if this is true then the current is the primary course
-                primary_subj = course['crosslist_primary'][:-6]
+            for course in data:
+                pp.pprint(course)
 
-            else:
-                primary_subj = course['course_department']
 
-            course_data = {
-                "course_code": "x",
-                "instructors":['mfhodges'],
-                "course_schools": [course_school],
-                "course_subject": course['course_department'],
-                "course_term": term[-1],
-                "course_activity": course['activity'],
-                "course_number": course['course_number'],
-                "course_section": course['section_number'],
-                "course_name": course['course_title'],
-                "year": term[:-1],
-                "requested": False,
-                "course_primary_subject":primary_subj
-                }
-            if not course_is_unique(course_data):
-                # we havent created this course yet so lets create it
+                ###############################################################################
+                #### we need to have some way to check if the associated data already exists ##
+                ###############################################################################
 
-                create_instance('courses',course_data)
-                if course['crosslistings']:
-                    print("MAIN COURSE")
-                    pp.pprint(course_data,indent=2)
-                    for crosslist in course['crosslistings']:
-                        #make the course
-                        course_data['course_number']=crosslist['course_id']
-                        course_data['course_section']=crosslist['section_id']
-                        course_data['course_subject']=crosslist['subject']
-                        print("CROSSLISTED COURSE")
-                        pp.pprint(course_data,indent=2)
-                        if not course_is_unique(course_data):
-                            create_instance('courses',course_data)
-                    #crosslist them
-                    # FIX THIS
-                    print("course['crosslist_primary']",course['crosslist_primary'])
-                    print("course['section_id']",course['section_id'])
-                    primary = course['crosslist_primary']+term
-                    secondary = course['section_id']+term
-                    if len(course['crosslistings']) ==1:
-                        cross_list(primary,secondary)
-                    elif len(course['crosslistings']) ==2:
-                        tertiary
+                # CHECK ACTIVITY
+                if check_activity(course['activity']):
+                    activity = course['activity']
+                else:
+                    activity = 'UNK'
 
-                        print("WE HAVE A BIG BOY")
 
+                # CHECK SCHOOLS - happend in the find school
+                # we may need the school if we have to create the subject
+                course_school = find_school(course['course_department'])
+                if course_school == None:
+                    OpenData.find_school_by_subj(course['course_department'])
+                    school_data = {
+                        "abbreviation": course_school,
+                        "name": course['department_description'],
+                        "visible": 'true',
+                        'opendata_abbr':
+                    }
+                    #add it to the file
+
+                # CHECK SUBJECTS
+                subject = course['course_department']
+                if check_instance('subjects',subject):
+                    pass
+                else:
+                    #create subject
+                    subject_data = {
+                            "abbreviation": subject,
+                            "name": course['department_description'],
+                            "visible": 'true',
+                            "schools": course_school
+                    }
+                    create_instance('subject',subject_data)
+
+                    # add it to the file.
+
+                # CHECK INSTRUCTORS instructors': [{'name': 'Elizabeth Shank', 'penn_id': '10124627', 'section_id': 'AAMW520401', 'term': '2019C'}]
+                for instructor in course['instructors']:
+                    if check_instructor(instructor['penn_id']):
+                        pass
                     else:
-                        print("WE HAVE A PROBLEM")
-            else:
-                print("course already exists")
-            print("~~~~~~~~~~~~~~~~~~~~~  NEXT COURSE   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        # increase page number
-        if PAGE == service_meta['number_of_pages']: LAST_PAGE = True
-        else:
-            PAGE +=1
+                        create_instructor(instructor['penn_id']))
+                #check_instructors(data['instructors'])
+
+                course_school = find_school(course['course_department'])
+                if course['crosslist_primary']: #if this is true then the current is the primary course
+                    primary_subj = course['crosslist_primary'][:-6]
+                else:
+                    # the listed course_subject is the primary one
+                    primary_subj = course['course_department']
+
+                course_data = {
+                    "course_code": "x",
+                    "instructors":['mfhodges'],
+                    "course_schools": [course_school],
+                    "course_subject": course['course_department'],
+                    "course_term": term[-1],
+                    "course_activity": course['activity'],
+                    "course_number": course['course_number'],
+                    "course_section": course['section_number'],
+                    "course_name": course['course_title'],
+                    "year": term[:-1],
+                    "requested": False,
+                    "course_primary_subject":primary_subj
+                    }
+
+                if not course_is_unique(course_data):
+                    # we have NOT created this course yet so lets create it
+
+                    # have the create_instance be a try and if it doesnt work write it down
+                    create_instance('courses',course_data)
+                    if course['crosslistings']:
+                        print(course['crosslistings'])
+                        print("MAIN COURSE")
+                        pp.pprint(course_data,indent=2)
+                        input('wait a minute')
+
+                        crosslist_codes = []
+                        for crosslist in course['crosslistings']:
+                            #make the course - we only need to change a few attributes ...
+                            course_data['course_number']=crosslist['course_id']
+                            course_data['course_section']=crosslist['section_id']
+                            course_data['course_subject']=crosslist['subject']
+                            course_code = course_data['course_subject'] +course_data['course_section']+course_data['course_number']+term
+                            crosslist_codes.append(course_code)
+                            print("CROSSLISTED COURSE")
+
+                            pp.pprint(course_data,indent=2)
+                            if not course_is_unique(course_data):
+                                create_instance('courses',course_data)
+                        #crosslist them
+                        # FIX THIS
+                        if crosslist_codes:
+                            primary = course['crosslist_primary']+term
+                            cross_list(primary,crosslist_codes)
+                else:# course already exists
+                    pass
+                    #print("course already exists")
+                print("~~~~~~~~~~~~~~~~~~~~~  NEXT COURSE   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
+            #
+
+
 
 
 
@@ -347,7 +394,7 @@ if __name__== "__main__":
  'third_party_links': []}
 
 
-    
+
 """
 
 
@@ -366,7 +413,7 @@ if __name__== "__main__":
 #    json.dump(data,outfile)
 
 
-Data provided by API stored in file defined above retreived from the search parameters 
+Data provided by API stored in file defined above retreived from the search parameters
 ###################################
 ########## ACTIVITY MAP ###########
 ###################################
@@ -390,7 +437,7 @@ Data provided by API stored in file defined above retreived from the search para
 ###################################
 
 {'2019B': 'Summer 2019', '2019C': 'Fall 2019'}
-NOTE: are not current term .. 
+NOTE: are not current term ..
 ###################################
 ########## DEPARTMENTS ############
 ###################################
@@ -602,9 +649,3 @@ NOTE: are not current term ..
 
 
 """
-
-
-
-
-
-

@@ -16,19 +16,13 @@ import django.core.exceptions
 
 
 """
-class User(User):
-    pass # since its already defined in Courses with the serializer
-    #username == pennkey
-
-
-    # most will be done like: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Authentication
-
-    def __str__(self):
-        return self.username
-
-    def __unicode__(self):
-        return self.username
+profile was created out of a need to store the users penn_id
+https://github.com/jlooney/extended-user-example
 """
+class Profile(models.Model):
+    user = models.OneToOneField(User,on_delete=models.CASCADE)
+    penn_id = models.CharField(max_length=10,unique=True)
+
 #class Instructor(models.auth.User):
 """
         this class expands on the User model
@@ -160,7 +154,8 @@ class Course(models.Model):
         ('SEM', 'Seminar'),
         ('SRT', 'Senior Thesis'),
         ('STU', 'Studio'),
-        ('MST', 'Masters Thesis')
+        ('MST', 'Masters Thesis'),
+        ('UNK','Unknown')
     )
 
     created = models.DateTimeField(auto_now_add=True)
@@ -227,10 +222,16 @@ class Course(models.Model):
 
         #return error
 
+    # NOT IN USE AND NEEDS TO BE TESTED
     def get_subjects(self):
-        return self.course_subject
+        cross_listed = self.crosslisted
+        return "ok"
+        if cross_listed == None:
+            return self.course_subject.abbreviation
+
         #should get all crosslisted and the
-        #return ",\n".join([sub.abbreviation for sub in self.course_subjects.all()])
+
+        return ",\n".join([sub.abbreviation for sub in cross_listed])
 
 
     def get_schools(self):
@@ -387,7 +388,7 @@ class AutoAdd(models.Model):
 
 class UpdateLog(models.Model):
     """
-    this is how to store
+    this is how to store Task Process history and status
     """
     MANAGER_CHOICES = (
     ('a','A'),
@@ -395,8 +396,16 @@ class UpdateLog(models.Model):
     ('c','C'),
     )
 
+    # consult this: https://medium.freecodecamp.org/how-to-build-a-progress-bar-for-the-web-with-django-and-celery-12a405637440
+
+
     created = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    finished = models.DateTimeField(null=True,blank=True)
     process= models.CharField(max_length=10,choices = MANAGER_CHOICES)
+    # log = this should be a link to the log file associated with the task
+    
+
+
 
 
 class Tools(models.Model):

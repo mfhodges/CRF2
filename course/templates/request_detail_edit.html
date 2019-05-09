@@ -16,7 +16,7 @@
 {% endif %}
 
 <!-- DETAIL -->
-<fieldset >
+<fieldset id="RequestForm">
   <legend>EDITING Request for {{request_instance.course_info|asrepr}}</legend>
 
   <dl class="row" style="line-height:1.1;">
@@ -75,7 +75,7 @@
 
 
 <!-- Canvas Site info -->
-{% include "bits/canvas_site_info.html" %}
+{% include "bits/canvas_site_info.html" with course=request_instance.course_info %}
 
 
 

@@ -2,6 +2,10 @@ from django.template.loader import get_template
 from course.forms import ContactForm, EmailChangeForm
 from django.core.mail import EmailMessage
 from course.models import *
+import logging
+
+
+
 
 """
 Types of emails being sent:
@@ -30,10 +34,11 @@ def get_email(pennkey):
         user_email = User.objects.get(username=pennkey).email
         if user_email == '':
             user_email = 'None'
-            # alert some process ? 
+            # alert some process ?
         print("found %s email for %s" % ( user_email, pennkey))
     except User.DoesNotExist:
         user_email = ''
+        logging.critical("could not find %s user in system" % (pennkey))
     return user_email
 
 
@@ -124,3 +129,6 @@ def added_to_request(context):
         to=[get_email(context['user'])],
     )
     email.send()
+
+def main():
+    logging.basicConfig(filename='course/static/logs/emails.log',format='%(asctime)s %(message)s')

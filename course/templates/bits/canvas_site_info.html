@@ -20,5 +20,10 @@
   </dl>
   {% else %}
   <p> no canvas instance created yet </p>
+  {% if user.is_staff %}
+  <!-- SRS_CIS-520-001 2013C -->
+  
+  <a target="_blank" href="https://canvas.upenn.edu/accounts/96678?search_term=SRS_{{course.course_subject}}-{{course.course_number}}-{{course.course_section}}"> CHECK FOR CANVAS SITE </a>
+  {% endif %}
   {% endif %}
 </fieldset>

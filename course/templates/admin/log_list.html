@@ -13,7 +13,122 @@
 
   <p> There will be a div detailing the last update timestamp, time till next, and a button to force an update/run of certain management processes </p>
 
+  <ul>
+  {% for task in data %}
+    <li>{{ task.name }} {{task.schedule }} enabled: {{task.enabled}}, last run at {{task.last_run_at}}</li>
+
+  {% endfor %}
+</ul>
+  <fieldset>
+    <legend>Task Processing </legend>
+    <table>
+      <thead>
+        <tr>
+          <!-- headers -->
+          <th scope="col">Task Name</th>
+          <th scope="col">Enabled</th>
+          <th scope="col">Frequency</th>
+          <th scope="col">Last Run</th>
+          <th scope="col">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td scope="row"> Validate Requests</td>
+          <td> x</td>
+          <td> x</td>
+          <td> x</td>
+          <td> x</td>
+        </tr>
+
+        <tr>
+          <td scope="row"> Site Creation</td>
+          <td> x</td>
+          <td> x</td>
+          <td> x</td>
+          <td> x</td>
+        </tr>
+        <tr>
+          <td scope="row">Registrar Sync</td>
+          <td> x</td>
+          <td> x</td>
+          <td> x</td>
+          <td> x</td>
+        </tr>
+        <tr>
+          <td scope="row">Canvas Sync </td>
+          <td> x</td>
+          <td> x</td>
+          <td> x</td>
+          <td> x</td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    <!-- NOTE: the details should be a link to the most recent tasklog for that task type -->
+
+    <div style="font-size: 1rem;">
+      <p > <i>Validate Requests</i> - when a 'submitted' request is checked for errors </p>
+      <p > <i>Site Creation</i> - when a 'in process' request is created in Canvas</p>
+    </div>
+      <small> please refer to <a href="https://raw.githubusercontent.com/Mfhodges/CRF2/master/wiki/request_process.png">this diagram</a> for more info on the request process</small>
+  </fieldset>
+
+
+
+  <fieldset>
+    <legend>One off tasks </legend>
+    <p>
+      Here are all of the tasks you can force to run now
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Task Name</th>
+          <th scope="col">Last Run</th>
+          <th scope="col">Description</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td scope="row"> One-off 1</td>
+          <td> x</td>
+          <td> <a data-toggle="popover" tabindex="0" data-trigger="focus" data-content="And here's some amazing content. It's very engaging. Right?"><i class="fas fa-info-circle"></i></a></td>
+          <td> <button> run </button></td>
+        </tr>
+        <tr>
+          <td scope="row"> One-off 2</td>
+          <td> x</td>
+          <td> <a data-toggle="popover" tabindex="0" data-trigger="focus" data-content="And here's some amazing content. It's very engaging. Right?"><i class="fas fa-info-circle"></i></a></td>
+          <td> <button> run </button></td>
+        </tr>
+        <tr>
+          <td scope="row"> One-off 3</td>
+          <td> x</td>
+          <td> <a data-toggle="popover" tabindex="0" data-trigger="focus" data-content="And here's some amazing content. It's very engaging. Right?"><i class="fas fa-info-circle"></i></a></td>
+          <td> <button> run </button></td>
+        </tr>
+
+   </tbody>
+   </table>
+  </fieldset>
 </div>
 
 
+
+
+
+{% endblock %}
+
+{% block template_page_js %}
+<script>
+$(function () {
+  $('[data-toggle="popover"]').popover()
+})
+$('.popover-dismiss').popover({
+  trigger: 'focus'
+})
+</script>
 {% endblock %}
