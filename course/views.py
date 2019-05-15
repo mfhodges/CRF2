@@ -73,22 +73,22 @@ from rest_framework import status
 def custom_exception_handler(exc, context):
     # Call REST framework's default exception handler first,
     # to get the standard error response.
-    print("helloooo","\n",exc,"\n",context)
+    ##print("helloooo","\n",exc,"\n",context)
     response = exception_handler(exc, context)
     #response = render({},'errors/403.html')
 
 
-    print("yeah okie,,",response.status_code)
+    #print("yeah okie,,",response.status_code)
     # we need to be able to parse if they are doing a html request or not
     # Now add the HTTP status code to the response.
-    print("hahhhh")
+    #print("hahhhh")
     if response is not None:
         response.data['status_code'] = response.status_code
         response.data['error'] = response.data['detail']
         del response.data['detail']
 
     #response.template_name = 'base_blank.html'#'errors/'+str(response.status_code)+'.html'
-    print("we r barely ali", response.data['status_code'])
+    #print("we r barely ali", response.data['status_code'])
     return response
     #return render(response, 'errors/'+str(response.status_code) +'.html')
 
@@ -126,13 +126,13 @@ class MixedPermissionModelViewSet(viewsets.ModelViewSet): #LoginRequiredMixin, -
     def get_permissions(self):
 
         try:
-            print("self.action", self.action)
+            #print("self.action", self.action)
             # return permission_classes depending on `action`
-            print([permission() for permission in self.permission_classes_by_action[self.action]])
+            #print([permission() for permission in self.permission_classes_by_action[self.action]])
             return [permission() for permission in self.permission_classes_by_action[self.action]]
         except KeyError:
             # action is not set return default permission_classes
-            print("KeyError for permission: ", self.action)
+            #print("KeyError for permission: ", self.action)
             return [permission() for permission in self.permission_classes]
 
 
@@ -185,11 +185,11 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
 
     def perform_create(self, serializer):
-        print("CourseViewSet.perform_create: request.POST", self.request.POST)
-        print("CourseViewSet.perform_create: request.meta", self.request.META) # could use 'HTTP_REFERER': 'http://127.0.0.1:8000/courses/'
-        print("CourseViewSet.perform_create: request.query_params", self.request.query_params)
-        print('CourseViewSet.perform_create lookup field', self.lookup_field)
-        print("CourseViewSet.perform_create", self.request.data)
+        #print("CourseViewSet.perform_create: request.POST", self.request.POST)
+        #print("CourseViewSet.perform_create: request.meta", self.request.META) # could use 'HTTP_REFERER': 'http://127.0.0.1:8000/courses/'
+        #print("CourseViewSet.perform_create: request.query_params", self.request.query_params)
+        #print('CourseViewSet.perform_create lookup field', self.lookup_field)
+        #print("CourseViewSet.perform_create", self.request.data)
         serializer.save(owner=self.request.user)
 
 
@@ -197,33 +197,33 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     # I AM NOT SURE IF THIS IS OKAY WITH AUTHENTICATION
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-        print("course query_set", queryset)
+        #print("course query_set", queryset)
         page = self.paginate_queryset(queryset)
 
-        #print(",,",self.filter_backends[0].get_filterset(request,self.get_queryset(),self))
+        ##print(",,",self.filter_backends[0].get_filterset(request,self.get_queryset(),self))
         #for backend in list(self.filter_backends):
             #django_filters.rest_framework.backends.DjangoFilterBackend - https://github.com/carltongibson/django-filter/blob/master/django_filters/rest_framework/backends.py
-            #print("...",backend.filterset_base.form) # <class 'django_filters.rest_framework.filterset.FilterSet'>
-            #print("...1",backend.filterset_base.get_form_class)
-            #print("...1",backend.filterset_base.filters)
+            ##print("...",backend.filterset_base.form) # <class 'django_filters.rest_framework.filterset.FilterSet'>
+            ##print("...1",backend.filterset_base.get_form_class)
+            ##print("...1",backend.filterset_base.filters)
 
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
-            print("template_name",response.template_name)
+            #print("template_name",response.template_name)
             if request.accepted_renderer.format == 'html':
                 response.template_name = 'course_list.html'
-                print("pp",request.get_full_path())
-                print("kwargs",kwargs)
-                print("args",args)
+                #print("pp",request.get_full_path())
+                #print("kwargs",kwargs)
+                #print("args",args)
 
                 # https://github.com/encode/django-rest-framework/blob/master/rest_framework/utils/urls.py
 
-                print('filterfield', CourseFilter.Meta.fields)
-                print('request.query_params', request.query_params.keys())
+                #print('filterfield', CourseFilter.Meta.fields)
+                #print('request.query_params', request.query_params.keys())
                 response.data = {'results': response.data,'paginator':self.paginator, 'filter':CourseFilter, 'request':request}
-            #print("yeah ok1",response.items())
-            #print("o")
+            ##print("yeah ok1",response.items())
+            ##print("o")
             return response
         """
         serializer = self.get_serializer(queryset, many=True)
@@ -231,17 +231,17 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         if request.accepted_renderer.format == 'html':
             response.template_name = 'course_list.html'
             response.data = {'results': response.data}
-        print("yeah ok2",response.items())
+        #print("yeah ok2",response.items())
         return response
         """
 
     def retrieve(self, request, *args, **kwargs):
-        print('CourseViewSet.retrieve lookup field', self.lookup_field)
+        #print('CourseViewSet.retrieve lookup field', self.lookup_field)
         response = super(CourseViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
-            print("bye george(detail)!\n",response.data)
+            #print("bye george(detail)!\n",response.data)
             course_instance = self.get_object()
-            print("iii",course_instance)
+            #print("iii",course_instance)
             # okay so at this point none of this is working soe
 
             # should check if requested and if so get that request obj! is this efficient ??
@@ -250,15 +250,15 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
                 #NOTE there must be an associated course and if there isnt... we r in trouble!
                 request_instance = course_instance.get_request()
-                #print("hfaweuifh ",request_instance)
+                ##print("hfaweuifh ",request_instance)
                 this_form = ''#RequestSerializer()
             else:
                 # course detail needs to get form
                 # URGENT is this creating many copies of the ob?
                 this_form = RequestSerializer(data={'course_requested':self.get_object()})
-                print("ok")
+                #print("ok")
                 this_form.is_valid()
-                print("this_form",this_form.data)
+                #print("this_form",this_form.data)
                 request_instance =''
             return Response({'course': response.data, 'request_instance':request_instance,'request_form':this_form ,'style':{'template_pack': 'rest_framework/vertical/'}}, template_name='course_detail.html')
         return response
@@ -318,12 +318,12 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 for crosslisted in course.crosslisted.all():
                     crosslisted.requested = True
                     crosslisted.request = course.request
-                    print("crosslisted.request , course.request",crosslisted.request , course.request)
+                    #print("crosslisted.request , course.request",crosslisted.request , course.request)
                     crosslisted.save()
-            print("-",course.course_code, course.requested)
+            #print("-",course.course_code, course.requested)
             #get crosslisted courses
             crosslisted = course.crosslisted
-            #print(crosslisted,"help me!!!")
+            ##print(crosslisted,"help me!!!")
 
 
         """
@@ -336,27 +336,27 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             sessions would be a better and safer implementation.
         """
 
-        print("views.py in create: request.data", request.data)
+        #print("views.py in create: request.data", request.data)
         # setting masquerade variable for later use
         try:
             masquerade = request.session['on_behalf_of']
         except KeyError:
             masquerade = ''
-        print("Request create; masqueraded as:", masquerade)
+        #print("Request create; masqueraded as:", masquerade)
 
         course = Course.objects.get(course_code=request.data['course_requested'])# get Course instance
         instructors = course.get_instructors()
-        print("course instructors", instructors)
+        #print("course instructors", instructors)
 
         # CHECK PERMISSIONS custom_permissions(request,request_obj,masquerade,instructors)
         permission = self.custom_permissions(None,masquerade,instructors)
-        print("permission, ", permission)
+        #print("permission, ", permission)
 
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid()
         if not serializer.is_valid():
-            print(serializer.errors)
+            #print(serializer.errors)
             (serializer.errors)
             messages.add_message(request, messages.ERROR, serializer.errors['non_field_errors'])
             raise serializers.ValidationError(serializer.errors)
@@ -381,36 +381,36 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
 
     def perform_create(self, serializer):
-        print("Request perform_create")
+        #print("Request perform_create")
         serializer.save(owner=self.request.user)
         serializer.save(masquerade="test")# NOTE fix this!
 
 
     def list(self, request, *args, **kwargs):
-        print('self.lookup_field', self.lookup_field)
+        #print('self.lookup_field', self.lookup_field)
 
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
-        print("1")
+        #print("1")
         if page is not None:
 
             serializer = self.get_serializer(page, many=True)
-            print(";",serializer.data)
+            #print(";",serializer.data)
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
-            print("template_name",response.template_name)
+            #print("template_name",response.template_name)
             if request.accepted_renderer.format == 'html':
                 response.template_name = 'request_list.html'
-                print("template_name",response.template_name)
+                #print("template_name",response.template_name)
                 response.data = {'results': response.data,'paginator':self.paginator, 'filter': RequestFilter}
-            print("request.accepted_renderer.format",request.accepted_renderer.format)
+            #print("request.accepted_renderer.format",request.accepted_renderer.format)
             return response
         """
         serializer = self.get_serializer(queryset, many=True)
         response = Response(serializer.data)
         if request.accepted_renderer.format == 'html':
-            print("template_name",response.template_name)
+            #print("template_name",response.template_name)
             response.template_name = 'request_list.html'
-            print("template_name",response.template_name)
+            #print("template_name",response.template_name)
             response.data = {'results': response.data}
         return response
         """
@@ -423,12 +423,13 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             Here 403 errors will be raised
         """
 
-        print("masquerade: ", masquerade)
+        #print("masquerade: ", masquerade)
         if request_obj:
-            print("request_obj['masquerade']: ", request_obj['masquerade'])
-            print("request_obj['owner']: ", request_obj['owner'])
-        print("no request_obj: ")
-        print("instructors: ", instructors)
+            pass
+            #print("request_obj['masquerade']: ", request_obj['masquerade'])
+            #print("request_obj['owner']: ", request_obj['owner'])
+        #print("no request_obj: ")
+        #print("instructors: ", instructors)
 
         if self.request.user.is_staff:
             return True
@@ -438,12 +439,12 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             # user or masq is in the Request Instance
             # if the user is the owner of the request obj or the listed masquerade
             if not masquerade:
-                print("no masq set")
+                #print("no masq set")
                 if self.request.user.username == request_obj['owner'] or self.request.user.username == request_obj['masquerade']:
-                    #print("")
+                    ##print("")
                     return True
                 else:
-                    print("raising error1")
+                    #print("raising error1")
                     raise PermissionDenied({"message":"You don't have permission to access"})
                     return False
 
@@ -451,30 +452,30 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             elif masquerade == request_obj['owner'] or masquerade == request_obj['masquerade']:
                 return True
             else:
-                print("raising error2")
+                #print("raising error2")
                 raise PermissionDenied({"message":"You don't have permission to access"})
                 return False
 
         if self.request.method =="POST":
             # scenario - we are asking to create a request from a course, request_obj=None
             if instructors: # there are instructors
-                print("we have intsructors")
+                #print("we have intsructors")
                 if self.request.user.username in instructors:
-                    print("self.request.user.username in instructors: ", self.request.user.username, "in ", instructors, "==",self.request.user.username in instructors)
+                    #print("self.request.user.username in instructors: ", self.request.user.username, "in ", instructors, "==",self.request.user.username in instructors)
                     #("masquerade in instructors: ", masquerade," in ", instructors, "== ", masquerade in instructors)
                     return True
                 elif masquerade and masquerade in instructors:
                     return True
                 else:
-                    print("raising error3")
+                    #print("raising error3")
                     raise PermissionDenied({"message":"You don't have permission to access"})
                     return False
             # no instructors then anyone can create a request for it
             else:
-                print("no instructors then anyone can create a request for it")
+                #print("no instructors then anyone can create a request for it")
                 return True
         else:
-            print("OHH BUDY WE HAVE A PROBLEM")
+            #print("OHH BUDY WE HAVE A PROBLEM")
             return False
 
     def check_request_update_permissions(request,response_data):
@@ -501,7 +502,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             return permissions['staff']
 
         if request.user.username == request_owner or (request.user.username == request_masquerade and request_masquerade !=''):
-            print("yeahh buddy",request.user.username)
+            #print("yeahh buddy",request.user.username)
             return permissions['owner']
         return ''
 
@@ -511,41 +512,41 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         """
             can retrieve for /requests/<COURSE_CODE>/ or /requests/<COURSE_CODE/edit
         """
-        print("ok in retrieve self,,",self.request.session.get('on_behalf_of','None'))
-        print("ok in ret,,", request.session.get('on_behalf_of','None'))
-        print("Request.retrieve")
-        print("request.data",request.data)
-        print("request.resolver_match.url_name",request.resolver_match.url_name)
+        #print("ok in retrieve self,,",self.request.session.get('on_behalf_of','None'))
+        #print("ok in ret,,", request.session.get('on_behalf_of','None'))
+        #print("Request.retrieve")
+        #print("request.data",request.data)
+        #print("request.resolver_match.url_name",request.resolver_match.url_name)
 
 
         response = super(RequestViewSet, self).retrieve(request, *args, **kwargs)
-        print("response",response.data)
+        #print("response",response.data)
         if request.resolver_match.url_name == "UI-request-detail-success":
             return Response({'request_instance': response.data}, template_name='request_success.html')
 
         # CHECK PERMISSIONS custom_permissions(request_obj, current_masquerade,instructors)
         obj_permission = self.custom_permissions(response.data,request.session.get('on_behalf_of','None'),response.data['course_info']['instructors'])
-        print("permission, ", obj_permission)
+        #print("permission, ", obj_permission)
 
         if request.accepted_renderer.format == 'html':
-            #print("bye george(UI-request-detail)!\n",response.data)
+            ##print("bye george(UI-request-detail)!\n",response.data)
             permissions = RequestViewSet.check_request_update_permissions(request, response.data)
             if request.resolver_match.url_name == "UI-request-detail-edit":
             #if 'edit' in request.path.split('/') : # this is possibly the most unreliable code ive ever written
                 # we want the edit form
                 # CHECK PERMISSIONS -> must be creator and not be masquerading as creator
                 # CHECK IF request status is submitted ( for requestor ) or submitted/locked( for admin)
-                #print("object",self.get_object())
+                ##print("object",self.get_object())
                 here= RequestSerializer(self.get_object(), context={'request':request})
 
-                #print(here.title_override)
-                #print("RequestSerializer(response.data)",here)
+                ##print(here.title_override)
+                ##print("RequestSerializer(response.data)",here)
                 return Response({'request_instance': response.data,'permissions':permissions,'request_form':here,'style':{'template_pack': 'rest_framework/vertical/'}}, template_name='request_detail_edit.html') #data={'course_requested':response.data['course_requested']},partial_update=True
             return Response({'request_instance': response.data, 'permissions':permissions}, template_name='request_detail.html')
         return response
 
     def destroy(self, request, *args, **kwargs):
-        print("OH MY GOLLY GEEE we r deleteing a request")
+        #print("OH MY GOLLY GEEE we r deleteing a request")
         instance = self.get_object()
         # Must get Course and set .request to true
         course = Course.objects.get(course_code=instance.course_requested)# get Course instance
@@ -561,23 +562,23 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         # '' is different than None ... if the key isnt present the .get() returns None
         """
         if request.data.get('on_behalf_of')=='':
-            print(request.get_full_path())
-            print("ok self,,",self.request.session.get('on_behalf_of','None'))
-            print("ok no self,,",request.session.get('on_behalf_of','None'))
+            #print(request.get_full_path())
+            #print("ok self,,",self.request.session.get('on_behalf_of','None'))
+            #print("ok no self,,",request.session.get('on_behalf_of','None'))
             set_session(request)
             return redirect(request.get_full_path())
         """
 
     def update(self, request, *args, **kwargs):
-        print("in update")
+        #print("in update")
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        print(":^)")
-        print("request.data update!",request.data)
+        #print(":^)")
+        #print("request.data update!",request.data)
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        print(":^) !")
+        #print(":^) !")
         if getattr(instance, '_prefetched_objects_cache', None):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
@@ -591,7 +592,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
         if 'view_type' in request.data:
             if request.data['view_type'] == 'UI-request-detail':
-                print("LLL")
+                #print("LLL")
                 permissions = RequestViewSet.check_request_update_permissions(request, {'owner':instance.owner,'masquerade':instance.masquerade,'status':instance.status})
                 return Response({'request_instance':serializer.data,'permissions':permissions}, template_name='request_detail.html')
                 #return redirect('UI-request-detail', pk=request.data['course_requested'])
@@ -620,9 +621,9 @@ class UserViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     """
     # this is just to havet the pk be username and not id
     def retrieve(self, request, pk=None):
-        print("IM DOING MY BEST")
+        #print("IM DOING MY BEST")
         instance = User.objects.filter(username=pk)
-        print(instance)
+        #print(instance)
 
 
         serializer = self.get_serializer(instance)
@@ -654,45 +655,45 @@ class SchoolViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
-        print("1")
+        #print("1")
         if page is not None:
 
             serializer = self.get_serializer(page, many=True)
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
-            print("template_name",response.template_name)
+            #print("template_name",response.template_name)
             if request.accepted_renderer.format == 'html':
                 response.template_name = 'schools_list.html'
-                print("template_name",response.template_name)
+                #print("template_name",response.template_name)
                 response.data = {'results': response.data,'paginator':self.paginator}
-            print("request.accepted_renderer.format",request.accepted_renderer.format)
+            #print("request.accepted_renderer.format",request.accepted_renderer.format)
             return response
         """
         serializer = self.get_serializer(queryset, many=True)
         response = Response(serializer.data)
         if request.accepted_renderer.format == 'html':
-            print("template_name",response.template_name)
+            #print("template_name",response.template_name)
             response.template_name = 'schools_list.html'
-            print("template_name",response.template_name)
+            #print("template_name",response.template_name)
             response.data = {'results': response.data}
         return response
         """
 
     def post(self, request,*args, **kwargs):
-        print("posting")
+        #print("posting")
         #if request.user.is_authenticated():
 
         """
         #need to check if the post is for masquerade
-        print(request.get_full_path())
+        #print(request.get_full_path())
         set_session(request)
         return(redirect(request.get_full_path()))
         """
 
     def update(self, request, *args, **kwargs):
-        print("update?")
-        print("args",args)
-        print("kwargs", kwargs)
-        print("request.data", request.data)
+        #print("update?")
+        #print("args",args)
+        #print("kwargs", kwargs)
+        #print("request.data", request.data)
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -703,18 +704,19 @@ class SchoolViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
         if request.data.get('view_type',None) == 'UI':
-            print("its happening")
+            pass
+            #print("its happening")
 
         return Response(serializer.data)
 
 
     def retrieve(self, request, *args, **kwargs):
-        print("this is dumb",request.method)
-        print("self.lookup_field: ",self.lookup_field)
+        #print("this is dumb",request.method)
+        #print("self.lookup_field: ",self.lookup_field)
         # this response should probably be paginated but thats a lot of work ..
         response = super(SchoolViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
-            #print("bye george(UI-request-detail)!\n",response.data)
+            ##print("bye george(UI-request-detail)!\n",response.data)
             return Response({'data': response.data}, template_name='school_detail.html')
         return response
 
@@ -739,28 +741,28 @@ class SubjectViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 #        serializer.save(owner=self.request.user)
 
     def create(self, request, *args, **kwargs):
-        print("request.data", request.data)
+        #print("request.data", request.data)
         serializer = self.get_serializer(data=request.data)
-        print("serializer",serializer)
+        #print("serializer",serializer)
         serializer.is_valid(raise_exception=True)
-        print("ok")
+        #print("ok")
         self.perform_create(serializer)
-        print("ok2")
+        #print("ok2")
         headers = self.get_success_headers(serializer.data)
-        print("serializer.data",serializer.data)
+        #print("serializer.data",serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
     def list(self, request, *args, **kwargs):
-        print("in list")
+        #print("in list")
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
-        print("1")
+        #print("1")
         if page is not None:
 
             serializer = self.get_serializer(page, many=True)
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
-            print("template_name",response.template_name)
+            #print("template_name",response.template_name)
 
             if request.accepted_renderer.format == 'html':
                 response.template_name = 'subjects_list.html'
@@ -770,9 +772,9 @@ class SubjectViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         response = Response(serializer.data)
         if request.accepted_renderer.format == 'html':
-            print("template_name",response.template_name)
+            #print("template_name",response.template_name)
             response.template_name = 'subjects_list.html'
-            print("template_name",response.template_name)
+            #print("template_name",response.template_name)
             response.data = {'results': response.data}
         return response
         """
@@ -782,16 +784,16 @@ class SubjectViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
         """
         #need to check if the post is for masquerade
-        print(request.get_full_path())
+        #print(request.get_full_path())
         set_session(request)
         return(redirect(request.get_full_path()))
         """
 
     def retrieve(self, request, *args, **kwargs):
-        print("request.data",request.data)
+        #print("request.data",request.data)
         response = super(SubjectViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
-            #print("bye george(UI-request-detail)!\n",response.data)
+            ##print("bye george(UI-request-detail)!\n",response.data)
             return Response({'data': response.data}, template_name='subject_detail.html')
         return response
 
@@ -811,8 +813,8 @@ class NoticeViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                                     'partial_update':[],
                                     'delete':[]}
     def perform_create(self, serializer):
-        print("NoticeViewSet - perform_create trying to create Notice")
-        #print(self.request.user) == username making request
+        #print("NoticeViewSet - perform_create trying to create Notice")
+        ##print(self.request.user) == username making request
         serializer.save(owner=self.request.user)
 
 
@@ -826,14 +828,14 @@ class HomePage(LoginRequiredMixin,APIView):
         # # TODO:
         # [ ] Check that valid pennkey
         # [ ] handles if there are no notice instances in the db
-        print("request.user",request.user)
-        print("in home")
+        #print("request.user",request.user)
+        #print("in home")
         try:
             notice = Notice.objects.latest()
-            print(Notice.notice_text)
+            #print(Notice.notice_text)
         except Notice.DoesNotExist:
             notice = None
-            print("no notices")
+            #print("no notices")
 
         # this should get the courses from this term !
         # currently we are just getting the courses that have not been requested
@@ -846,13 +848,13 @@ class HomePage(LoginRequiredMixin,APIView):
         courses= Course.objects.filter(instructors=user)
         courses_count = courses.count()
         courses = courses[:15] #requested=False
-        print(courses)
-        print("1",user,"2",user.username)
+        #print(courses)
+        #print("1",user,"2",user.username)
         site_requests = Request.objects.filter(Q(owner=user) | Q(masquerade=user))
         site_requests_count = site_requests.count()
         site_requests= site_requests[:15]
 
-        #print(site_requests, site_requests[0].course_requested.course_name)
+        ##print(site_requests, site_requests[0].course_requested.course_name)
         # for courses do instructors.courses since there is a manytomany relationship
         return Response({'data':
             {'notice':notice,
@@ -873,27 +875,27 @@ class HomePage(LoginRequiredMixin,APIView):
 
 
     def set_session(request):
-        print("set_session request.data",request.data)
+        #print("set_session request.data",request.data)
         try:
             on_behalf_of = request.data['on_behalf_of']
-            print("found on_behalf_of in request.data ", on_behalf_of)
+            #print("found on_behalf_of in request.data ", on_behalf_of)
             if on_behalf_of: # if its not none -> if exists then see if pennkey works
                 if validate_pennkey(on_behalf_of) == None: #if pennkey is good the user exists
-                    print("not valid input")
+                    #print("not valid input")
                     messages.error(request,'Invalid Pennkey')
                     on_behalf_of = None
         except KeyError:
             pass
         # check if user is in the system
         request.session['on_behalf_of'] = on_behalf_of
-        print("masquerading as:", request.session['on_behalf_of'])
+        #print("masquerading as:", request.session['on_behalf_of'])
 
     def post(self, request,*args, **kwargs):
         #if request.user.is_authenticated():
         #need to check if the post is for masquerade
-        print("posting in home")
-        print("\trequest.get_full_path()",request.get_full_path())
-        print("\trequest.META[''HTTP_REFERER'']",request.META['HTTP_REFERER'])
+        #print("posting in home")
+        #print("\trequest.get_full_path()",request.get_full_path())
+        #print("\trequest.META[''HTTP_REFERER'']",request.META['HTTP_REFERER'])
         HomePage.set_session(request)
         return(redirect(request.META['HTTP_REFERER']))
 
@@ -914,18 +916,18 @@ class AutoAddViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                                     'delete':[IsAdminUser]}
 
     def create(self, request, *args, **kwargs):
-        print(self.request.user)
+        #print(self.request.user)
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        print("headers",headers)
-        print("autoadd data",serializer.data) # {'url': 'http://127.0.0.1:8000/api/autoadds/1/', 'user': 'username_8', 'school': 'AN', 'subject': 'abbr_2', 'id': 1, 'role': 'ta'}
+        #print("headers",headers)
+        #print("autoadd data",serializer.data) # {'url': 'http://127.0.0.1:8000/api/autoadds/1/', 'user': 'username_8', 'school': 'AN', 'subject': 'abbr_2', 'id': 1, 'role': 'ta'}
         response = Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
         email_processor.autoadd_contact({'user':serializer.data['user'], 'role':serializer.data['role'], 'school':School.objects.get(abbreviation=serializer.data['school']).name, 'subject':Subject.objects.get(abbreviation=serializer.data['subject']).name})
-        print("got here")
+        #print("got here")
         if request.accepted_renderer.format == 'html':
             response.template_name = 'admin/autoadd_list.html'
             return(redirect('UI-autoadd-list'))
@@ -933,31 +935,31 @@ class AutoAddViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
 
     def list(self, request, *args, **kwargs):
-        #print(request.user.is_authenticated())
+        ##print(request.user.is_authenticated())
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
-        print("1")
+        #print("1")
 
         if page is not None:
 
             serializer = self.get_serializer(page, many=True)
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
-            print("template_name",response.template_name)
+            #print("template_name",response.template_name)
             if request.accepted_renderer.format == 'html':
                 response.template_name = 'admin/autoadd_list.html'
-                print("template_name",response.template_name)
-                print("qqq",repr(AutoAddSerializer))
-                print("qqqq",AutoAddSerializer.fields)
+                #print("template_name",response.template_name)
+                #print("qqq",repr(AutoAddSerializer))
+                #print("qqqq",AutoAddSerializer.fields)
                 response.data = {'results': response.data,'paginator':self.paginator,'serializer':AutoAddSerializer}
-            print("request.accepted_renderer.format",request.accepted_renderer.format)
-            print("yeah ok1",response.items())
+            #print("request.accepted_renderer.format",request.accepted_renderer.format)
+            #print("yeah ok1",response.items())
             return response
 
     def destroy(self, request, *args, **kwargs):
-        print("ss")
+        #print("ss")
         instance = self.get_object()
         self.perform_destroy(instance)
-        print("ok", request.path)
+        #print("ok", request.path)
         response = Response(status=status.HTTP_204_NO_CONTENT)
         if 'UI' in request.data:
             if request.data['UI'] == 'true':
@@ -986,7 +988,7 @@ class UpdateLogViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                                     'delete':[IsAdminUser]}
     # CHECK PERMISSIONS!
     def list(self, request, *args, **kwargs):
-        print("yeah ok")
+        #print("yeah ok")
         # see more about the models here https://django-celery-beat.readthedocs.io/en/latest/index.html
         #https://medium.com/the-andela-way/crontabs-in-celery-d779a8eb4cf
         periodic_tasks = PeriodicTask.objects.all()
@@ -998,7 +1000,7 @@ class UpdateLogViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 #@login_required(login_url='/accounts/login/')
 def userinfo(request):
     form = EmailChangeForm(request.user)
-    print(request.method)
+    #print(request.method)
     if request.method=='POST':
         form = EmailChangeForm(request.user, request.POST)
         if form.is_valid():

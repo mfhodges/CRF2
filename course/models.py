@@ -195,8 +195,8 @@ class Course(models.Model):
         """
         #<subject><course_number><section><year><term>
         self.course_code = self.course_subject.abbreviation + self.course_number + self.course_section + self.year + self.course_term
-        print("saving Course instance")
-        print("self.pk",self.pk)
+        #print("saving Course instance")
+        #print("self.pk",self.pk)
         super().save(*args,**kwargs) #super(Course, self)
         # here is where you do the updating of cross listed instances
 
@@ -403,7 +403,7 @@ class UpdateLog(models.Model):
     finished = models.DateTimeField(null=True,blank=True)
     process= models.CharField(max_length=10,choices = MANAGER_CHOICES)
     # log = this should be a link to the log file associated with the task
-    
+
 
 
 

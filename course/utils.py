@@ -22,7 +22,7 @@ def check_site(sis_id,canvas_course_id):
 
 def update_request_status():
     request_set = Request.objects.all() # should be filtered to status = approved
-    print(request_set)
+    print("r",request_set)
     string = ''
     if request_set:
         print("\t some requests - lets process them ")
