@@ -53,8 +53,8 @@ class Command(BaseCommand):
             if School.objects.filter(abbreviation=school['abbreviation']).exists()==False:
                 if school.get("canvas_subaccount"):
                     print(school)
-                    School.objects.create(name=school['name'],abbreviation=school["abbreviation"],visiblity=school["visible"],opendata_abbr=school["opendata_abbr"],canvas_subaccount=school["canvas_subaccount"])
+                    School.objects.create(name=school['name'],abbreviation=school["abbreviation"],visible=school["visiblity"],opendata_abbr=school["opendata_abbr"],canvas_subaccount=school["canvas_subaccount"])
                 else:
-                    School.objects.create(name=school['name'],abbreviation=school["abbreviation"],visiblity=school["visible"],opendata_abbr=school["opendata_abbr"])
+                    School.objects.create(name=school['name'],abbreviation=school["abbreviation"],visible=school["visiblity"],opendata_abbr=school["opendata_abbr"])
             else:
                 print("SCHool already exists: "+ school["name"])
