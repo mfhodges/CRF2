@@ -50,11 +50,11 @@ class Command(BaseCommand):
         canvas_subaccount = models.IntegerField(null=True)
         """
         for school in school_data:
-            try:
+            if School.objects.filter(abbreviation=school['abbreviation']).exists()==False:
                 if school.get("canvas_subaccount"):
                     print(school)
                     School.objects.create(name=school['name'],abbreviation=school["abbreviation"],visible=school["visible"],opendata_abbr=school["opendata_abbr"],canvas_subaccount=school["canvas_subaccount"])
                 else:
                     School.objects.create(name=school['name'],abbreviation=school["abbreviation"],visible=school["visible"],opendata_abbr=school["opendata_abbr"])
-            except:
-                print("Error: "+ school["name"])
+            else:
+                print("SCHool already exists: "+ school["name"])
