@@ -52,6 +52,7 @@ class Command(BaseCommand):
         for school in school_data:
             try:
                 if school.get("canvas_subaccount"):
+                    print(school)
                     School.objects.create(name=school['name'],abbreviation=school["abbreviation"],visible=school["visible"],opendata_abbr=school["opendata_abbr"],canvas_subaccount=school["canvas_subaccount"])
                 else:
                     School.objects.create(name=school['name'],abbreviation=school["abbreviation"],visible=school["visible"],opendata_abbr=school["opendata_abbr"])
