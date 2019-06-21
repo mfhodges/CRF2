@@ -26,8 +26,8 @@ def delete_query_param(request, key):
 @register.simple_tag
 def get_item(qp, key):
     # qp is request.query_params
-    print("qp", qp)
-    print("key, val", (key , val))
+    #print("qp", qp)
+    #print("key, val", (key , val))
     if val == None:
         return ""
     else:
@@ -36,7 +36,7 @@ def get_item(qp, key):
 @register.simple_tag
 def get_user(user):
     # qp is request.query_params
-    print(user)
+    #print(user)
     try:
         user = User.objects.get(username=user)
     except User.DoesNotExist:
@@ -54,17 +54,17 @@ def masquerading(request):
 def filter_messages(messages, type):
     answer = []
     if messages:
-        print("u",messages)
+        #print("u",messages)
         for message in messages:
             if message.tags == type:
-                print(message.tags)
+                #print(message.tags)
                 answer += [message]
     return answer
 
 @register.filter
 def asrepr(course):
     term = course['year'] + course['course_term']
-    print(course['course_section'])
+    #print(course['course_section'])
     return "_".join([course['course_primary_subject'], course['course_number'],course['course_section'], term ])
 
 

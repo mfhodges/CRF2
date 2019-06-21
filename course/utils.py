@@ -9,6 +9,24 @@ about how users are added
 """
 
 
+def validate_pennkey(pennkey):
+    # assumes usernames are valid pennkeys
+    try:
+        user = User.objects.get(username=pennkey)
+    except User.DoesNotExist:
+        user = None
+
+    # do a lookup in the data warehouse ?
+    return user
+
+
+
+def datawarehouse_lookup(pennkey):
+    ## connects to the db and makes a query
+
+
+    #if no results
+    return False
 
 def check_site(sis_id,canvas_course_id):
     """
@@ -29,7 +47,7 @@ def update_request_status():
         string = "\t some requests - dw I processed them "
         for request_obj in request_set:
             st ="\t"+request_obj.course_requested.course_code+" "+ request_obj.status
-            print(st)
+            print("ok ",st)
             # process request ( create course)
 
     else:

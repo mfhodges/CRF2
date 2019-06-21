@@ -230,14 +230,16 @@ $('.toggle-nav').click(function (e) {
 $('.close-notification i').click(function (e) {
   if ($('blockquote').hasClass('show')) {
     $('blockquote').removeClass('show'); // removing the show class adds the expand icon
-    $('.message').hide();
+    //$('.message').hide();
+    $('#notice').hide();
     $('.default').show();
     $('.close-notification').addClass('vertical-center');
     $('.close-notification i').removeClass('fa-times');
     $('.close-notification i').addClass('fa-plus');
   } else {
     $('blockquote').addClass('show');
-    $('.message').show();
+    //$('.message').show();
+    $('#notice').show()
     $('.default').hide();
     $('.close-notification').removeClass('vertical-center');
     $('.close-notification i').removeClass('fa-plus');

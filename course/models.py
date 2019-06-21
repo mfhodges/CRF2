@@ -4,7 +4,8 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import User
 import datetime
 import django.core.exceptions
-
+from django.utils.html import mark_safe
+from markdown import markdown
 # This model is to represent a Course object in the CRF
 # the meta-data that is important with this is information that will help the course be
 # discoverable in the CRF2. all of these objects with be populated from the data
@@ -41,6 +42,7 @@ class School(models.Model):
     abbreviation = models.CharField(max_length=10,unique=True,primary_key=True)
     visible = models.BooleanField(default=True)
     opendata_abbr = models.CharField(max_length=2)
+    canvas_subaccount = models.IntegerField(null=True)
 
     def get_subjects(self):
         return self.subjects
@@ -294,6 +296,8 @@ class Notice(models.Model):
     class Meta:
         get_latest_by = 'updated_date' # allows .latest()
 
+    def get_notice_as_markdown(self):
+        return mark_safe(markdown(self.notice_text, safe_mode='escape'))
 
     def __str__(self):
 

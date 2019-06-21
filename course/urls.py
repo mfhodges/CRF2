@@ -1,4 +1,5 @@
 from django.conf.urls import include, url
+from django.contrib.auth import views as auth_views
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 from course import views
@@ -107,5 +108,14 @@ urlpatterns = [
     # --------------- Temporary Email view -------------------
     path('emails/', views.temporary_email_list, name='temporary_email'),
     path('emails/<value>/', views.my_email, name='my_email'),
+
+    # --------------- login url/view -------------------
+    path('accounts/login/', auth_views.LoginView.as_view(
+            template_name='login.html',
+            extra_context={'next': '/',},
+            ), name='login'),
+    path('accounts/logout/', auth_views.LogoutView.as_view(
+            template_name='logout.html',
+            ), name='logout'),
 ]
 #path('course', views.CourseViewSet.as_view({'get': 'list'})),

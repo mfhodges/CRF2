@@ -367,7 +367,7 @@ class SchoolSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = School
-        fields = ('name','abbreviation','visible','subjects')#'__all__'
+        fields = ('name','abbreviation','visible','subjects','canvas_subaccount')#'__all__'
 
     def create(self,validated_data):
         """
@@ -393,6 +393,7 @@ class SchoolSerializer(serializers.ModelSerializer):
         instance.name = validated_data.get('name', instance.name)
         instance.abbreviation = validated_data.get('abbreviation', instance.abbreviation)
         instance.visible = validated_data.get('visible', instance.visible)
+        instance.canvas_subaccount = validated_data.get('canvas_subaccount', instance.canvas_subaccount)
         #instance.subject = validated_data.get('')
         #something for subjects
         instance.save()

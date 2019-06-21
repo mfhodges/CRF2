@@ -36,6 +36,8 @@ from course.forms import ContactForm, EmailChangeForm
 from django.template.loader import get_template
 import datetime
 from course import email_processor
+from course import utils
+
 from rest_framework.exceptions import PermissionDenied
 from django_celery_beat.models import PeriodicTask, IntervalSchedule, CrontabSchedule
 #from rest_framework.filters import SearchFilter
@@ -68,8 +70,6 @@ from rest_framework import status
 
 
 
-
-
 def custom_exception_handler(exc, context):
     # Call REST framework's default exception handler first,
     # to get the standard error response.
@@ -78,10 +78,8 @@ def custom_exception_handler(exc, context):
     #response = render({},'errors/403.html')
 
 
-    #print("yeah okie,,",response.status_code)
     # we need to be able to parse if they are doing a html request or not
     # Now add the HTTP status code to the response.
-    #print("hahhhh")
     if response is not None:
         response.data['status_code'] = response.status_code
         response.data['error'] = response.data['detail']
@@ -93,18 +91,8 @@ def custom_exception_handler(exc, context):
     #return render(response, 'errors/'+str(response.status_code) +'.html')
 
 
-def validate_pennkey(pennkey):
-    # assumes usernames are valid pennkeys
-    try:
-        user = User.objects.get(username=pennkey)
-    except User.DoesNotExist:
-        user = None
 
-    # do a lookup in the data warehouse ?
-    return user
-
-
-class MixedPermissionModelViewSet(viewsets.ModelViewSet): #LoginRequiredMixin, -- causes problems with API
+class MixedPermissionModelViewSet(viewsets.ModelViewSet): #LoginRequiredMixin, -- causes problems with API?
     '''
     Mixed permission base model allowing for action level
     permission control. Subclasses may define their permissions
@@ -119,22 +107,29 @@ class MixedPermissionModelViewSet(viewsets.ModelViewSet): #LoginRequiredMixin, -
     see more here: http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html
 
     THIS MODEL IS INHERITED BY EVERY VIEWSET ( except homepage... ) !!
-        - it also includes the loginrequired just to keep the code as clean as possible
     '''
     permission_classes_by_action = {}
     login_url = '/accounts/login/'
+    #permission_classes = (IsAuthenticated,)
+
     def get_permissions(self):
+        print("we here")
 
         try:
             #print("self.action", self.action)
             # return permission_classes depending on `action`
-            #print([permission() for permission in self.permission_classes_by_action[self.action]])
+            print([permission() for permission in self.permission_classes_by_action[self.action]])
             return [permission() for permission in self.permission_classes_by_action[self.action]]
         except KeyError:
             # action is not set return default permission_classes
-            #print("KeyError for permission: ", self.action)
+            print("KeyError for permission: ", self.action)
             return [permission() for permission in self.permission_classes]
 
+
+    def handle_no_permission(self):
+        if self.raise_exception or self.request.user.is_authenticated:
+            raise PermissionDenied(self.get_permission_denied_message())
+        return redirect_to_login(self.request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
 
 
 
@@ -818,10 +813,17 @@ class NoticeViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
 
-class HomePage(LoginRequiredMixin,APIView):
+class HomePage(APIView):#,
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'home_content.html'
     login_url = '/accounts/login/'
+    permission_classes_by_action = {'create': [],
+                                    'list': [],
+                                    'retrieve':[],
+                                    'update':[],
+                                    'partial_update':[],
+                                    'delete':[]}
+
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
@@ -880,8 +882,8 @@ class HomePage(LoginRequiredMixin,APIView):
             on_behalf_of = request.data['on_behalf_of']
             #print("found on_behalf_of in request.data ", on_behalf_of)
             if on_behalf_of: # if its not none -> if exists then see if pennkey works
-                if validate_pennkey(on_behalf_of) == None: #if pennkey is good the user exists
-                    #print("not valid input")
+                if utils.validate_pennkey(on_behalf_of) == None: #if pennkey is good the user exists
+                    print("not valid input")
                     messages.error(request,'Invalid Pennkey')
                     on_behalf_of = None
         except KeyError:

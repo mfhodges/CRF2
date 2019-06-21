@@ -16,12 +16,17 @@
       <thead>
         <tr>
           <th style="width:40%;">Name</th>
-          <th style="width:25%;">Abbr.</th>
+          <th style="width:10%;">Abbr.</th>
+          {% if user.is_staff %}
+          <th>Subaccount ID</th>
+          {% endif %}
           <th>Visibility</th>
+
         </tr>
       </thead>
       <tbody>
         {% for school in results %}
+
         <tr>
           {% if school.visible == True %}
           <td><a href="/schools/{{ school.abbreviation }}/">{{school.name}}</a></td>
@@ -29,6 +34,10 @@
           <td>{{school.name}}</td>
           {% endif %}
           <td>{{school.abbreviation}}</td>
+          {% if user.is_staff %}
+          <td>{{school.canvas_subaccount|stringformat:"i"}}</td>
+          {% endif %}
+
           <td>
 
             <!-- <form action="{% url 'school-detail' pk=1 %}" method="POST"> -->
