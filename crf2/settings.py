@@ -72,7 +72,7 @@ INSTALLED_APPS = [
 	'rest_framework',
     'django_filters',
     'admin_auto_filters',
-    'django_celery_beat',
+    #'django_celery_beat',
     'django_extensions',
     'rest_framework_swagger',
 
