@@ -29,7 +29,7 @@ print("basedir",BASE_DIR)
 SECRET_KEY = config.get('django','secret_key',raw=True)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 
 ALLOWED_HOSTS = ['127.0.0.1:8000','127.0.0.1','localhost'#'demo-crf.herokuapp.com'#'128.91.177.58'
