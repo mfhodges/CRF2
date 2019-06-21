@@ -185,7 +185,7 @@ def get_courses():
                         "abbreviation": course_school,
                         "name": course['department_description'],
                         "visible": 'true',
-                        'opendata_abbr':
+                        'opendata_abbr':course_school[:2]
                     }
                     #add it to the file
 
@@ -210,7 +210,7 @@ def get_courses():
                     if check_instructor(instructor['penn_id']):
                         pass
                     else:
-                        create_instructor(instructor['penn_id']))
+                        create_instructor(instructor['penn_id'])
                 #check_instructors(data['instructors'])
 
                 course_school = find_school(course['course_department'])
