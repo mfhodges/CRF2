@@ -32,8 +32,8 @@ SECRET_KEY = config.get('django','secret_key',raw=True)
 DEBUG = True
 
 
-ALLOWED_HOSTS = ['127.0.0.1:8000','127.0.0.1','localhost'#'demo-crf.herokuapp.com'#'128.91.177.58'
-]
+ALLOWED_HOSTS = ['127.0.0.1:8000','127.0.0.1','localhost','demo-crf.herokuapp.com']#'128.91.177.58'
+#]
 
 
 # Static files (CSS, JavaScript, Images)
@@ -72,9 +72,9 @@ INSTALLED_APPS = [
 	'rest_framework',
     'django_filters',
     'admin_auto_filters',
-    #'django_celery_beat',
-    #'django_extensions',
-    #'rest_framework_swagger',
+    'django_celery_beat',
+    'django_extensions',
+    'rest_framework_swagger',
 
 ]
 
