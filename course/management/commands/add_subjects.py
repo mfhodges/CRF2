@@ -74,7 +74,7 @@ class Command(BaseCommand):
                     # need to see if exists
                     if Subject.objects.filter(abbreviation=subj).exists()==False:
                         try:
-                            subj_name = data["departments"]["subjs"]
+                            subj_name = data["departments"][subj]
                             Subject.objects.create(name=subj_name,abbreviation=subj,visible=True,schools=this_school)
                         except:
 
