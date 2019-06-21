@@ -1,0 +1,32 @@
+librarycrf@pobox.upenn.edu
+
+Authentication:
+Username: librarycanvas@pobox.upenn.edu
+PW: T2#fMu#rXe
+
+Mail Server Name: outlook.office365.com
+
+Reply Address: librarycrf@pobox.upenn.edu
+From Name: Canvas Course Request (or whatever you want)
+
+IMAP Settings:
+Server name: outlook.office365.com
+Port: 993
+Encryption method: TLS
+
+SMTP Settings:
+Server name: smtp.office365.com
+Port: 587
+Encryption method: STARTTLS
+
+
+from django.core.mail import EmailMessage
+email = EmailMessage('Subject', 'Body', from_email='librarycanvas@pobox.upenn.edu', to=['mfhodges95@gmail.com'])
+email.send()
+
+
+
+
+from django.core.mail import EmailMessage
+email = EmailMessage('Subject', 'Body', from_email='librarycrf@pobox.upenn.edu', to=['mfhodges95@gmail.com'])
+email.send()
