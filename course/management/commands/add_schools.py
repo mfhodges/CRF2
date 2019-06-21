@@ -36,7 +36,7 @@ class Command(BaseCommand):
         pass
         #parser.add_argument('-p', '--prefix', type=str, help='Define a username prefix')
         #parser.add_argument('-a', '--admin', action='store_true', help='Create an admin account')
-        #parser.add_argument('-c', '--courseware', action='store_true', help='Quick add Courseware Support team as Admins')
+        parser.add_argument('-q', '--quick', action='store_true', help='Quick add local store of schools')
 
     def handle(self, *args, **kwargs):
         #courseware = kwargs['courseware']
