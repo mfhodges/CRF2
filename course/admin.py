@@ -76,6 +76,7 @@ admin.site.register(School)
 admin.site.register(Subject)
 admin.site.register(AutoAdd)
 admin.site.register(UpdateLog)
+admin.site.register(PageContent)
 
 
 # https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Admin_site

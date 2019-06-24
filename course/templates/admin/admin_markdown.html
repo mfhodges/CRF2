@@ -1,0 +1,20 @@
+
+
+
+
+
+<div class="module" style="background:#F8F8F8;padding-bottom:5px;">
+  <h2 style="font-size:16px;margin-bottom:10px;"> Notes !</h2>
+  <p> Here could be some good info about how this works! </p>
+  <p> To toggle between editor view (showing markdown) and preview (final text) click on the eye above ( <i class="fa fa-eye"></i> ) or type CMD+P </p>
+  <p> If you do now know how to write markdown please consult <a href="https://simplemde.com/markdown-guide"> this guide</a> </p>
+  <p> For PageContent Objects, please do <b><i>not</i></b> edit the Location field</p>
+</div>
+
+
+<!-- makes  markdown editor -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+  <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+  <script>
+  var simplemde = new SimpleMDE({ element: document.getElementById("{{ elementid|safe }}") });
+  </script>

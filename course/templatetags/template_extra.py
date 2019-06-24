@@ -7,6 +7,7 @@ from rest_framework.utils.urls import remove_query_param
 from django.utils.encoding import iri_to_uri
 from django.utils.html import escape
 from django.contrib.auth.models import User
+from course.models import *
 
 register = template.Library()
 
@@ -67,8 +68,12 @@ def asrepr(course):
     #print(course['course_section'])
     return "_".join([course['course_primary_subject'], course['course_number'],course['course_section'], term ])
 
-
-
+@register.simple_tag
+def get_markdown(location):
+    if PageContent.objects.filter(location=location).exists():
+        page = PageContent.objects.get(location=location)
+        return page.get_page_as_markdown()
+    return ''
 
 """
 @register.simple_tag

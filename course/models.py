@@ -411,7 +411,23 @@ class UpdateLog(models.Model):
 
 
 
+# This class is to allow any Courseware Support people to edit some of the pages content without halting the appilication
 
+class PageContent(models.Model):
+
+    location = models.CharField(max_length=100)
+    markdown_text = models.TextField(max_length=4000)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def get_page_as_markdown(self):
+        return mark_safe(markdown(self.markdown_text, safe_mode='escape'))
+
+    def __str__(self):
+        return self.location
+
+
+
+## this is currently not in use!
 class Tools(models.Model):
     """
     this is a table of all tools that we can configure in Canvas
