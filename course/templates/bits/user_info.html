@@ -1,0 +1,17 @@
+
+{% load rest_framework %}
+{% load template_extra %}
+
+
+<dl class="row" style="line-height:1.1;margin-bottom:0;">
+  {% if user.first_name and user.last_name %}
+    <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">User: </dt>
+    <dd class="col-8 col-md-9"> {{user.first_name }} {{user.last_name}} </dd>
+  {% endif %}
+    <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Penn Key: </dt>
+    <dd class="col-8 col-md-9"> {{user.username}} </dd>
+    <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Penn ID : </dt>
+    <dd class="col-8 col-md-9"> {{user.profile.penn_id}}</dd>
+    <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Email: </dt>
+    <dd class="col-8 col-md-9"> {{user.email|default:"None" }}</dd>
+</dl>

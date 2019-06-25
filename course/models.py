@@ -308,6 +308,7 @@ class Notice(models.Model):
 
 
 
+
 class Request(models.Model):
     REQUEST_PROCESS_CHOICES =(
         ('COMPLETED','Completed'),
@@ -341,7 +342,7 @@ class Request(models.Model):
 
     owner = models.ForeignKey('auth.User', related_name='requests', on_delete=models.CASCADE)#should not delete when user is deleted
     masquerade = models.CharField(max_length=20,null=True)
-    additional_enrollments = models.ManyToManyField(User,related_name='additional_enrollments',blank=True)
+    #additional_enrollments = models.ManyToManyField(AdditionalEnrollment,related_name='additional_enrollments',blank=True)
 
 
     class Meta:
@@ -358,6 +359,20 @@ class Request(models.Model):
 
     #def __str__(self):
     #    return " \"%s\" site request" % ( self.course_requested.course_code)
+
+
+class AdditionalEnrollment(models.Model):
+    ENROLLMENT_TYPE= (
+    ('TA','TA'),
+    ('INST','Instructor'),
+    ('DES','Designer'),
+    ('LIB','Librarian'),
+    ('OBS', 'Observer'),)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    role = models.CharField(max_length=4, choices=ENROLLMENT_TYPE,default='TA')
+    course = models.ForeignKey(Request,on_delete=models.CASCADE, default=None)
+
+
 
 #class SubjectArea(models.Model):
 """

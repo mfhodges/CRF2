@@ -8,6 +8,13 @@ from django.contrib.auth.models import User
 can implement EXACT search by instructor username, course code, or course title
 
 """
+
+class AdditionalEnrollmentInline(admin.StackedInline):
+    model = AdditionalEnrollment
+    extra = 2
+    autocomplete_fields = ['user']
+
+
 class CourseAdmin(admin.ModelAdmin):
     list_display =['course_code','course_name','get_instructors','get_subjects','get_schools','course_term','course_activity','requested']
 
@@ -16,6 +23,7 @@ class CourseAdmin(admin.ModelAdmin):
     )
     search_fields = ('instructors__username','course_code','course_name')
     readonly_fields = ['created','updated','owner'] # maybe add requested to here.
+
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == "course":
@@ -39,6 +47,8 @@ class RequestAdmin(admin.ModelAdmin):
     )
     search_fields = ('owner__username','masquerade','course_requested__course_code')
     readonly_fields = ['created','updated','masquerade']
+    inlines = [AdditionalEnrollmentInline]
+    autocomplete_fields = ['owner','course_requested']
     #def formfield_for_manytomany(self, db_field, request, **kwargs):
     #    if db_field.name == "request":
     #        kwargs["queryset"] = Course.objects.filter(course_schools__abbreviation=request.user)

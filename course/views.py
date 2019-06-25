@@ -116,7 +116,7 @@ class MixedPermissionModelViewSet(viewsets.ModelViewSet): #LoginRequiredMixin, -
         print("we here")
 
         try:
-            #print("self.action", self.action)
+            print("self.action", self.action)
             # return permission_classes depending on `action`
             print([permission() for permission in self.permission_classes_by_action[self.action]])
             return [permission() for permission in self.permission_classes_by_action[self.action]]
@@ -173,7 +173,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     # for permission_classes_by_action see: https://stackoverflow.com/questions/35970970/django-rest-framework-permission-classes-of-viewset-method
     permission_classes_by_action = {'create': [IsAdminUser],
                                     'list': [IsAuthenticated],
-                                    'retrieve':[IsAuthenticated,IsAdminUser],
+                                    'retrieve':[IsAuthenticated],#,IsAdminUser], # it seems like it defaults to the most strict case
                                     'update':[IsAdminUser],
                                     'partial_update':[IsAdminUser],
                                     'delete':[IsAdminUser]}
@@ -280,6 +280,8 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions. see http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html
+
+    the function custom permissions handles the ... custom permissions
     """
     # # TODO:
     # [ ] create and test permissions
@@ -345,14 +347,15 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
         # CHECK PERMISSIONS custom_permissions(request,request_obj,masquerade,instructors)
         permission = self.custom_permissions(None,masquerade,instructors)
-        #print("permission, ", permission)
+        print("permission, ", permission)
 
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid()
         if not serializer.is_valid():
             #print(serializer.errors)
-            (serializer.errors)
+            # potentially uncomment next line...
+            #(serializer.errors)
             messages.add_message(request, messages.ERROR, serializer.errors['non_field_errors'])
             raise serializers.ValidationError(serializer.errors)
 
@@ -383,10 +386,8 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         #print('self.lookup_field', self.lookup_field)
-
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
-        #print("1")
         if page is not None:
 
             serializer = self.get_serializer(page, many=True)
@@ -399,16 +400,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 response.data = {'results': response.data,'paginator':self.paginator, 'filter': RequestFilter}
             #print("request.accepted_renderer.format",request.accepted_renderer.format)
             return response
-        """
-        serializer = self.get_serializer(queryset, many=True)
-        response = Response(serializer.data)
-        if request.accepted_renderer.format == 'html':
-            #print("template_name",response.template_name)
-            response.template_name = 'request_list.html'
-            #print("template_name",response.template_name)
-            response.data = {'results': response.data}
-        return response
-        """
+
 
 
     def custom_permissions(self,request_obj,masquerade,instructors):
@@ -476,7 +468,8 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     def check_request_update_permissions(request,response_data):
         request_status = response_data['status']
         request_owner = response_data['owner']
-        request_masquerade = response_data['masquerade']
+        request_masquerade = response_data['masquerade'] #
+        print("request_masquerade",request_masquerade)
             # owner is also considered masquerade
         if request_status == "SUBMITTED": permissions = {'staff':['lock','cancel','edit'],'owner':['cancel','edit']}
         elif request_status == "APPROVED": permissions = {'staff':['cancel','edit','lock','create'],'owner':['cancel']}
@@ -489,16 +482,22 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         # permission - 'create' pushes the request into the in_process queue
         # permission - 'unlock' sets it as submitted again
 
-        #if request.session['on_behalf_of']:
+        if request.session['on_behalf_of']:
             # you have you're masq set
+            current_masquerade = request.session['on_behalf_of']
+            print("request.session['on_behalf_of']",request.session['on_behalf_of'])
+            if current_masquerade == request_owner:
+                return permissions['owner']
 
         #else:
         if request.user.is_staff:
             return permissions['staff']
 
+        # they own or was submitted on their behalf
         if request.user.username == request_owner or (request.user.username == request_masquerade and request_masquerade !=''):
             #print("yeahh buddy",request.user.username)
             return permissions['owner']
+        #
         return ''
 
 
@@ -524,8 +523,9 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         #print("permission, ", obj_permission)
 
         if request.accepted_renderer.format == 'html':
-            ##print("bye george(UI-request-detail)!\n",response.data)
+            print("bye george(UI-request-detail)!\n",response.data)
             permissions = RequestViewSet.check_request_update_permissions(request, response.data)
+            print("request permissions",permissions)
             if request.resolver_match.url_name == "UI-request-detail-edit":
             #if 'edit' in request.path.split('/') : # this is possibly the most unreliable code ive ever written
                 # we want the edit form
@@ -566,12 +566,15 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         #print("in update")
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        #print(":^)")
-        #print("request.data update!",request.data)
+        partial = kwargs.pop('partial', False)#see if partial
+        instance = self.get_object() # get request to update
+        print("request.data, data to update!",request.data)
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
+        serializer.is_valid()#raise_exception=True)
+        if not serializer.is_valid():
+            messages.add_message(request, messages.ERROR, "An error occurred: Please add the Content Copy information to the additional instructions field and a Courseware Support team memeber will assist you.")
+            raise serializers.ValidationError(serializer.errors)
+
         self.perform_update(serializer)
         #print(":^) !")
         if getattr(instance, '_prefetched_objects_cache', None):
@@ -884,7 +887,7 @@ class HomePage(APIView):#,
             if on_behalf_of: # if its not none -> if exists then see if pennkey works
                 if utils.validate_pennkey(on_behalf_of) == None: #if pennkey is good the user exists
                     print("not valid input")
-                    messages.error(request,'Invalid Pennkey')
+                    messages.error(request,'Invalid Pennkey -- Pennkey must be Upenn Employee')
                     on_behalf_of = None
         except KeyError:
             pass

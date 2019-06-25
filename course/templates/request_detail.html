@@ -49,7 +49,10 @@
       <a href="{% url 'UI-request-detail-edit' pk=request_instance.course_requested %}" class="button" style="margin-right:20px;">Edit Request <i class="fas fa-edit"></i></a>
     {% endif %}
   </div>
+
+{% if user.is_staff %}
   <h6> Admin Actions</h6>
+{% endif %}  
   <div class="row" style="margin-left:7px;margin-top:.5rem;">
 
     {% if 'lock' in permissions %}

@@ -26,12 +26,11 @@ def validate_pennkey(pennkey):
         user = datawarehouse_lookup(pennkey)
         if user:
             #clean up first and last names
-
             first_name = user['firstname'].title()
             last_name = user['lastname'].title()
-
-            User.objects.create_user(username=pennkey,first_name=first_name,last_name=last_name,email=user['email'],Profile)
-        print("okokok user: ",user)
+            Profile.objects.create(user=User.objects.create_user(username=pennkey,first_name=first_name,last_name=last_name,email=user['email']),penn_id=user['penn_id'])
+        else:
+            user=None
     # do a lookup in the data warehouse ?
     return user
 
@@ -56,6 +55,8 @@ def datawarehouse_lookup(penn_key):
 
     #if no results
     return False
+
+
 
 def check_site(sis_id,canvas_course_id):
     """

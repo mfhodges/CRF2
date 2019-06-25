@@ -16,12 +16,14 @@ Please check that you submitted valild inputs.
 
 
 {% if messages %}
+<div class="bd-callout bd-callout-warning">
 <ul class="messages">
-    <h5 style="margin-bottom:0px;"> Messages </h5>
+    <h5 style="margin-bottom:0px;margin-top:0.5rem;"> Messages </h5>
     {% for message in messages %}
     <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
     {% endfor %}
 </ul>
+</div>
 {% endif %}
 
 <a href='{{request.META.HTTP_REFERER}}'> <i class="fas fa-arrow-left"></i> Go Back </a>

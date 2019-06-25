@@ -5,6 +5,7 @@ from rest_framework.routers import DefaultRouter
 from course import views
 from rest_framework_swagger.views import get_swagger_view
 from rest_framework import renderers
+from django.views.generic.base import TemplateView
 #from rest_framework.schemas import get_schema_view # new
 
 schema_view = get_swagger_view(title='Pastebin API')
@@ -117,5 +118,7 @@ urlpatterns = [
     path('accounts/logout/', auth_views.LogoutView.as_view(
             template_name='logout.html',
             ), name='logout'),
+    # --------------- Documentation url/view -------------------
+    path('documentation/',TemplateView.as_view(template_name='documentation.html'),name='documentation'),
 ]
 #path('course', views.CourseViewSet.as_view({'get': 'list'})),

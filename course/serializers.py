@@ -232,15 +232,19 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
         Check that:
             CourseCopy Course has user or masquerade listed as an instructor
         """
-        if data['copy_from_course']:
+        print("data",data)
+
+        # Lets check if we want to update content source and if so, lets check if its valid
+        if 'copy_from_course' in data.keys():
+            if data['copy_from_course'] == None: return data
             #go get course
-            #print("data['copy_from_course']",data['copy_from_course'])
+            print("data['copy_from_course']",data['copy_from_course'])
             instructors = api.get_course_users(data['copy_from_course'])
             user = self.context['request'].user
             masquerade =self.context['request'].session['on_behalf_of']
-            ##print(instructors)
-            ##print(user)
-            ##print(masquerade)
+            print(instructors)
+            print(user)
+            print(masquerade)
             if user in instructors:
                 #validate!
                 #print("you taught the course")
@@ -251,9 +255,9 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
                     #print("you are masqued as some1 who taught the course")
                     pass
             else:
-                #print("found error")
-                #messages.add_message(request, messages.ERROR, 'errror text')
-                raise serializers.ValidationError(_("an error occurred please add the course information to the additional instructions field"))
+                print("not valid content source")
+                #messages.add_message(self.request, messages.ERROR, "an error occurred please add the course information to the additional instructions field and a Courseware Support team memeber will assist you.")
+                raise serializers.ValidationError({"error":"an error occurred please add the course information to the additional instructions field and a Courseware Support team memeber will assist you."})
             #if not in the instructors raise an error
             # error message should be like "an error occurred please add the course information to the additional instructions field"
 

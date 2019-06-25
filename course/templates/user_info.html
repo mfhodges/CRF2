@@ -17,7 +17,7 @@
           <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Penn Key: </dt>
           <dd class="col-8 col-md-9"> {{masq_user.username}}</dd>
           <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Penn ID: </dt>
-          <dd class="col-8 col-md-9"> {{ mmasq_user.profile.penn_id}}</dd>
+          <dd class="col-8 col-md-9"> {{ masq_user.profile.penn_id}} </dd>
           <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Email: </dt>
           <dd class="col-8 col-md-9"> {{ masq_user.email|default:"None" }}</dd>
       </dl>
@@ -29,7 +29,7 @@
         {% endif %}
           <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Penn Key: </dt>
           <dd class="col-8 col-md-9"> {{user.username}} </dd>
-          <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Penn ID: </dt>
+          <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Penn ID : </dt>
           <dd class="col-8 col-md-9"> {{user.profile.penn_id}}</dd>
           <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Email: </dt>
           <dd class="col-8 col-md-9"> {{user.email|default:"None" }}</dd>
