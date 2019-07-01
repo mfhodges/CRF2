@@ -1,3 +1,4 @@
 config/
 datawarehouse/
+db.sqlite3
 config.ini
