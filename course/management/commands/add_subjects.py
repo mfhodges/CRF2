@@ -42,43 +42,51 @@ class Command(BaseCommand):
 
 
     def add_arguments(self, parser):
-        pass
+        parser.add_argument('-d', '--opendata', action='store_true', help='pull from OpenData API')
+        parser.add_argument('-l', '--localstore', action='store_true', help='pull from Local Store')
+
         #parser.add_argument('-p', '--prefix', type=str, help='Define a username prefix')
         #parser.add_argument('-a', '--admin', action='store_true', help='Create an admin account')
         #parser.add_argument('-c', '--courseware', action='store_true', help='Quick add Courseware Support team as Admins')
 
     def handle(self, *args, **kwargs):
         #courseware = kwargs['courseware']
-        with open('OpenData/OpenData.txt') as json_file:
-            data = json.load(json_file)
-            #print(data.keys()) =dict_keys(['activity_map', 'departments', 'programs', 'school_subj_map'])
-            """
-            steps
-            1. iterate through school subj mapping and take each school abbr "AS"
-                a. look up "AS" as school object
-                b. iterate list of subjs
-                    - look up departments['subj'] to get full name
-                c. create Subject object
-            """
-            for (school,subjs) in data["school_subj_map"].items():
-                print(school,subjs)
-                try:
-                    this_school = School.objects.get(opendata_abbr=school)
-                except:
-                    # make this a log
-                    print("couldnt find school " + school)
+        opendata = kwargs['opendata']
 
-                #
-                print(subjs)
-                for subj in subjs:
-                    # need to see if exists
-                    if Subject.objects.filter(abbreviation=subj).exists()==False:
-                        try:
-                            subj_name = data["departments"][subj]
-                            Subject.objects.create(name=subj_name,abbreviation=subj,visible=True,schools=this_school)
-                        except:
+        if opendata:
+            pass
 
-                            print("couldnt find subj in departments: " + subj )
-                            Subject.objects.create(name=subj+"-- FIX ME",abbreviation=subj,visible=True,schools=this_school)
-                    else:
-                        print("subject already exists: "+ subj)
+        else:
+            with open('OpenData/OpenData.txt') as json_file:
+                data = json.load(json_file)
+                #print(data.keys()) =dict_keys(['activity_map', 'departments', 'programs', 'school_subj_map'])
+                """
+                steps
+                1. iterate through school subj mapping and take each school abbr "AS"
+                    a. look up "AS" as school object
+                    b. iterate list of subjs
+                        - look up departments['subj'] to get full name
+                    c. create Subject object
+                """
+                for (school,subjs) in data["school_subj_map"].items():
+                    print(school,subjs)
+                    try:
+                        this_school = School.objects.get(opendata_abbr=school)
+                    except:
+                        # make this a log
+                        print("couldnt find school " + school)
+
+                    #
+                    print(subjs)
+                    for subj in subjs:
+                        # need to see if exists
+                        if Subject.objects.filter(abbreviation=subj).exists()==False:
+                            try:
+                                subj_name = data["departments"][subj]
+                                Subject.objects.create(name=subj_name,abbreviation=subj,visible=True,schools=this_school)
+                            except:
+
+                                print("couldnt find subj in departments: " + subj )
+                                Subject.objects.create(name=subj+"-- FIX ME",abbreviation=subj,visible=True,schools=this_school)
+                        else:
+                            print("subject already exists: "+ subj)

@@ -5,7 +5,7 @@ import requests
 from configparser import ConfigParser
 
 
-
+"""
 config = ConfigParser()
 config.read('../config/config.ini')
 
@@ -16,22 +16,23 @@ headers = {
     'Authorization-Bearer' : id,
     'Authorization-Token':key
 }
+"""
 
 class OpenData(object):
 
-        def __init__(self, base_url=domain, id=id, key=key):
+        def __init__(self, base_url, id, key):
             # sets the information in the headers
             self.headers = {
                 'Authorization-Bearer' : id,
                 'Authorization-Token':key }
             self.base_url = base_url
             self.uri = ''
-            self.params = {'number_of_results_per_page':10,'page_number':1} # set this as a default
+            self.params = {'number_of_results_per_page':30,'page_number':1} # set this as a default
 
 
         def clear_settings(self):
             self.uri = ''
-            self.params = {'number_of_results_per_page':10,'page_number':1} # set this as a default
+            self.params = {'number_of_results_per_page':30,'page_number':1} # set this as a default
 
         def set_uri(self,new_uri):
             # should check that url+uri is valid
@@ -48,7 +49,7 @@ class OpenData(object):
             current = self.params['page_number']
             self.add_param('page_number',current+1)
 
-            result_data, service_meta = self.call_api(result_data=False)
+            result_data, service_meta = self.call_api(only_data=False)
 
             print("test",service_meta['current_page_number'],service_meta['number_of_pages'])
             if service_meta['current_page_number'] == current+1:
@@ -61,7 +62,7 @@ class OpenData(object):
 
 
 
-        def call_api(self,result_data=True):
+        def call_api(self,only_data=True):
             # if data = True then we are returning the contents otherwise we r returning the service_meta and result_data
             # probably something more should be happening here.
             # since the response is {'result_data': [<content we want],'service_meta':{...}}
@@ -69,18 +70,25 @@ class OpenData(object):
 
             url = self.base_url + self.uri
             response = requests.get(url,headers=self.headers,params=self.params)
-            print("url",url)
+            #print("url",url)
             print(response.status_code)
             r = response.json()
+            #print(r)
             service_meta = r['service_meta']
+            #print(service_meta)
             if service_meta['current_page_number'] == service_meta['number_of_pages']:
                 result_data = []
             else:
-                result_data = r['result_data'][0]
-            if result_data== True:
+                #print("1",r['result_data'])
+                if service_meta['results_per_page'] == len(r['result_data']):
+                    result_data = r['result_data']
+                else:
+                    result_data = r['result_data'][0]
+            if only_data== True:
+                #print("2")
                 return result_data
             else:
-                print(result_data)
+                #print("3")
                 return result_data, r['service_meta']
 
 
@@ -97,10 +105,11 @@ class OpenData(object):
 
         def get_courses_by_term(self,term):
             #https://esb.isc-seo.upenn.edu/8091/open_data/course_section_search?
+            # term = 2013C
             self.clear_settings()
             self.set_uri('course_section_search')
             self.add_param('term',term)
-            return self.call_api(result_data=True)
+            return self.call_api(only_data=True)
 
 
         def find_school_by_subj(self,subject):
@@ -115,12 +124,24 @@ class OpenData(object):
             return response['result_data'][0]['school_code']
 
 
-id_directory = config.get('opendata', 'id_directory')
-key_directory = config.get('opendata', 'key_directory')
-headers_directory = {
-    'Authorization-Bearer' : id,
-    'Authorization-Token':key
-}
+        def get_available_activity(self):
+            # this will make a call to
+            # https://esb.isc-seo.upenn.edu/8091/open_data/course_section_search_parameters/
+            # r['result_data']["activity_map"]
+            #  "available_terms_map" : {"2013B" : "Summer 2013", "2013C" : "Fall 2013"},
+            url = self.base_url + 'course_section_search_parameters/'
+            response = requests.get(url,headers=self.headers).json()
+            #print(response)
+            return response['result_data'][0]['activity_map']
+
+
+
+#id_directory = config.get('opendata', 'id_directory')
+#key_directory = config.get('opendata', 'key_directory')
+#headers_directory = {
+#    'Authorization-Bearer' : id,
+#    'Authorization-Token':key
+#}
 
 
 #https://esb.isc-seo.upenn.edu/8091/open_data/course_section_search?course_id=ANAT513601

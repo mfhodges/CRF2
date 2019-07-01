@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from course.models import Course, Notice, Request, School, Subject, AutoAdd, UpdateLog,Profile
+from course.models import *
 from django.contrib.auth.models import User
 import datetime
 from django.contrib import messages
@@ -37,9 +37,9 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
 
     # Eventually the queryset should also filter by Group = Instructors
     instructors = serializers.SlugRelatedField(many=True,queryset=User.objects.all(), slug_field='username')
-    course_schools = serializers.SlugRelatedField(many=True,queryset=School.objects.all(), slug_field='abbreviation')
+    course_schools = serializers.SlugRelatedField(many=False,queryset=School.objects.all(), slug_field='abbreviation')
     course_subject = serializers.SlugRelatedField(many=False,queryset=Subject.objects.all(), slug_field='abbreviation')
-
+    course_activity = serializers.SlugRelatedField(many=False,queryset=Activity.objects.all(), slug_field='abbr')
     id = serializers.ReadOnlyField()
     #course_requested = serializers.HyperlinkedRelatedField(many=True, view_name='request-detail',read_only=True)
     #request_details = RequestSerializer(many=True,read_only=True)
@@ -58,7 +58,7 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
         """
         #print("CourseSerializer validated_data", validated_data)
         instructors_data = validated_data.pop('instructors')
-        schools_data = validated_data.pop('course_schools')
+        #schools_data = validated_data.pop('course_schools')
         #subjects_data = validated_data.pop('course_subjects')
         if 'crosslisted' in validated_data: crosslist = validated_data.pop('crosslisted')
         course = Course.objects.create(**validated_data)
@@ -69,9 +69,9 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
             #print(instructor_data.username, instructor_data)
             course.instructors.add(instructor_data)
 
-        for school_data in schools_data:
+        #for school_data in schools_data:
             #print("school_data",school_data)
-            course.course_schools.add(school_data)
+        #    course.course_schools.add(school_data)
 
         #for subject_data in subjects_data:
         #    #print("subject data", subject_data)
@@ -122,6 +122,7 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
             instance.course_schools.set(validated_data.get('course_schools', instance.course_schools))
             instance.instructors.set(validated_data.get('instructors',instance.instructors))
             instance.crosslisted.set(validated_data.get('crosslisted',instance.crosslisted))
+
             instance.save()
             crosslistings = validated_data.get('crosslisted',instance.crosslisted)
 
@@ -207,6 +208,16 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 
+class AdditionalEnrollmentSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(queryset=User.objects.all(), slug_field='username',style={'base_template': 'input.html'})
+    #role = serializers.SlugRelatedField(many=False, )
+    #models.CharField(max_length=4, choices=ENROLLMENT_TYPE,default='TA')
+    #course_request = models.ForeignKey(Request,on_delete=models.CASCADE, default=None)
+
+    class Meta:
+        model = AdditionalEnrollment
+        #fields = '__all__'
+        exclude = ('id','course_request')
 
 class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerializer
     #this adds a field that is not defined in the model
@@ -217,7 +228,7 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
 
     course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='course_code' , style={'base_template': 'input.html'})
     title_override = serializers.CharField(required=False , style={'base_template': 'input.html'})
-
+    additional_enrollments = AdditionalEnrollmentSerializer(many=True,required=False, style={'base_template':'list_fieldset.html'})
     # IF REQUEST STATUS IS CHANGED TO CANCELED IT SHOULD BE DISASSOCIATED FROM COURSE INSTANCE
     # IN ORDER TO PRESERVE THE ONE TO ONE COURSE -> REQUEST RELATIONSHIP
     # IF REQUEST IS MADE THE COURSE INSTANCE SHOULD CHANGE COURSE.REQUESTED to TRUE
@@ -232,11 +243,11 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
         Check that:
             CourseCopy Course has user or masquerade listed as an instructor
         """
-        print("data",data)
+        print("data in validate",data)
 
         # Lets check if we want to update content source and if so, lets check if its valid
         if 'copy_from_course' in data.keys():
-            if data['copy_from_course'] == None: return data
+            if data['copy_from_course'] == None or data['copy_from_course'] == '': return data
             #go get course
             print("data['copy_from_course']",data['copy_from_course'])
             instructors = api.get_course_users(data['copy_from_course'])
@@ -282,15 +293,21 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
         #course_requested_data = validated_data.pop('course_requested')
         # check that this course.requested==False
         ##print("course_requested_data", course_requested_data)
-        #print("validated_Data",validated_data)
+        print("validated_Data",validated_data)
+
 
         add_enrolls_data = validated_data.pop('additional_enrollments')
+
+        # CHECK FOR AUTOADDS AND THEN ADD !
         request_object = Request.objects.create(**validated_data)
         #validated_data['course_requested'].requested = False
 
-        for enroll_data in add_enrolls_data:
-            ##print("subject data", subject_data)
-            request_object.additional_enrollments.add(enroll_data)
+        if add_enrolls_data:
+            print("add_enrolls_data",add_enrolls_data)
+            for enroll_data in add_enrolls_data:
+                ##print("subject data", subject_data)
+                AdditionalEnrollment.objects.create(course_request=request_object,**enroll_data)
+                #request_object.additional_enrollments.add(enroll_data)
 
         #print("RequestSerializer.create", validated_data)
         return request_object
@@ -304,12 +321,24 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
         # [ ]must check that the course is not already requested?
         # [ ] better/more thorough validation
 
-        #print("in serializer ", validated_data)
+        print("in serializer update ", validated_data)
         instance.status = validated_data.get('status',instance.status)
         instance.title_override = validated_data.get('title_override',instance.title_override)
         instance.copy_from_course = validated_data.get('copy_from_course',instance.copy_from_course)
         instance.reserves = validated_data.get('reserves',instance.reserves)
         instance.additional_instructions = validated_data.get('additional_instructions',instance.additional_instructions)
+
+        add_enrolls_data = validated_data.get('additional_enrollments')
+        if add_enrolls_data:
+            #request_obj =
+            AdditionalEnrollment.objects.filter(course_request=instance).delete()
+            for enroll_data in add_enrolls_data:
+                ##print("subject data", subject_data)
+                print("instance",instance)
+                AdditionalEnrollment.objects.update_or_create(course_request=instance,**enroll_data)
+                #request_object.additional_enrollments.add(enroll_data)
+
+        #instance.additional_enrollments = validated_data.set('additional_enrollments',instance.additional_enrollments)
         #print("instance.status", instance.status)
         #print("instance.title_override", instance.title_override)
         #instance.course = validated_data.get('course_requested', instance.course_requested)
@@ -456,6 +485,9 @@ class AutoAddSerializer(serializers.HyperlinkedModelSerializer):
         #instance.notice_text = validated_data.get('notice_text', instance.notice_text)
         instance.save()
         return instance
+
+
+
 
 
 class UpdateLogSerializer(serializers.ModelSerializer):

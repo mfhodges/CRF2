@@ -23,7 +23,7 @@ class CourseAdmin(admin.ModelAdmin):
     )
     search_fields = ('instructors__username','course_code','course_name')
     readonly_fields = ['created','updated','owner'] # maybe add requested to here.
-
+    autocomplete_fields = ['crosslisted','instructors']
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == "course":
@@ -55,8 +55,13 @@ class RequestAdmin(admin.ModelAdmin):
     #    return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     def requestors(self,object):
-        if object.masquerade != '': return object.owner.username + " (" + object.masquerade +") "
-        return object.owner.username
+        print("object.masquerade",object.masquerade)
+        if object.masquerade == None:
+            return object.owner.username
+        elif object.masquerade != '':
+            return object.owner.username + " (" + object.masquerade +") "
+        else:
+            return object.owner.username
 
     def save_model(self, request, obj, form, change):
         #print("checkin save")
@@ -83,6 +88,7 @@ admin.site.register(Course, CourseAdmin)
 admin.site.register(Request,RequestAdmin)
 admin.site.register(Notice)
 admin.site.register(School)
+admin.site.register(Activity)
 admin.site.register(Subject)
 admin.site.register(AutoAdd)
 admin.site.register(UpdateLog)

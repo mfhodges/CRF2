@@ -45,30 +45,11 @@
   {% endif %}
 <!--END DETAIL -->
 
-
-  <form action="{% url 'UI-request-detail' pk=request_instance.course_requested %}" method="put" id="RequestForm">
+  <form enctype='application/json' action="{% url 'UI-request-detail' pk=request_instance.course_requested %}" method="put" id="RequestForm">
       {% csrf_token %}
       <input name="view_type" class="form-control" type="hidden" value="UI-request-detail">
       <input name='course_requested' value='{{request_instance.course_requested}}' type='hidden'>
-
-
       {% include "bits/request_form.html" with course=request_instance.course_requested %}
-
-
-        {% if user.is_staff %}
-      <fieldset>
-        <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
-        <i> (this is visible to admins only) </i>
-        <b><p> ADD CONTENT HERE </p></b>
-
-        <p> this would be adding TA's, Instructors, Designers, Librarians ..NOT students</p>
-
-          <!--<p> this field could also expland to have custom tool add ons </p>-->
-      </fieldset>
-      {% endif %}
-
-
-
       <input type="submit" value="Update Request" />
   </form>
 </fieldset>
@@ -77,7 +58,11 @@
 <!-- Canvas Site info -->
 {% include "bits/canvas_site_info.html" with course=request_instance.course_info %}
 
-
+<div id="demo">
+  <h2>Let AJAX change this text</h2>
+  <button class="apireq">Change Content</button>
+    <button class="apiadd">add Content</button>
+</div>
 
 {% endblock %}
 
@@ -86,6 +71,69 @@
 
 {% block template_page_js %}
 <script>
+
+function addrow(){
+  // should get lenght !
+  var num = document.getElementById("additional_enrollments").childElementCount;
+  var node = document.createElement("DIV");
+  node.setAttribute("id","addEnroll-"+num);
+  node.setAttribute("class","row");
+  //node.appendChild(y);
+  var id = "'additional_enrollments','addEnroll-"+num+"'";
+  var name_user ="'additional_enrollments["+num+"][user]'"
+  var name_role ="'additional_enrollments["+num+"][role]'"
+  node.insertAdjacentHTML('beforeend',"<label style='width: 46%;'> user <input name="+name_user+" value='' class='form-control' type='text'> </label> <label> role  <select id='choose' name="+name_role+" style='width:130px;'> <option disabled selected>Please select</option> <option value='TA'>TA</option> <option value='DES'>Designer</option> <option value='LIB'>Librarian</option> </select> </label><a onClick=removeElement("+id+"); style='padding-top:30px;padding-left:5px;'> Delete <i class=\'fas fa-times\'></i></a>");
+  document.getElementById("additional_enrollments").appendChild(node);
+}
+
+function removeElement(parentDiv, childDiv){
+     if (childDiv == parentDiv) {
+          alert("The parent div cannot be removed.");
+     }
+     else if (document.getElementById(childDiv)) {
+          var child = document.getElementById(childDiv);
+          var parent = document.getElementById(parentDiv);
+          parent.removeChild(child);
+     }
+     else {
+          alert("Child div has already been removed or does not exist.");
+          return false;
+     }
+}
+$('.apireq').click( function() {
+    $.ajax({
+             url : "http://127.0.0.1:8000/api/requests/{{request_instance.course_requested}}",
+             dataType: "json",
+             headers: {'X-CSRFTOKEN': '{{ csrf_token }}'},
+             success : function (data) {
+                      console.log(data['additional_enrollments']);
+                    }
+                 });
+             });
+
+ $('.apiadd').click( function() {
+
+     $.ajax({
+              url : "http://127.0.0.1:8000/api/requests/{{request_instance.course_requested}}/",
+              headers: {
+                          'X-CSRFTOKEN': '{{ csrf_token }}'
+                      },
+              type: "PUT",
+              dataType: "json",
+              //contentType: 'application/json',
+              data: {"additional_enrollments": [{'user':'molly','role':'TA'}]},
+              success: function(data){
+                    console.log(data);
+              }
+              });
+});
+
+// before submit lets add all the additional_enrollments
+/*
+$('.form').onsubmit( function () {
+
+});
+*/
 
 // removes null query_params ! <3
 /*$('form[method="put"]').submit(function(){

@@ -6,11 +6,11 @@ from django.contrib.auth.models import User
 from course.permissions import IsOwnerOrReadOnly
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework.reverse import reverse
-
+from django.utils.datastructures import MultiValueDict
+from rest_framework.utils import html
 from rest_framework import viewsets
-
 from django.contrib.auth.decorators import login_required
-
+from django.http.request import QueryDict
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -37,7 +37,7 @@ from django.template.loader import get_template
 import datetime
 from course import email_processor
 from course import utils
-
+import json
 from rest_framework.exceptions import PermissionDenied
 from django_celery_beat.models import PeriodicTask, IntervalSchedule, CrontabSchedule
 #from rest_framework.filters import SearchFilter
@@ -113,12 +113,12 @@ class MixedPermissionModelViewSet(viewsets.ModelViewSet): #LoginRequiredMixin, -
     #permission_classes = (IsAuthenticated,)
 
     def get_permissions(self):
-        print("we here")
+        #print("we here")
 
         try:
             print("self.action", self.action)
             # return permission_classes depending on `action`
-            print([permission() for permission in self.permission_classes_by_action[self.action]])
+            #print([permission() for permission in self.permission_classes_by_action[self.action]])
             return [permission() for permission in self.permission_classes_by_action[self.action]]
         except KeyError:
             # action is not set return default permission_classes
@@ -140,14 +140,15 @@ class CourseFilter(filters.FilterSet):
     #filter_fields = ('course_activity','instructors__username','course_schools__abbreviation','course_subjects__abbreviation',) #automatically create a FilterSet class
     # https://github.com/philipn/django-rest-framework-filters/issues/102
     #pls see: https://django-filter.readthedocs.io/en/master/ref/filters.html
-    activity = filters.ChoiceFilter(choices=Course.ACTIVITY_CHOICES, field_name='course_activity', label='Activity')
+    #https://django-filter.readthedocs.io/en/master/ref/filters.html#modelchoicefilter
+    activity = filters.ModelChoiceFilter(queryset=Activity.objects.all(), field_name='course_activity', label='Activity')
     instructor = filters.CharFilter(field_name='instructors__username', label='Instructor')
     school = filters.CharFilter(field_name='course_schools__abbreviation',label='School (abbreviation)')
     subject = filters.CharFilter(field_name='course_subject__abbreviation', label='Subject (abbreviation)')
     term = filters.ChoiceFilter(choices=Course.TERM_CHOICES, field_name='course_term', label='Term')
     class Meta:
         model = Course
-        fields = ['activity','instructor','school','subject','term']
+        fields = ['instructor','subject','term','activity','school']#,'activity', school
 
 
 class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
@@ -253,7 +254,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 this_form = RequestSerializer(data={'course_requested':self.get_object()})
                 #print("ok")
                 this_form.is_valid()
-                #print("this_form",this_form.data)
+                print("this_form",this_form.data)
                 request_instance =''
             return Response({'course': response.data, 'request_instance':request_instance,'request_form':this_form ,'style':{'template_pack': 'rest_framework/vertical/'}}, template_name='course_detail.html')
         return response
@@ -287,7 +288,6 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     # [ ] create and test permissions
     # [x] on creation of request instance mutatate course instance so courese.requested = True
     #[ ] ensure POST is only setting masquerade
-
     queryset = Request.objects.all()
     serializer_class = RequestSerializer
     filterset_class = RequestFilter
@@ -333,8 +333,9 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             sessions would be a better and safer implementation.
         """
 
-        #print("views.py in create: request.data", request.data)
+        print("views.py in create: request.data", request.data)
         # setting masquerade variable for later use
+
         try:
             masquerade = request.session['on_behalf_of']
         except KeyError:
@@ -356,10 +357,12 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             #print(serializer.errors)
             # potentially uncomment next line...
             #(serializer.errors)
-            messages.add_message(request, messages.ERROR, serializer.errors['non_field_errors'])
+            messages.add_message(request, messages.ERROR, serializer.errors)
             raise serializers.ValidationError(serializer.errors)
 
         serializer.validated_data['masquerade'] = masquerade
+        print("testing !")
+        serializer.validated_data['additional_enrollments'] = None
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
@@ -381,7 +384,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     def perform_create(self, serializer):
         #print("Request perform_create")
         serializer.save(owner=self.request.user)
-        serializer.save(masquerade="test")# NOTE fix this!
+        #serializer.save(masquerade="test")# NOTE fix this!
 
 
     def list(self, request, *args, **kwargs):
@@ -536,6 +539,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
                 ##print(here.title_override)
                 ##print("RequestSerializer(response.data)",here)
+                print("request_form", here,here.data)
                 return Response({'request_instance': response.data,'permissions':permissions,'request_form':here,'style':{'template_pack': 'rest_framework/vertical/'}}, template_name='request_detail_edit.html') #data={'course_requested':response.data['course_requested']},partial_update=True
             return Response({'request_instance': response.data, 'permissions':permissions}, template_name='request_detail.html')
         return response
@@ -566,10 +570,58 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         #print("in update")
+
         partial = kwargs.pop('partial', False)#see if partial
         instance = self.get_object() # get request to update
-        print("request.data, data to update!",request.data)
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        additional_enrollments_partial = html.parse_html_list(request.data, prefix ='additional_enrollments')
+        print("request.data, data to update!",request.data, additional_enrollments_partial)
+        d = request.data.dict()
+        #test1 = json.dumps({k: d.getlist(k) for k in d.keys() if not k.startswith('additional_enrollments')})
+        #test2 = json.dumps({k: ",".join(d.getlist(k)) for k in d.keys()})
+        #ad = additional_enrollments_partial
+        #test3 = json.dumps({k: (ad.getlist(k) if len(ad.getlist(k)) > 1 else ad[k]) for k in ad.keys()})
+
+        #print("test1",test1)
+        #print("test2",test2)
+        #print("test3",test3)
+        # check if we are updating
+        if additional_enrollments_partial:
+            print("we are just updating the additional_enrollments", additional_enrollments_partial)
+            print("partialll",partial)
+            ok= additional_enrollments_partial[0].dict()
+            print("ok",ok)
+
+            # removing spaces from keys
+            # storing them in sam dictionary
+            ok = {x.replace('[', '').replace(']',''): v
+                for x, v in ok.items()}
+            print("newok",ok)
+            #qdict.update({'additional_enrollments':additional_enrollments_partial[0]})
+            final_add_enroll = []
+            #for k in additional_enrollments_partial:
+            for add in additional_enrollments_partial:
+                add = add.dict()
+                new_add = {x.replace('[', '').replace(']',''): v
+                    for x, v in add.items()}
+                print("newadd",new_add)
+                if '' in new_add.values():
+                    pass
+                else:
+                    final_add_enroll +=[new_add]
+            print("final_add_enroll",final_add_enroll)
+            #print(additional_enrollments_partial.dict())
+            d['additional_enrollments']=final_add_enroll#[{'user':'molly','role':'DES'}]})
+            #print("test1.2", test1)
+#            qdict.update({'additional_enrollments':{'user':'molly','role':'TA'}})
+            #qdict.update(test1)
+            print("d",d,"reqiest.data",request.data)
+            #request.data = qdict
+            serializer = self.get_serializer(instance, data=d, partial=partial)
+            print(serializer.initial_data)
+            #request.data['additional_enrollments'] = additional_enrollments_partial
+        else:
+            serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        print("about to check if serializer is valid")
         serializer.is_valid()#raise_exception=True)
         if not serializer.is_valid():
             messages.add_message(request, messages.ERROR, "An error occurred: Please add the Content Copy information to the additional instructions field and a Courseware Support team memeber will assist you.")
@@ -880,15 +932,20 @@ class HomePage(APIView):#,
 
 
     def set_session(request):
-        #print("set_session request.data",request.data)
+        print("set_session request.data",request.data)
         try:
             on_behalf_of = request.data['on_behalf_of']
-            #print("found on_behalf_of in request.data ", on_behalf_of)
+            print("found on_behalf_of in request.data ", on_behalf_of)
             if on_behalf_of: # if its not none -> if exists then see if pennkey works
-                if utils.validate_pennkey(on_behalf_of) == None: #if pennkey is good the user exists
+                lookup_user = utils.validate_pennkey(on_behalf_of)
+                if lookup_user == None: #if pennkey is good the user exists
                     print("not valid input")
                     messages.error(request,'Invalid Pennkey -- Pennkey must be Upenn Employee')
                     on_behalf_of = None
+                elif lookup_user.is_staff == True:
+                    messages.error(request,'Invalid Pennkey -- Pennkey cannot be Courseware Team Member')
+                    on_behalf_of = None
+
         except KeyError:
             pass
         # check if user is in the system

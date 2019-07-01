@@ -16,21 +16,6 @@
 
 
 
-
-    {% masquerading request as masq %}
-    {% if user.is_staff and masq is False %}
-    <fieldset>
-      <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
-      <i> (this is visible to admins only) </i>
-      <b><p> ADD CONTENT HERE </p></b>
-      <!-- this would be the disabled section -->
-      <p> this would be adding TA's, Instructors, Designers, Librarians ..NOT students</p>
-
-      <p> this field could also expland to have custom tool add ons
-    </fieldset>
-  {% endif %}
-
-
   <!-- BUTTONS -->
 
     <div class="row" style="margin-left:7px;margin-top:2.5rem;margin-bottom:.5rem;">
@@ -52,7 +37,7 @@
 
 {% if user.is_staff %}
   <h6> Admin Actions</h6>
-{% endif %}  
+{% endif %}
   <div class="row" style="margin-left:7px;margin-top:.5rem;">
 
     {% if 'lock' in permissions %}

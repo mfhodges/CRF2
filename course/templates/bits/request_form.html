@@ -29,10 +29,73 @@
 
   <fieldset>
     <legend><h6 style="margin:0;">Library Services</h6></legend>
-    <p> Course Reserve services are available to your course. See <a href="http://www.library.upenn.edu/reserves/reserves.html"> http://www.library.upenn.edu/reserves/reserves.html</a></p>
+    <p> Course Reserve services are available to your course. See <a href="http://www.library.upenn.edu/reserves/reserves.html"> http://www.library.upenn.edu/reserves/reserves.html</a> for more information.</p>
+
     {% render_field request_form.reserves style=style %}
   </fieldset>
 
+
+  <fieldset>
+    <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
+    <b><p> ADD CONTENT HERE </p></b>
+    <!-- wowie -->
+    <p> This is for adding TA's, Instructors, Designers, Librarians ..NOT students</p>
+    <p>{{request_instance.additional_enrollments}}</p>
+
+
+    <fieldset id="additional_enrollments" style="border:none;padding-right:0px;padding-left:0px;">
+      {% if request_instance.additional_enrollments %}
+        {% for enrollment in request_instance.additional_enrollments %}
+        <p> {{enrollment}} {{enrollment.role}} {{enrollment.user}}
+
+        
+        </p>
+
+          <div id="addEnroll-1" class="row" style="">
+          <label style="width: 47%;">
+            user
+          <input name="additional_enrollments[{{foorloop.counter0}}][user]" value="{{enrollment.user}}" class="form-control" type="text">
+        </label>
+        <label>
+          role
+          <!--<input name="additional_enrollments[0][role]" value="" class="form-control" type="text">-->
+          <select id="choose" name="additional_enrollments[{{foorloop.counter0}}][role]" style='width:130px;'>
+            <option disabled>Please select</option>
+            <option value="TA" {% if enrollment.role == "TA" %} selected {% endif %}>TA</option>
+            <option value="DES" {% if enrollment.role == "DES" %} selected {% endif %}>Designer</option>
+            <option value="LIB" {% if enrollment.role == "LIB" %} selected {% endif %}>Librarian</option>
+          </select>
+        </label>
+          <a onClick="removeElement('additional_enrollments', 'addEnroll-1');" style="padding-top:30px;padding-left:5px;"> Delete <i class="fas fa-times"></i></a>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div id="addEnroll-1" class="row" style="">
+        <label style="width: 47%;">
+          user
+        <input name="additional_enrollments[0][user]" value="" class="form-control" type="text">
+      </label>
+      <label>
+        role
+        <!--<input name="additional_enrollments[0][role]" value="" class="form-control" type="text">-->
+        <select id="choose" name="additional_enrollments[0][role]" style='width:130px;'>
+          <option disabled selected>Please select</option>
+          <option value="TA">TA</option>
+          <option value="DES">Designer</option>
+          <option value="LIB">Librarian</option>
+        </select>
+      </label>
+        <a onClick="removeElement('additional_enrollments', 'addEnroll-1');" style="padding-top:30px;padding-left:5px;"> Delete <i class="fas fa-times"></i></a>
+        </div>
+      {% endif %}
+    </fieldset>
+    <div onclick="addrow()"> <a>
+      <i class="fas fa-plus"></i> add another </a>
+    </div>
+
+
+
+  </fieldset>
 
 
 {% render_field request_form.additional_instructions style=style %}

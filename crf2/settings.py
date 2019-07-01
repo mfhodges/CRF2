@@ -31,8 +31,8 @@ SECRET_KEY = config.get('django','secret_key',raw=True)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-
-ALLOWED_HOSTS = ['127.0.0.1:8000','127.0.0.1','localhost','demo-crf.herokuapp.com']#'128.91.177.58'
+#
+ALLOWED_HOSTS = ['*']#'128.91.177.58'
 #]
 
 
@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 	'course',
 	'rest_framework',
+    'corsheaders',
     'django_filters',
     'admin_auto_filters',
     'django_celery_beat',
@@ -83,7 +84,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -125,6 +126,7 @@ DATABASES = {
     }
 }
 
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -175,8 +177,13 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.SearchFilter','django_filters.rest_framework.DjangoFilterBackend',),
     #'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'DEFAULT_PAGINATION_CLASS': 'drf_link_header_pagination.LinkHeaderPagination',
-    'PAGE_SIZE': 30#,
+    'PAGE_SIZE': 30,
     #'EXCEPTION_HANDLER': 'course.views.custom_exception_handler'
+
+    #'DEFAULT_PARSER_CLASSES': (
+    #    'rest_framework.parsers.JSONParser',
+    #)
+
 }
 
 from celery.schedules import crontab

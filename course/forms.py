@@ -1,5 +1,6 @@
 
 from django import forms
+from course.models import AdditionalEnrollment
 
 # our new form
 class ContactForm(forms.Form):
@@ -9,7 +10,6 @@ class ContactForm(forms.Form):
         required=True,
         widget=forms.Textarea
     )
-
 
 
 

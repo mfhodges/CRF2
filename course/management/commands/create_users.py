@@ -40,6 +40,8 @@ class Command(BaseCommand):
                 else:
                     User.objects.create_user(username=username, email='', password='123')
         if courseware:
+            config = ConfigParser()
+            config.read('config/config.ini')
             for (key,value) in config.items('users'):
                 try:
                     User.objects.create_superuser(username=key,email='',password=value)

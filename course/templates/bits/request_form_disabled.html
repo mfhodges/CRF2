@@ -84,6 +84,40 @@
       </dl>
 </fieldset>
 
+<fieldset>
+  <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
+  <b><p> ADD CONTENT HERE </p></b>
+  <!-- this would be the disabled section -->
+  <p> this would be adding TA's, Instructors, Designers, Librarians ..NOT students</p>
+  <div>
+    {% if request_instance.additional_enrollments %}
+    <div class="contain-table">
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Role</th>
+          </tr>
+      </thead>
+      <tbody>
+      {% for enrollment in request_instance.additional_enrollments %}
+        <tr>
+        <td> {{enrollment.user}}</td> <td> {{enrollment.role}} </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+      </table>
+    </div>
+    {% else %}
+      <p> no additional enrollments </p>
+
+    {% endif %}
+  </div>
+
+
+
+</fieldset>
+
 
 <div class="form-group ">
   <label>Additional instructions</label>

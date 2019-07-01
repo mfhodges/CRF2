@@ -46,6 +46,9 @@ This is fine because I want the API to be very generic
 # Additionally, we include the login URLs for the browsable API.
 # NOTE : pk = course_SRS_Title
 urlpatterns = [
+    # --------------- Documentation url/view -------------------
+    path('documentation/',TemplateView.as_view(template_name='documentation.html'),name='documentation'),
+
     url(r'^api/', include(router.urls)),
     url(r'^api_doc/', schema_view),
     # --------------- Course list/detail view -------------------
@@ -118,7 +121,6 @@ urlpatterns = [
     path('accounts/logout/', auth_views.LogoutView.as_view(
             template_name='logout.html',
             ), name='logout'),
-    # --------------- Documentation url/view -------------------
-    path('documentation/',TemplateView.as_view(template_name='documentation.html'),name='documentation'),
+
 ]
 #path('course', views.CourseViewSet.as_view({'get': 'list'})),

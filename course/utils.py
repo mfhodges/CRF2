@@ -17,46 +17,95 @@ about how users are added
 
 def validate_pennkey(pennkey):
     # assumes usernames are valid pennkeys
-    print("validating pennkey")
+    print("validating pennkey (utils.py)")
     try:
         user = User.objects.get(username=pennkey)
     except User.DoesNotExist:
         # check if in penn db
         print("checking datawarehouse for: ", pennkey)
-        user = datawarehouse_lookup(pennkey)
-        if user:
+        userdata = datawarehouse_lookup(PPENN_KEY=pennkey)
+        if userdata:
             #clean up first and last names
-            first_name = user['firstname'].title()
-            last_name = user['lastname'].title()
-            Profile.objects.create(user=User.objects.create_user(username=pennkey,first_name=first_name,last_name=last_name,email=user['email']),penn_id=user['penn_id'])
+
+            first_name = userdata['firstname'].title()
+            last_name = userdata['lastname'].title()
+            user = User.objects.create_user(username=pennkey,first_name=first_name,last_name=last_name,email=userdata['email'])
+            Profile.objects.create(user=user,penn_id=user['penn_id'])
         else:
             user=None
     # do a lookup in the data warehouse ?
     return user
 
 
+def check_by_penn_id(PENN_ID):
+    print("howdy")
+    try:
+        user = Profile.objects.get(penn_id=PENN_ID).user
+        print("already exists")
+        return user
+    except:# User.DoesNotExist or Profile.DoesNotExist:
+        # check if in penn db
+        print("checking datawarehouse for: ", PENN_ID)
+        user = datawarehouse_lookup(PPENN_ID=PENN_ID)
+        if user:
+            #clean up first and last names
+            first_name = user['firstname'].title()
+            last_name = user['lastname'].title()
+            Profile.objects.create(user=User.objects.create_user(username=user['penn_key'],first_name=first_name,last_name=last_name,email=user['email']),penn_id=PENN_ID)
+        else:
+            print("WE HAVE A BIG PROBLEM")
+            user=None
+        return user
 
-def datawarehouse_lookup(penn_key):
+
+
+def datawarehouse_lookup(PPENN_KEY=None,PPENN_ID=None):
     ## connects to the db and makes a query
     config = ConfigParser()
     config.read('config/config.ini') # this works
     info = dict(config.items('datawarehouse'))
     #print(info)
+    print("not ok",PPENN_KEY,PPENN_ID,(PPENN_ID !=None))
     connection = cx_Oracle.connect(info['user'], info['password'], info['service'])
     cursor = connection.cursor()
-    cursor.execute("""
-        SELECT FIRST_NAME, LAST_NAME, EMAIL_ADDRESS, PENN_ID
-        FROM EMPLOYEE_GENERAL
-        WHERE PENNKEY= :pennkey""",
-        pennkey = penn_key)
-    for fname, lname, email, penn_id in cursor:
-        print("Values:", [fname, lname, email, penn_id])
-        return {'firstname':fname, 'lastname':lname, 'email':email, 'penn_id':penn_id}
+    if PPENN_KEY != None:
+        print("looking by penn key")
+        cursor.execute("""
+            SELECT FIRST_NAME, LAST_NAME, EMAIL_ADDRESS, PENN_ID
+            FROM EMPLOYEE_GENERAL
+            WHERE PENNKEY=:pennkey""",
+            pennkey = PPENN_KEY)
+        for fname, lname, email, pennid in cursor:
+            print("Values:", [fname, lname, email, pennid])
+
+            return {'firstname':fname, 'lastname':lname, 'email':email, 'penn_id':pennid}
+
+    if (PPENN_ID !=None)==True:
+        print("llooking by penn id")
+        cursor.execute("""
+            SELECT FIRST_NAME, LAST_NAME, EMAIL_ADDRESS, PENN_KEY
+            FROM EMPLOYEE_GENERAL
+            WHERE PENN_ID=:pennid""",
+            pennid = PPENN_ID)
+        print(cursor)
+        for fname, lname, email, penn_key in cursor:
+            print("Values:", [fname, lname, email, penn_key])
+
+            return {'firstname':fname, 'lastname':lname, 'email':email, 'penn_key':penn_key}
 
     #if no results
+    print("no resutl?")
     return False
 
 
+def find_or_create_user(pennid):
+    print("checking")
+    user = check_by_penn_id(pennid)
+    if user: # the user exists
+        print("user",user)
+        return user
+    else:
+        return None
 
 def check_site(sis_id,canvas_course_id):
     """

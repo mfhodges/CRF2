@@ -6,6 +6,7 @@ import datetime
 import django.core.exceptions
 from django.utils.html import mark_safe
 from markdown import markdown
+from django.db.models.signals import pre_delete
 # This model is to represent a Course object in the CRF
 # the meta-data that is important with this is information that will help the course be
 # discoverable in the CRF2. all of these objects with be populated from the data
@@ -28,6 +29,23 @@ class Profile(models.Model):
 """
         this class expands on the User model
 """
+
+class Activity(models.Model):
+    name = models.CharField(max_length=40)
+    abbr = models.CharField(max_length=3, unique=True, primary_key=True)
+
+    def __str__(self):
+        return self.abbr
+
+    def __repr__(self):
+        return self.abbr
+
+    def get_name(self):
+        return self.abbr
+
+    class Meta:
+        verbose_name = 'Activity Type'
+        verbose_name_plural = 'Activity Types'
 
 #    def __str__(self):
 #        return self.username
@@ -74,6 +92,8 @@ class School(models.Model):
 
     class Meta:
         ordering = ('name',)
+        verbose_name = 'School // Sub Account'
+        verbose_name_plural = 'Schools // Sub Accounts'
 
 
 class Subject(models.Model):
@@ -92,7 +112,8 @@ class Subject(models.Model):
 
     class Meta:
         ordering = ('name',)
-
+        verbose_name = 'Subject // Deptartment '
+        verbose_name_plural = 'Subjects // Departments'
 
 
 class CanvasSite(models.Model):
@@ -102,7 +123,17 @@ class CanvasSite(models.Model):
     url = models.URLField()
     request_instance = models.ForeignKey(
         'Request',
-        on_delete=models.CASCADE,null=False)
+        on_delete=models.CASCADE,null=True) # there doesnt have to be one!
+    owners = models.ManyToManyField(User,related_name='Canvas_Sites',blank=True) # should be allowed to be null --> "STAFF"
+    added_permissions = models.ManyToManyField(User,related_name='Canvas_Site_Permissions',blank=True,default=None)
+    name = models.CharField(max_length=50,blank=False,default=None) #CHEM 101 2019C General Chemistry I
+    sis_course_id = models.CharField(max_length=50,blank=False,default=None) # SRS_CHEM-101-003 2019C
+    sis_section_id = models.CharField(max_length=50,blank=False,default=None)#SRS_CHEM-101-003 2019C
+    section_name = models.CharField(max_length=50,blank=False,default=None)#CHEM 101-003 2019C General Chemistry I
+
+    # i think this should be a school object ...
+    subaccount = models.CharField(max_length=50,blank=False,default=None)#School of Arts and Sciences
+    term = models.CharField(max_length=5,blank=False,default=None)#2019C
         #name = models.CharField(max_length=50,unique=True)#BMIN 521 2019C AI II: Machine Learning
     """
     sis_course_id = #SRS_BMIN-521-401 2019C
@@ -130,7 +161,6 @@ class CourseManager(models.Manager):
 
 
 
-
 class Course(models.Model):
 
     SPRING = 'A'
@@ -143,22 +173,6 @@ class Course(models.Model):
         (SUMMER, 'Summer'),
         (FALL, 'Fall'))
 
-    ACTIVITY_CHOICES = (
-        ('LEC', 'Lecture'),
-        ('SEM', 'Seminar'),
-        ('LAB', 'Laboratory'),
-        ('CLN', 'Clinic'),
-        ('IND', 'Independent Study'),
-        ('ONL', 'Online Course'),
-        ('PRC', 'SCUE Preceptorial'),
-        ('PRO', 'NSO Proseminar'),
-        ('REC', 'Recitation'),
-        ('SEM', 'Seminar'),
-        ('SRT', 'Senior Thesis'),
-        ('STU', 'Studio'),
-        ('MST', 'Masters Thesis'),
-        ('UNK','Unknown')
-    )
 
     created = models.DateTimeField(auto_now_add=True)
     #id = models.CharField(max_length=250) # this is a number
@@ -168,27 +182,21 @@ class Course(models.Model):
     instructors = models.ManyToManyField(User,related_name='courses',blank=True) # should be allowed to be null --> "STAFF"
     course_term = models.CharField(
         max_length=1,choices = TERM_CHOICES,) # self.course_term would == self.SPRING || self.FALL || self.SUMMER
-    course_activity = models.CharField(max_length=3,choices = ACTIVITY_CHOICES,)
-
-
-
-    #  r'^(?P<subject>[A-Z]{2,4})(?P<course_number>\d{3}|)-?(?P<section_number>\d{3}|)-(?P<term>20[01][0-9][ABC])$')
+    course_activity = models.ForeignKey(Activity, related_name='courses',on_delete=models.CASCADE)
     course_code = models.CharField(max_length=150,unique=True, primary_key=True, editable=False) # unique and primary_key means that is the lookup_field
     course_subject = models.ForeignKey(Subject,on_delete=models.CASCADE,related_name='courses') # one to many
     course_primary_subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    course_schools = models.ManyToManyField(School,related_name='courses')# one to many
+    course_schools = models.ForeignKey(School,related_name='courses',on_delete=models.CASCADE)# one to many
     course_number = models.CharField(max_length=4, blank=False)
     course_section = models.CharField(max_length=4,blank=False)# can courses not have associated sections?
     course_name = models.CharField(max_length=250) # Human Readable Name i.e. Late Antique Arts
-
     year = models.CharField(max_length=4,blank=False)
     crosslisted = models.ManyToManyField("self", blank=True, symmetrical=True, default=None)
     requested =  models.BooleanField(default=False)# False -> not requested
 
-
-
     class Meta:
         ordering = ('course_code',)
+
 
 
     def save(self, *args, **kwargs):
@@ -230,15 +238,12 @@ class Course(models.Model):
         return "ok"
         if cross_listed == None:
             return self.course_subject.abbreviation
-
         #should get all crosslisted and the
-
         return ",\n".join([sub.abbreviation for sub in cross_listed])
 
-
     def get_schools(self):
-        return ",\n".join([sch.abbreviation for sch in self.course_schools.all()])
-
+        return self.course_schools
+        #return ",\n".join([sch.abbreviation for sch in self.course_schools.all()])
 
     def get_instructors(self):
         #check if blank?
@@ -247,15 +252,13 @@ class Course(models.Model):
             return("STAFF")
         return ",\n".join([inst.username for inst in self.instructors.all()])
 
-
     def get_sections(self):
         # when all but the course code is the same ?
         # filter all courses that have the same
         return None
 
-
     def __str__(self):
-        return "_".join([self.course_primary_subject.abbreviation, self.course_number, self.course_section, self.year, self.course_term])
+        return "_".join([self.course_primary_subject.abbreviation, self.course_number, self.course_section, self.year+self.course_term])
 
     def __unicode__(self):
         return "_".join([self.course_primary_subject.abbreviation, self.course_number, self.course_section, self.year, self.course_term])
@@ -266,7 +269,6 @@ class Course(models.Model):
     CourseManager = CourseManager()
 
 
-
     #def get_absolute_url(self):
     #    """
     #    get_absolute_url should return a string of the url that is
@@ -275,6 +277,8 @@ class Course(models.Model):
     #    """
     #    # determine which view?
     #    return reverse('vegetable', pks={pk: self.pk})
+
+
 
 
 class Notice(models.Model):
@@ -325,10 +329,10 @@ class Request(models.Model):
         on_delete=models.CASCADE,
         primary_key=True) # once the course is deleted the request will be deleted too.
 
-    copy_from_course =models.CharField(max_length=100, null=True,default=None) # previously content source
+    copy_from_course =models.CharField(max_length=100, null=True,default=None,blank=True) # previously content source
     # this should be a list of courses they have rights too
     # SuperUsers have access to all courses
-    title_override = models.CharField(max_length=100,null=True,default=None) # previously SRS title override
+    title_override = models.CharField(max_length=100,null=True,default=None,blank=True) # previously SRS title override
     additional_instructions = models.TextField(blank=True,default=None, null=True)
     reserves = models.BooleanField(default=False)
     canvas_instance = models.ForeignKey(CanvasSite,related_name='canvas', on_delete=models.CASCADE,null=True, blank=True )
@@ -339,23 +343,33 @@ class Request(models.Model):
     status = models.CharField(max_length=20, choices=REQUEST_PROCESS_CHOICES,default='SUBMITTED' )
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-
     owner = models.ForeignKey('auth.User', related_name='requests', on_delete=models.CASCADE)#should not delete when user is deleted
     masquerade = models.CharField(max_length=20,null=True)
     #additional_enrollments = models.ManyToManyField(AdditionalEnrollment,related_name='additional_enrollments',blank=True)
 
 
+
     class Meta:
         ordering = ('created',)
+        #verbose_name = 'Site Request'
+        #verbose_name_plural = 'Site Requests'
 
     def save(self, *args, **kwargs):
         """
         some text
         """
+        print("saving")
         #print("..",self.status,args,kwargs)
         #print("(Model.py) Request self.pk",self.pk)
         super(Request, self).save(*args,**kwargs)
 
+    def delete(self, *args, **kwargs):
+        print("ohhh")
+        print(self.course_requested.requested)
+        self.course_requested.requested = False
+        print(self.course_requested.requested)
+
+        super(Request, self).delete()
 
     #def __str__(self):
     #    return " \"%s\" site request" % ( self.course_requested.course_code)
@@ -370,7 +384,7 @@ class AdditionalEnrollment(models.Model):
     ('OBS', 'Observer'),)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=4, choices=ENROLLMENT_TYPE,default='TA')
-    course = models.ForeignKey(Request,on_delete=models.CASCADE, default=None)
+    course_request = models.ForeignKey(Request,related_name='additional_enrollments',on_delete=models.CASCADE, default=None)
 
 
 
