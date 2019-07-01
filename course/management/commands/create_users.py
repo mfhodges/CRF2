@@ -12,7 +12,6 @@ config.read('config/config.ini')
 
 class Command(BaseCommand):
     help = 'Create random users'
-
     def add_arguments(self, parser):
         parser.add_argument('-t', '--total', type=int, help='Indicates the number of users to be created')
         parser.add_argument('-p', '--prefix', type=str, help='Define a username prefix')
@@ -33,10 +32,8 @@ class Command(BaseCommand):
                     username = '{prefix}_{random_string}'.format(prefix=prefix, random_string=get_random_string())
                 else:
                     username = get_random_string()
-
                 if admin:
                     User.objects.create_superuser(username=username, email='', password='123')
-
                 else:
                     User.objects.create_user(username=username, email='', password='123')
         if courseware:

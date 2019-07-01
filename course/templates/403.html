@@ -10,6 +10,12 @@
 
 
 <h1>403 - Permssions Error </h1>
+
+{% for key, value in request.session.items  %}
+        <p> Key: {{ key }}  Value: {{ value }} </p>
+{% endfor %}
+
+
 <p>
   You do not have permission to see this page/make that action. If you are acting on behalf of another user
   please check that you have set that in the in the form above or from the homepage. For more information on this error

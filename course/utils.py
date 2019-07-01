@@ -34,7 +34,7 @@ def validate_pennkey(pennkey):
             first_name = userdata['firstname'].title()
             last_name = userdata['lastname'].title()
             user = User.objects.create_user(username=pennkey,first_name=first_name,last_name=last_name,email=userdata['email'])
-            Profile.objects.create(user=user,penn_id=user['penn_id'])
+            Profile.objects.create(user=user,penn_id=userdata['penn_id'])
         else:
             user=None
     # do a lookup in the data warehouse ?

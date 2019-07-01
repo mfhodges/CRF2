@@ -577,7 +577,6 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         print("request.data, data to update!",request.data, additional_enrollments_partial)
         d = request.data.dict()
         # check if we are updating
-
         if additional_enrollments_partial:
             ok= additional_enrollments_partial[0].dict()
             print("ok",ok)
