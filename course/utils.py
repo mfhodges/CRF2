@@ -5,6 +5,10 @@ from datawarehouse.datawarehouse import *
 
 import cx_Oracle
 from configparser import ConfigParser
+import logging
+
+LOG_FILENAME ='users.log'
+logging.basicConfig(filename=LOG_FILENAME,format='(%(asctime)s) %(levelname)s:%(message)s', level=logging.DEBUG, datefmt='%m/%d/%Y %I:%M:%S %p')
 
 """
 
@@ -24,9 +28,9 @@ def validate_pennkey(pennkey):
         # check if in penn db
         print("checking datawarehouse for: ", pennkey)
         userdata = datawarehouse_lookup(PPENN_KEY=pennkey)
+        logging.warning(userdata)
         if userdata:
             #clean up first and last names
-
             first_name = userdata['firstname'].title()
             last_name = userdata['lastname'].title()
             user = User.objects.create_user(username=pennkey,first_name=first_name,last_name=last_name,email=userdata['email'])
