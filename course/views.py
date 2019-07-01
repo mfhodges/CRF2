@@ -576,27 +576,15 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         additional_enrollments_partial = html.parse_html_list(request.data, prefix ='additional_enrollments')
         print("request.data, data to update!",request.data, additional_enrollments_partial)
         d = request.data.dict()
-        #test1 = json.dumps({k: d.getlist(k) for k in d.keys() if not k.startswith('additional_enrollments')})
-        #test2 = json.dumps({k: ",".join(d.getlist(k)) for k in d.keys()})
-        #ad = additional_enrollments_partial
-        #test3 = json.dumps({k: (ad.getlist(k) if len(ad.getlist(k)) > 1 else ad[k]) for k in ad.keys()})
-
-        #print("test1",test1)
-        #print("test2",test2)
-        #print("test3",test3)
         # check if we are updating
+
         if additional_enrollments_partial:
-            print("we are just updating the additional_enrollments", additional_enrollments_partial)
-            print("partialll",partial)
             ok= additional_enrollments_partial[0].dict()
             print("ok",ok)
-
             # removing spaces from keys
             # storing them in sam dictionary
             ok = {x.replace('[', '').replace(']',''): v
                 for x, v in ok.items()}
-            print("newok",ok)
-            #qdict.update({'additional_enrollments':additional_enrollments_partial[0]})
             final_add_enroll = []
             #for k in additional_enrollments_partial:
             for add in additional_enrollments_partial:
@@ -611,16 +599,13 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             print("final_add_enroll",final_add_enroll)
             #print(additional_enrollments_partial.dict())
             d['additional_enrollments']=final_add_enroll#[{'user':'molly','role':'DES'}]})
-            #print("test1.2", test1)
-#            qdict.update({'additional_enrollments':{'user':'molly','role':'TA'}})
-            #qdict.update(test1)
-            print("d",d,"reqiest.data",request.data)
-            #request.data = qdict
+
             serializer = self.get_serializer(instance, data=d, partial=partial)
-            print(serializer.initial_data)
+            print("serializer.initial_data",serializer.initial_data)
             #request.data['additional_enrollments'] = additional_enrollments_partial
         else:
-            serializer = self.get_serializer(instance, data=request.data, partial=partial)
+            data = dict( [(x,y) for x,y in d.items() if not x.startswith('additional_enrollments')] )
+            serializer = self.get_serializer(instance, data=data, partial=partial)
         print("about to check if serializer is valid")
         serializer.is_valid()#raise_exception=True)
         if not serializer.is_valid():

@@ -22,7 +22,6 @@
   <dl class="row" style="line-height:1.1;">
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Status</dt>
         <dd class="col-8 col-md-9"> {{ request_instance.status }}</dd>
-
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Requestor</dt>
         <dd class="col-8 col-md-9"> {{ request_instance.owner }}
           {% if request_instance.masquerade %}
@@ -32,7 +31,6 @@
 
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Created</dt>
         <dd class="col-8 col-md-9"> {{ request_instance.created }}</dd>
-
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Updated</dt>
         <dd class="col-8 col-md-9"> {{ request_instance.updated }}</dd>
   </dl>
@@ -58,11 +56,6 @@
 <!-- Canvas Site info -->
 {% include "bits/canvas_site_info.html" with course=request_instance.course_info %}
 
-<div id="demo">
-  <h2>Let AJAX change this text</h2>
-  <button class="apireq">Change Content</button>
-    <button class="apiadd">add Content</button>
-</div>
 
 {% endblock %}
 
@@ -71,62 +64,6 @@
 
 {% block template_page_js %}
 <script>
-
-function addrow(){
-  // should get lenght !
-  var num = document.getElementById("additional_enrollments").childElementCount;
-  var node = document.createElement("DIV");
-  node.setAttribute("id","addEnroll-"+num);
-  node.setAttribute("class","row");
-  //node.appendChild(y);
-  var id = "'additional_enrollments','addEnroll-"+num+"'";
-  var name_user ="'additional_enrollments["+num+"][user]'"
-  var name_role ="'additional_enrollments["+num+"][role]'"
-  node.insertAdjacentHTML('beforeend',"<label style='width: 46%;'> user <input name="+name_user+" value='' class='form-control' type='text'> </label> <label> role  <select id='choose' name="+name_role+" style='width:130px;'> <option disabled selected>Please select</option> <option value='TA'>TA</option> <option value='DES'>Designer</option> <option value='LIB'>Librarian</option> </select> </label><a onClick=removeElement("+id+"); style='padding-top:30px;padding-left:5px;'> Delete <i class=\'fas fa-times\'></i></a>");
-  document.getElementById("additional_enrollments").appendChild(node);
-}
-
-function removeElement(parentDiv, childDiv){
-     if (childDiv == parentDiv) {
-          alert("The parent div cannot be removed.");
-     }
-     else if (document.getElementById(childDiv)) {
-          var child = document.getElementById(childDiv);
-          var parent = document.getElementById(parentDiv);
-          parent.removeChild(child);
-     }
-     else {
-          alert("Child div has already been removed or does not exist.");
-          return false;
-     }
-}
-$('.apireq').click( function() {
-    $.ajax({
-             url : "http://127.0.0.1:8000/api/requests/{{request_instance.course_requested}}",
-             dataType: "json",
-             headers: {'X-CSRFTOKEN': '{{ csrf_token }}'},
-             success : function (data) {
-                      console.log(data['additional_enrollments']);
-                    }
-                 });
-             });
-
- $('.apiadd').click( function() {
-
-     $.ajax({
-              url : "http://127.0.0.1:8000/api/requests/{{request_instance.course_requested}}/",
-              headers: {
-                          'X-CSRFTOKEN': '{{ csrf_token }}'
-                      },
-              type: "PUT",
-              dataType: "json",
-              //contentType: 'application/json',
-              data: {"additional_enrollments": [{'user':'molly','role':'TA'}]},
-              success: function(data){
-                    console.log(data);
-              }
-              });
-});
 
 // before submit lets add all the additional_enrollments
 /*
@@ -159,6 +96,7 @@ $('form[method="put"]').submit(function(){
     });
 });
 */
+
 </script>
 
 {% endblock %}

@@ -761,6 +761,19 @@ textarea.has-error:active {
   width:90%;
 }
 
+#additional_enrollments input[type=text], #additional_enrollments textera, #additional_enrollments select {
+  margin-left:0%;
+  margin-right:0%;
+  padding:6px;
+}
+ #additional_enrollments select {
+   padding:6px;
+   width:120px;
+ }
+#additional_enrollments label{
+  margin:0px;
+}
+
 /*.form-group{
   margin-top:5px;
 }*/

@@ -227,7 +227,7 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
     masquerade = serializers.ReadOnlyField()
 
     course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='course_code' , style={'base_template': 'input.html'})
-    title_override = serializers.CharField(required=False , style={'base_template': 'input.html'})
+    title_override = serializers.CharField(allow_null=True,required=False , style={'base_template': 'input.html'})
     additional_enrollments = AdditionalEnrollmentSerializer(many=True,required=False, style={'base_template':'list_fieldset.html'})
     # IF REQUEST STATUS IS CHANGED TO CANCELED IT SHOULD BE DISASSOCIATED FROM COURSE INSTANCE
     # IN ORDER TO PRESERVE THE ONE TO ONE COURSE -> REQUEST RELATIONSHIP
@@ -238,6 +238,14 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
         #exclude = ('masquerade',)
         #depth=2
 
+    #def to_internal_value(self, data):
+    #    data = dict(data)
+    #    if data.get('title_override', None) == '':
+    #        data['title_override'] =None
+    #    if data.get('course_requested', None) == '':
+    #        data['course_requested'] =None
+    #    return super(RequestSerializer, self).to_internal_value(data)
+
     def validate(self, data):
         """
         Check that:
@@ -247,7 +255,9 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
 
         # Lets check if we want to update content source and if so, lets check if its valid
         if 'copy_from_course' in data.keys():
-            if data['copy_from_course'] == None or data['copy_from_course'] == '': return data
+            if data['copy_from_course'] == None or data['copy_from_course'] == '':
+                print("no copy from course data")
+                return data
             #go get course
             print("data['copy_from_course']",data['copy_from_course'])
             instructors = api.get_course_users(data['copy_from_course'])
