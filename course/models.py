@@ -234,8 +234,10 @@ class Course(models.Model):
 
     # NOT IN USE AND NEEDS TO BE TESTED
     def get_subjects(self):
+        # this need to be 
+        return self.course_subject.abbreviation
         cross_listed = self.crosslisted
-        return "ok"
+        print(cross_listed)
         if cross_listed == None:
             return self.course_subject.abbreviation
         #should get all crosslisted and the

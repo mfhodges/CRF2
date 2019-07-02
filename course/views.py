@@ -351,7 +351,44 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         print("permission, ", permission)
 
 
-        serializer = self.get_serializer(data=request.data)
+        additional_enrollments_partial = html.parse_html_list(request.data, prefix ='additional_enrollments')
+        print("request.data, data to create!",request.data, additional_enrollments_partial)
+        d = request.data.dict()
+        # check if we are updating
+        if additional_enrollments_partial:
+            ok= additional_enrollments_partial[0].dict()
+            print("ok in create",ok)
+            # removing spaces from keys
+            # storing them in sam dictionary
+            ok = {x.replace('[', '').replace(']',''): v
+                for x, v in ok.items()}
+            final_add_enroll = []
+            #for k in additional_enrollments_partial:
+            for add in additional_enrollments_partial:
+                add = add.dict()
+                new_add = {x.replace('[', '').replace(']',''): v
+                    for x, v in add.items()}
+                print("newadd",new_add)
+                if '' in new_add.values():
+                    #print("")
+                    pass
+                else:
+                    final_add_enroll +=[new_add]
+            print("(create)final_add_enroll",final_add_enroll)
+            #print(additional_enrollments_partial.dict())
+            d['additional_enrollments']=final_add_enroll#[{'user':'molly','role':'DES'}]})
+
+            serializer = self.get_serializer(data=d)
+            print("(create) serializer.initial_data",serializer.initial_data)
+            #request.data['additional_enrollments'] = additional_enrollments_partial
+        else:
+            data = dict( [(x,y) for x,y in d.items() if not x.startswith('additional_enrollments')] )
+            print("data",data)
+            data['additional_enrollments'] = []
+            serializer = self.get_serializer(data=data)
+
+
+        #serializer = self.get_serializer(data=request.data)
         serializer.is_valid()
         if not serializer.is_valid():
             #print(serializer.errors)
@@ -362,7 +399,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
         serializer.validated_data['masquerade'] = masquerade
         print("testing !")
-        serializer.validated_data['additional_enrollments'] = None
+        #serializer.validated_data['additional_enrollments'] = None
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
@@ -416,10 +453,6 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         #print("masquerade: ", masquerade)
         if request_obj:
             pass
-            #print("request_obj['masquerade']: ", request_obj['masquerade'])
-            #print("request_obj['owner']: ", request_obj['owner'])
-        #print("no request_obj: ")
-        #print("instructors: ", instructors)
 
         if self.request.user.is_staff:
             return True
@@ -515,7 +548,6 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         #print("request.data",request.data)
         #print("request.resolver_match.url_name",request.resolver_match.url_name)
 
-
         response = super(RequestViewSet, self).retrieve(request, *args, **kwargs)
         #print("response",response.data)
         if request.resolver_match.url_name == "UI-request-detail-success":
@@ -568,6 +600,9 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             return redirect(request.get_full_path())
         """
 
+
+
+
     def update(self, request, *args, **kwargs):
         #print("in update")
 
@@ -604,6 +639,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             #request.data['additional_enrollments'] = additional_enrollments_partial
         else:
             data = dict( [(x,y) for x,y in d.items() if not x.startswith('additional_enrollments')] )
+            data['additional_enrollments'] = []
             serializer = self.get_serializer(instance, data=data, partial=partial)
         print("about to check if serializer is valid")
         serializer.is_valid()#raise_exception=True)

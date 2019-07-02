@@ -228,7 +228,7 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
 
     course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='course_code' , style={'base_template': 'input.html'})
     title_override = serializers.CharField(allow_null=True,required=False , style={'base_template': 'input.html'})
-    additional_enrollments = AdditionalEnrollmentSerializer(many=True,required=False, style={'base_template':'list_fieldset.html'})
+    additional_enrollments = AdditionalEnrollmentSerializer(many=True,default=[], style={'base_template':'list_fieldset.html'})
     # IF REQUEST STATUS IS CHANGED TO CANCELED IT SHOULD BE DISASSOCIATED FROM COURSE INSTANCE
     # IN ORDER TO PRESERVE THE ONE TO ONE COURSE -> REQUEST RELATIONSHIP
     # IF REQUEST IS MADE THE COURSE INSTANCE SHOULD CHANGE COURSE.REQUESTED to TRUE
@@ -238,13 +238,13 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
         #exclude = ('masquerade',)
         #depth=2
 
-    #def to_internal_value(self, data):
-    #    data = dict(data)
-    #    if data.get('title_override', None) == '':
-    #        data['title_override'] =None
-    #    if data.get('course_requested', None) == '':
-    #        data['course_requested'] =None
-    #    return super(RequestSerializer, self).to_internal_value(data)
+    def to_internal_value(self, data):
+        data = dict(data)
+        if data.get('title_override', None) == '':
+            data['title_override'] =None
+        if data.get('course_requested', None) == '':
+            data['course_requested'] =None
+        return super(RequestSerializer, self).to_internal_value(data)
 
     def validate(self, data):
         """
