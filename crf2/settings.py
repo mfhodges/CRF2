@@ -55,11 +55,21 @@ EMAIL_PORT = 587
 #EMAIL_HOST_PASSWORD = config.get('email', 'password')
 #DEFAULT_FROM_EMAIL = config.get('email', 'defaultfromemail')
 
+# For Django shib
+AUTHENTICATION_BACKENDS += (
+    'shibboleth.backends.ShibbolethRemoteUserBackend',
+)
 
-
+SHIBBOLETH_ATTRIBUTE_MAP = {
+    "shib-user": (True, "username"),
+    "shib-given-name": (False, "first_name"),
+    "shib-sn": (False, "last_name"),
+    "shib-mail": (False, "email"),
+}
+LOGIN_URL = ''
+#'https://weblogin.pennkey.upenn.edu/login?factors=UPENN.EDU&cosign-pennkey-idp-0&https://idp.pennkey.upenn.edu/idp/Authn/RemoteUser?conversation=e1s1'
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.admindocs',
@@ -76,6 +86,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'django_extensions',
     'rest_framework_swagger',
+    'shibboleth',
 
 ]
 
@@ -86,6 +97,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'shibboleth.middleware.ShibbolethRemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]

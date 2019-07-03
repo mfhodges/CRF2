@@ -299,7 +299,7 @@ blockquote {
   margin: 0 0 1.5rem 0;
   border-left: 16px solid #2965DE;
   padding: 0 1.5rem;
-  background: #2965DE1a;
+  background: #ecf0fc;/*#2965DE1a;*/
   font-size: 1.0rem;
   min-width: max-content;
   display: flex !important;
@@ -832,7 +832,7 @@ header .flex-small {
   z-index: 99;
   /*max-width:fit-content;*/
   min-width:fit-content !important;
-  background: #2965DE1a;
+  background: #ecf0fc; /*#2965DE1a;*/
 
   margin-left: 27%;
   padding: 0px;
@@ -849,6 +849,9 @@ header .flex-small {
   color: #404040;
 }
 
+#masquerade small {
+  color:black;
+}
 
 #side_sign_in {
   text-align: center;
