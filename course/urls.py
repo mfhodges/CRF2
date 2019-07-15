@@ -48,6 +48,8 @@ This is fine because I want the API to be very generic
 urlpatterns = [
     # --------------- Documentation url/view -------------------
     path('documentation/',TemplateView.as_view(template_name='documentation.html'),name='documentation'),
+    path('userlookup/',TemplateView.as_view(template_name='user_lookup.html'),name='documentation'),
+
 
     url(r'^api/', include(router.urls)),
     url(r'^api_doc/', schema_view),

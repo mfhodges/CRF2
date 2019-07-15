@@ -13,7 +13,13 @@
 
       {% get_markdown "Welcome-Banner" %}
       {% if request.user.is_staff %}
-      <a href="{%  url 'admin:course_pagecontent_change' 1 %}" style="float:right;margin-top:-15px"> (change this message) </a>
+
+        {% get_markdown_id 'Welcome-Banner' as page_id %}
+        {% if page_id %}
+          <a href="{%  url 'admin:course_pagecontent_change' page_id %}" style="float:right;margin-top:-15px"> (change this message) </a>
+        {% else %}
+          <a href="{%  url 'admin:course_pagecontent_add' %}" style="margin-top:-15px"> (add a message here) </a>
+        {% endif %}
       {% endif %}
   <!--<p>
       Courses taught through Graduate School of Education (GSE), Penn Law, The School of Veterinary Medicine, and Wharton cannot be requested through our Course Request Form.

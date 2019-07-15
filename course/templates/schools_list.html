@@ -2,7 +2,7 @@
 {% load rest_framework %}
 {% block schools %}active{% endblock %}
 {% block content %}
-
+{% load template_extra %}
 
   <h1> Schools</h1>
 
@@ -10,7 +10,19 @@
   <!--<p> previous{{ data.previous }} </p>
   <p> next{{ data.next}} </p>
   <p> num_pages{{ data.total_pages}} </p> -->
+  <div class="bd-callout bd-callout-info" class="w-100" style="margin-bottom: 5%;">
 
+  {% get_markdown "School-List" %}
+  {% if request.user.is_staff %}
+    {% get_markdown_id 'School-List' as page_id %}
+    {% if page_id %}
+      <a href="{%  url 'admin:course_pagecontent_change' page_id %}" class="card-link" style="float:right;margin-top:-15px"> (change this message) </a>
+    {% else %}
+      <a href="{%  url 'admin:course_pagecontent_add' %}" class="card-link" style="margin-top:-15px"> (add a message here) </a>
+    {% endif %}
+  {% endif %}
+  
+  </div>
 
     <table class="striped-table">
       <thead>

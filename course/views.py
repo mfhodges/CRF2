@@ -77,7 +77,6 @@ def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
     #response = render({},'errors/403.html')
 
-
     # we need to be able to parse if they are doing a html request or not
     # Now add the HTTP status code to the response.
     if response is not None:

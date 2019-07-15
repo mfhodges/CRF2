@@ -1,0 +1,180 @@
+{% extends "base_generic.html" %}
+{% load rest_framework %}
+
+
+{% block content %}
+
+
+<h1> Canvas User Lookup</h1>
+
+<p> Does something seem wrong about a user? Lets see if they exist in the CRF and if they exist in Canvas!
+
+{% include "bits/user_lookup.html" %}
+
+
+
+<fieldset id="showresults">
+  <legend>CRF Data</legend>
+</fieldset>
+
+
+
+<fieldset id="showresultscanvas">
+  <legend>Canvas Data</legend>
+  <p>
+    this should show all of the canvas data !
+  </p>
+</fieldset>
+
+{% endblock %}
+
+
+
+
+{% block template_page_js %}
+<script>
+// ajax call ?
+
+//https://canvas.upenn.edu/api/v1/accounts/96678/users?search_term=mfhodges
+
+/*$.ajax({
+        url: "https://canvas.upenn.edu/api/v1/accounts/96678/users?search_term=mfhodges",
+        type: 'GET',
+        dataType: 'json', // added data type
+        headers: {"Authorization": "Bearer 25~SEUFg2kAnCcarRFHAKTH1H7NIEFu7cEGeKrf2gNGkjAZTzElglrqGiVOlq5BfdKK"},
+        success: function(res) {
+            console.log(res);
+            alert(res);
+        },
+        error: function (error) {
+                console.log("youfucked up");
+                alert("nope",error);
+
+            }
+    });*/
+
+  $('.apireq').click( function() {
+        var pennkey = $("#pennkey").val();
+        console.log(pennkey);
+        $.ajax({
+                 url : `http://127.0.0.1:8000/api/users/${pennkey}`,
+                 dataType: "json",
+                 success : function (data) {
+                        console.log(data);
+                        var test = data;
+
+                        for ( const element in data) {
+                          console.log(element, data[element]);
+                          if (Array.isArray(data[element])){
+                            $('#showresults').append(`<p>${element}:</p>`);
+                            var items = data[element];
+                            var ul = document.createElement('ul');
+                            document.getElementById('showresults').appendChild(ul);
+                            items.forEach(function (item) {
+                                var li = document.createElement('li');
+                                ul.appendChild(li);
+                                li.innerHTML += item;
+                            });
+                          }
+                          else {
+                            $('#showresults').append(`<p>${element}: ${data[element]}</p>`);
+                          }
+                        };
+                        console.log(data.username)
+                      },
+                error: function (xhr, status) {
+                   $('#showresults').append("<p>Sorry, there was a problem!</p>");
+              }
+                     });
+
+      var access_token = "25~SEUFg2kAnCcarRFHAKTH1H7NIEFu7cEGeKrf2gNGkjAZTzElglrqGiVOlq5BfdKK";
+
+
+      var url = 'https://canvas.upenn.edu/api/v1/users/sis_login_id:mfhodges';
+
+      var headers = new Headers();
+      headers.append('X-Requested-With','XMLHttpRequest');
+      headers.append('Authorization',`Bearer ${access_token}`);
+
+      var options = {
+        method: 'GET',
+        headers:headers,
+        credentials: 'include',
+        mode:'no-cors'
+      }
+
+      fetch(url, options).then(function(response) {
+        console.log(response);
+      })
+
+
+
+
+
+
+      /* $.ajax({
+                url : `https://canvas.upenn.edu/api/v1/users/sis_login_id:${pennkey}`,
+                dataType: "json",
+                type:'GET',
+                crossDomain: true,
+                headers: {
+                        'Access-Control-Allow-Origin': 'https://canvas.upenn.edu',
+                        'Authorization':'Bearer 25~SEUFg2kAnCcarRFHAKTH1H7NIEFu7cEGeKrf2gNGkjAZTzElglrqGiVOlq5BfdKK',
+                        'Content-Type':'application/json'
+                    },
+                success : function (data) {
+                       console.log(data);
+                       var test = data;
+                       for ( const element in data) {
+                         console.log(element, data[element]);
+                         if (Array.isArray(data[element])){
+                           $('#showresultscanvas').append(`<p>${element}:</p>`);
+                           var items = data[element];
+                           var ul = document.createElement('ul');
+                           document.getElementById('showresultscanvas').appendChild(ul);
+                           items.forEach(function (item) {
+                               var li = document.createElement('li');
+                               ul.appendChild(li);
+                               li.innerHTML += item;
+                           });
+                         }
+                         else {
+                           $('#showresultscanvas').append(`<p>${element}: ${data[element]}</p>`);
+                         }
+                       };
+                       console.log(data.username)
+                     },
+               error: function (xhr, status) {
+                 $('#showresultscanvas').append("<p>Sorry, there was a problem!</p>");
+
+             }
+           });*/
+
+// both of these work !
+// https://canvas.upenn.edu/api/v1/users/sis_login_id:mfhodges
+// https://canvas.upenn.edu/api/v1/users/sis_user_id:89450759
+/*
+beforeSend : function( xhr ) {
+    xhr.setRequestHeader( "Authorization", "BEARER " + access_token );
+}
+*/
+
+
+
+                 });
+
+/*
+FROM THE DOCS
+
+The partial name or full ID of the users to match and return in the results list. Must be at least 3 characters.
+
+Note that the API will prefer matching on canonical user ID if the ID has a numeric form.
+It will only search against other fields if non-numeric in form, or if the numeric value doesn't yield any matches.
+ Queries by administrative users will search on SIS ID, login ID, name,
+  or email address; non-administrative queries will only be compared against name.
+
+*/
+
+
+</script>
+{% endblock %}

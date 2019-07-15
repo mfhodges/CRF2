@@ -895,18 +895,6 @@ header .flex-small {
 
 }
 
-.bd-callout {
-    padding: 1.25rem;
-    margin-top: 1.25rem;
-    margin-bottom: 1.25rem;
-    border: 1px solid #eee;
-    border-left-width: .25rem;
-    border-radius: .25rem;
-}
-
-.bd-callout-warning {
-    border-left-color: #f0ad4e;
-}
 
 
 /*  course form */
@@ -1266,3 +1254,56 @@ div.alert-dismissible > p {
     background-color: #2965DE;
     border-color: #2965DE;
   }
+
+
+  /* Bootstrap 4 Callouts - https://gist.github.com/mikeblum/aaffe654fc4f5a74c3b8b313fb43b2eb */
+
+  .bd-callout {
+    padding: 1.25rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid #eee;
+    border-left-width: .25rem;
+    border-radius: .25rem
+}
+
+.bd-callout h4 {
+    margin-top: 0;
+    margin-bottom: .25rem
+}
+
+.bd-callout p:last-child {
+    margin-bottom: 0
+}
+
+.bd-callout code {
+    border-radius: .25rem
+}
+
+.bd-callout+.bd-callout {
+    margin-top: -.25rem
+}
+
+.bd-callout-info {
+    border-left-color: var(--theme-blue);
+}
+
+.bd-callout-info h4 {
+    color: var(--theme-blue);
+}
+
+.bd-callout-warning {
+    border-left-color: #f0ad4e
+}
+
+.bd-callout-warning h4 {
+    color: #f0ad4e
+}
+
+.bd-callout-danger {
+    border-left-color: #d9534f
+}
+
+.bd-callout-danger h4 {
+    color: #d9534f
+}

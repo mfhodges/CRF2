@@ -75,6 +75,13 @@ def get_markdown(location):
         return page.get_page_as_markdown()
     return ''
 
+@register.simple_tag
+def get_markdown_id(location):
+    if PageContent.objects.filter(location=location).exists():
+        page = PageContent.objects.get(location=location)
+        return page.pk
+    return ''
+
 """
 @register.simple_tag
 def add_query_param(request, key, val):

@@ -24,7 +24,7 @@ https://github.com/jlooney/extended-user-example
 class Profile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
     penn_id = models.CharField(max_length=10,unique=True)
-
+    canvas_id = models.CharField(max_length=10,unique=True,null=True)
 #class Instructor(models.auth.User):
 """
         this class expands on the User model
@@ -234,7 +234,7 @@ class Course(models.Model):
 
     # NOT IN USE AND NEEDS TO BE TESTED
     def get_subjects(self):
-        # this need to be 
+        # this need to be
         return self.course_subject.abbreviation
         cross_listed = self.crosslisted
         print(cross_listed)

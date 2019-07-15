@@ -15,7 +15,7 @@
   <legend><h6 style="margin:0;">Mulit-Section Course Sites </h6></legend>
   <div class="form-group ">
     <p style="font-size:0.9rem;"> Sections of a course can share a single Canvas site. If you are teaching a large introductory course
-      or several sections of a course, you can have the sections broken out into a single site. please select all sections you would like included.
+      or several sections of a course, you can have the sections broken out into a single site. Please select all sections you would like included.
     </p>
     {% if course.get_sections %} <!-- if there are sections -->
     <b><p> ADD CONTENT HERE </p></b>
@@ -29,7 +29,7 @@
 
   <fieldset>
     <legend><h6 style="margin:0;">Library Services</h6></legend>
-    <p> Course Reserve services are available to your course. See <a href="http://www.library.upenn.edu/reserves/reserves.html"> http://www.library.upenn.edu/reserves/reserves.html</a> for more information.</p>
+    <p> Course Reserve services are available to your course. See <a href="http://www.library.upenn.edu/using-libraries/reserves"> http://www.library.upenn.edu/using-libraries/reserves</a> for more information.</p>
 
     {% render_field request_form.reserves style=style %}
   </fieldset>
@@ -59,6 +59,7 @@
             <option value="TA" {% if enrollment.role == "TA" %} selected {% endif %}>TA</option>
             <option value="DES" {% if enrollment.role == "DES" %} selected {% endif %}>Designer</option>
             <option value="LIB" {% if enrollment.role == "LIB" %} selected {% endif %}>Librarian</option>
+            <option value="INST" {% if enrollment.role == "INST" %} selected {% endif %}>Librarian</option>
           </select>
             </label>
           <a onClick="removeElement('additional_enrollments', 'addEnroll-1');" style="padding-left:5px;"> Delete <i class="fas fa-times"></i></a>
@@ -78,6 +79,8 @@
             <option value="TA">TA</option>
             <option value="DES">Designer</option>
             <option value="LIB">Librarian</option>
+            <option value="INST">Librarian</option>
+
           </select>
           </label>
           <a onClick="removeElement('additional_enrollments', 'addEnroll-1');" style="padding-left:5px;"> Delete <i class="fas fa-times"></i></a>

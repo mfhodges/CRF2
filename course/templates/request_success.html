@@ -11,7 +11,7 @@
 
 <p>
   {{ settings.BASE_URL }}
-You can see the request here: <a href="{% url 'UI-request-detail' pk=request_instance.course_requested %}">{{ request.META.HTTP_HOST }}{% url 'UI-request-detail' pk=request_instance.course_requested %}</a>.
+You can see the request here: <a href="{% url 'UI-request-detail' pk=request_instance.course_requested %}">{% url 'UI-request-detail' pk=request_instance.course_requested %}</a>.
 When the course site has been created, you will be sent a notification email from librarycrf@pobox.upenn.
 </p>
 
@@ -28,7 +28,17 @@ To learn more, please visit the <a href="https://commons.library.upenn.edu/libra
   <p>
 -->
 <hr>
+<div class="bd-callout bd-callout-info" class="w-100" style="margin-bottom: 5%;">
+
 {% get_markdown "Request-Created" %}
 
-
+{% if request.user.is_staff %}
+  {% get_markdown_id 'Request-Created' as page_id %}
+  {% if page_id %}
+  <a href="{%  url 'admin:course_pagecontent_change' page_id %}" style="float:right;margin-top:-15px"> (change this message) </a>
+  {% else %}
+  <a href="{%  url 'admin:course_pagecontent_add' %}" style="margin-top:-15px"> (add a message here) </a>
+  {% endif %}
+{% endif %}
+</div>
 {% endblock %}
