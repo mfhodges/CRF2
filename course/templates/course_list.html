@@ -56,7 +56,7 @@
         <!--<td>{{course.created|date:'m/d/Y'}} {{course.created|time:'h:i' }}</td> -->
         <td style="padding-left:4%;">
           <!-- REQUEST MODAL -->
-          {{course.requested}} 
+          
           {% if course.requested == True %}
               <!-- this button should pull up the submitted request! -->
               <a  href='{% url "UI-request-detail" pk=course.course_code %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</a>
@@ -154,6 +154,24 @@
 
 {% block template_page_js %}
 <script>
+// do some formatting of the form
+
+//$(document).onready ( function(){
+  // first delete the rendered user input
+  var form = document.getElementById("filterform");
+  // this should remove the user field
+  console.log(form.childNodes[1].childNodes);
+  form.childNodes[1].removeChild(form.childNodes[1].childNodes[5]);
+  // then edit the auto complete user input name from username -> user
+  var field = document.getElementById("id_username");
+  field.setAttribute("name", "intstructor");
+  field.setAttribute("id","id_instructor")
+  field.required = false;
+  //var x = field.nextSibling.innerHTML;
+
+
+
+
 // For the Course List View
 $('#CourseModal').on('show.bs.modal', function (event) {
   var button = $(event.relatedTarget) // Button that triggered the modal

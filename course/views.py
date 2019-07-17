@@ -143,7 +143,9 @@ class CourseFilter(filters.FilterSet):
     #https://django-filter.readthedocs.io/en/master/ref/filters.html#modelchoicefilter
     activity = filters.ModelChoiceFilter(queryset=Activity.objects.all(), field_name='course_activity', label='Activity')
     instructor = filters.CharFilter(field_name='instructors__username', label='Instructor')
-    school = filters.CharFilter(field_name='course_schools__abbreviation',label='School (abbreviation)')
+    #school = filters.CharFilter(field_name='course_schools__abbreviation',label='School (abbreviation)')
+    school = filters.ModelChoiceFilter(queryset=School.objects.all(),field_name='course_schools__abbreviation',label='School (abbreviation)')
+
     subject = filters.CharFilter(field_name='course_subject__abbreviation', label='Subject (abbreviation)')
     term = filters.ChoiceFilter(choices=Course.TERM_CHOICES, field_name='course_term', label='Term')
     class Meta:
@@ -217,7 +219,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
                 #print('filterfield', CourseFilter.Meta.fields)
                 #print('request.query_params', request.query_params.keys())
-                response.data = {'results': response.data,'paginator':self.paginator, 'filter':CourseFilter, 'request':request}
+                response.data = {'results': response.data,'paginator':self.paginator, 'filter':CourseFilter, 'request':request, 'autocompleteUser':UserForm()}
             ##print("yeah ok1",response.items())
             ##print("o")
             return response
@@ -438,7 +440,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             if request.accepted_renderer.format == 'html':
                 response.template_name = 'request_list.html'
                 #print("template_name",response.template_name)
-                response.data = {'results': response.data,'paginator':self.paginator, 'filter': RequestFilter}
+                response.data = {'results': response.data,'paginator':self.paginator, 'filter': RequestFilter, 'autocompleteUser':UserForm()}
             #print("request.accepted_renderer.format",request.accepted_renderer.format)
             return response
 

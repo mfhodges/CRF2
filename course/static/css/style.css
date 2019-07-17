@@ -297,7 +297,7 @@ mark {
 
 blockquote {
   margin: 0 0 1.5rem 0;
-  border-left: 16px solid #2965DE;
+  border-left: 5px solid #2965DE;
   padding: 0 1.5rem;
   background: #ecf0fc;/*#2965DE1a;*/
   font-size: 1.0rem;

@@ -79031,3 +79031,7 @@ AttributeError: 'str' object has no attribute 'get'
 (07/17/2019 11:08:43 AM) WARNING:Not Found: /favicon.ico
 (07/17/2019 11:10:45 AM) WARNING:Bad Request: /autoadds/
 (07/17/2019 02:09:26 PM) WARNING:Bad Request: /autoadds/
+(07/17/2019 02:28:44 PM) WARNING:Not Found: /favicon.ico
+(07/17/2019 04:10:01 PM) WARNING:Not Found: /favicon.ico
+(07/17/2019 04:12:52 PM) WARNING:Not Found: /favicon.ico
+(07/17/2019 04:28:36 PM) WARNING:Not Found: /favicon.ico

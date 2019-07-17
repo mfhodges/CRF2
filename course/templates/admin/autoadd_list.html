@@ -144,15 +144,12 @@
 //$(document).onready ( function(){
   // first delete the rendered user input
   var form = document.getElementById("autoAddForm");
-  console.log(form.childNodes);
-  //list.removeChild(list.childNodes[0]);
+  // this should remove the user field
   form.removeChild(form.childNodes[5]);
-  // document.querySelector("#AutoAddModal > div > div > div.modal-body > form > div:nth-child(3)")
-  // #AutoAddModal > div > div > div.modal-body > form > div:nth-child(3)
   // then edit the auto complete user input name from username -> user
   var field = document.getElementById("id_username");
-  console.log("helo");
   field.setAttribute("name", "user");
+  
   //var x = field.nextSibling.innerHTML;
 
 
