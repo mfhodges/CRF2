@@ -1,29 +1,45 @@
 {% extends "base_generic.html" %}
 {% load rest_framework %}
-
+{% block userlookup %}active{% endblock %}
+{% block content %
 
 {% block content %}
 
 
 <h1> Canvas User Lookup</h1>
 
-<p> Does something seem wrong about a user? Lets see if they exist in the CRF and if they exist in Canvas!
+<p> Does something seem wrong about a User? Lets see if they exist in the CRF and if they exist in Canvas!
+   Canvas Course sites listed are those with teacher enrollment status.
+</p>
 
-{% include "bits/user_lookup.html" %}
+<form id="myForm" action="#" onsubmit="submitForm();return false;">
+
+  <label style="width: 45%;">
+    user
+  <input name="user" type="text" id="pennkey">
+  {{ form2.username }}
+  </label>
+
+
+</form>
+<div>
+   <button class="apireq">click me </button>
+</div>
+
+{{ form2.media }}
 
 
 
 <fieldset id="showresults">
   <legend>CRF Data</legend>
+  <p> search to load basic data from the CRF</p>
 </fieldset>
 
 
 
 <fieldset id="showresultscanvas">
   <legend>Canvas Data</legend>
-  <p>
-    this should show all of the canvas data !
-  </p>
+  <p> search to load basic user data from canvas</p>
 </fieldset>
 
 {% endblock %}
@@ -33,36 +49,37 @@
 
 {% block template_page_js %}
 <script>
-// ajax call ?
 
-//https://canvas.upenn.edu/api/v1/accounts/96678/users?search_term=mfhodges
+function submitForm() {
+  $('.apireq').click();
+  return false;
+}
 
-/*$.ajax({
-        url: "https://canvas.upenn.edu/api/v1/accounts/96678/users?search_term=mfhodges",
-        type: 'GET',
-        dataType: 'json', // added data type
-        headers: {"Authorization": "Bearer 25~SEUFg2kAnCcarRFHAKTH1H7NIEFu7cEGeKrf2gNGkjAZTzElglrqGiVOlq5BfdKK"},
-        success: function(res) {
-            console.log(res);
-            alert(res);
-        },
-        error: function (error) {
-                console.log("youfucked up");
-                alert("nope",error);
+/*$(document).ready(function(){
+    $("#pennkey").autocomplete({
+        source: "/ajax_calls/search/",
+        minLength: 2,
+        open: function(){
+            setTimeout(function () {
+                $('.ui-autocomplete').css('z-index', 99);
+            }, 0);
+        }
+      });
+});
+*/
 
-            }
-    });*/
+// ajax call
 
   $('.apireq').click( function() {
         var pennkey = $("#pennkey").val();
         console.log(pennkey);
         $.ajax({
-                 url : `http://127.0.0.1:8000/api/users/${pennkey}`,
+                 url : `/api/users/${pennkey}`,
                  dataType: "json",
                  success : function (data) {
                         console.log(data);
                         var test = data;
-
+                        $('#showresults').empty();
                         for ( const element in data) {
                           console.log(element, data[element]);
                           if (Array.isArray(data[element])){
@@ -83,72 +100,45 @@
                         console.log(data.username)
                       },
                 error: function (xhr, status) {
-                   $('#showresults').append("<p>Sorry, there was a problem!</p>");
+                   $('#showresults').append("<p>Sorry, there was a problem! Check that this user exists in the CRF</p>");
               }
                      });
 
-      var access_token = "25~SEUFg2kAnCcarRFHAKTH1H7NIEFu7cEGeKrf2gNGkjAZTzElglrqGiVOlq5BfdKK";
 
-
-      var url = 'https://canvas.upenn.edu/api/v1/users/sis_login_id:mfhodges';
-
-      var headers = new Headers();
-      headers.append('X-Requested-With','XMLHttpRequest');
-      headers.append('Authorization',`Bearer ${access_token}`);
-
-      var options = {
-        method: 'GET',
-        headers:headers,
-        credentials: 'include',
-        mode:'no-cors'
-      }
-
-      fetch(url, options).then(function(response) {
-        console.log(response);
-      })
-
-
-
-
-
-
-      /* $.ajax({
-                url : `https://canvas.upenn.edu/api/v1/users/sis_login_id:${pennkey}`,
+       $.ajax({
+                url : `/canvasuser/${pennkey}`,
                 dataType: "json",
-                type:'GET',
-                crossDomain: true,
-                headers: {
-                        'Access-Control-Allow-Origin': 'https://canvas.upenn.edu',
-                        'Authorization':'Bearer 25~SEUFg2kAnCcarRFHAKTH1H7NIEFu7cEGeKrf2gNGkjAZTzElglrqGiVOlq5BfdKK',
-                        'Content-Type':'application/json'
-                    },
+
                 success : function (data) {
                        console.log(data);
                        var test = data;
+                       $('#showresultscanvas').empty();
                        for ( const element in data) {
                          console.log(element, data[element]);
                          if (Array.isArray(data[element])){
                            $('#showresultscanvas').append(`<p>${element}:</p>`);
                            var items = data[element];
-                           var ul = document.createElement('ul');
-                           document.getElementById('showresultscanvas').appendChild(ul);
+                           var ol = document.createElement('ol');
+                           document.getElementById('showresultscanvas').appendChild(ol);
                            items.forEach(function (item) {
                                var li = document.createElement('li');
-                               ul.appendChild(li);
-                               li.innerHTML += item;
+                               ol.appendChild(li);
+                               li.innerHTML += JSON.stringify(item);
                            });
                          }
                          else {
                            $('#showresultscanvas').append(`<p>${element}: ${data[element]}</p>`);
                          }
                        };
+                       console.log("ok");
                        console.log(data.username)
                      },
                error: function (xhr, status) {
-                 $('#showresultscanvas').append("<p>Sorry, there was a problem!</p>");
+                 $('#showresultscanvas').append("<p>Sorry, there was a problem! Check that this user exists in Canvas.</p>");
+                                        console.log("ok2");
 
              }
-           });*/
+           });
 
 // both of these work !
 // https://canvas.upenn.edu/api/v1/users/sis_login_id:mfhodges

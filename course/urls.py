@@ -7,7 +7,7 @@ from rest_framework_swagger.views import get_swagger_view
 from rest_framework import renderers
 from django.views.generic.base import TemplateView
 #from rest_framework.schemas import get_schema_view # new
-
+from course.autocomplete import UserAutocomplete
 schema_view = get_swagger_view(title='Pastebin API')
 
 
@@ -48,8 +48,7 @@ This is fine because I want the API to be very generic
 urlpatterns = [
     # --------------- Documentation url/view -------------------
     path('documentation/',TemplateView.as_view(template_name='documentation.html'),name='documentation'),
-    path('userlookup/',TemplateView.as_view(template_name='user_lookup.html'),name='documentation'),
-
+    path('userlookup/',TemplateView.as_view(template_name='admin/user_lookup.html'),name='user_lookup'),
 
     url(r'^api/', include(router.urls)),
     url(r'^api_doc/', schema_view),
@@ -123,6 +122,17 @@ urlpatterns = [
     path('accounts/logout/', auth_views.LogoutView.as_view(
             template_name='logout.html',
             ), name='logout'),
+
+    # --------------- Canvas Proxies -------------------
+    url(r'^canvasuser/(?P<username>\w+)/$',views.myproxy ),
+    # --------------- autocomplete -------------------
+    url(
+        r'^user-autocomplete/$',
+        UserAutocomplete.as_view(),
+        name='user-autocomplete',
+    ),
+
+
 
 ]
 #path('course', views.CourseViewSet.as_view({'get': 'list'})),

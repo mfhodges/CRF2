@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 import datetime
 from django.contrib import messages
 from canvas import api
+import collections
 # Serializer Classes provide a way of serializing and deserializing
 # the model instances into representations such as json. We can do this
 # by declaring serializers that work very similar to Django forms
@@ -31,8 +32,7 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
     course_code = serializers.CharField()
     crosslisted = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(), slug_field='course_code', required=False)
     #request_info = serializers.HyperlinkedRelatedField(many=False, lookup_field='course_requested',view_name='courses-detail',read_only=True)
-
-    #request_status = serializers.HyperlinkedIdentityField(view_name='course-request', format='html')
+    requested = serializers.SerializerMethodField(initial=False)
 
 
     # Eventually the queryset should also filter by Group = Instructors
@@ -49,6 +49,13 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
         fields = '__all__' # or a list of field from model like ('','')
         #read_only_fields = ('requested',)
 
+    def get_requested(self, obj):
+        try:
+            exists = obj.request
+            print("request obj",exists)
+        except:
+            return False
+        return True
 
 
 
@@ -238,6 +245,7 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
         #exclude = ('masquerade',)
         #depth=2
 
+
     def to_internal_value(self, data):
         data = dict(data)
         if data.get('title_override', None) == '':
@@ -303,12 +311,14 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
         #course_requested_data = validated_data.pop('course_requested')
         # check that this course.requested==False
         ##print("course_requested_data", course_requested_data)
-        print("validated_Data",validated_data)
+        print("validated_Data",validated_data) # {'course_requested': <Course: AAMW_622_401_2019C>, 'additional_enrollments': [], 'copy_from_course': '', 'status': 'SUBMITTED', 'masquerade': '', 'owner': <SimpleLazyObject: <User: mfhodges>>}
 
 
         add_enrolls_data = validated_data.pop('additional_enrollments')
-
         # CHECK FOR AUTOADDS AND THEN ADD !
+        # check for school and then check for subject
+        autoadds = AutoAdd.objects.filter(school=validated_data['course_requested'].course_schools).filter(subject=validated_data["course_requested"].course_subject)
+
         request_object = Request.objects.create(**validated_data)
         #validated_data['course_requested'].requested = False
 
@@ -316,9 +326,17 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
             print("add_enrolls_data",add_enrolls_data)
             for enroll_data in add_enrolls_data:
                 ##print("subject data", subject_data)
+                print("enroll_data",enroll_data)
                 AdditionalEnrollment.objects.create(course_request=request_object,**enroll_data)
                 #request_object.additional_enrollments.add(enroll_data)
 
+        if autoadds:
+            for autoadd in autoadds:
+                print(autoadd)
+                #[OrderedDict([('user', <User: mollyk>), ('role', 'DES')])]
+
+                enroll_data=collections.OrderedDict([('user',autoadd.user),('role',autoadd.role)])
+                AdditionalEnrollment.objects.create(course_request=request_object,**enroll_data)
         #print("RequestSerializer.create", validated_data)
         return request_object
 

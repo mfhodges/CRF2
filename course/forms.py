@@ -1,6 +1,9 @@
 
 from django import forms
 from course.models import AdditionalEnrollment
+from django.contrib.auth.models import User
+from dal import autocomplete
+
 
 # our new form
 class ContactForm(forms.Form):
@@ -11,6 +14,16 @@ class ContactForm(forms.Form):
         widget=forms.Textarea
     )
 
+
+class UserForm(forms.ModelForm):
+    # please only use this when you need to auto complete on the name field !
+    username = forms.ModelChoiceField(label='user',
+        queryset=User.objects.all(),
+        widget=autocomplete.ModelSelect2(url='user-autocomplete')
+    )
+    class Meta:
+        model = User
+        fields = ('__all__')
 
 
 class EmailChangeForm(forms.Form):

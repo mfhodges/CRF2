@@ -43,7 +43,8 @@ from django_celery_beat.models import PeriodicTask, IntervalSchedule, CrontabSch
 #from rest_framework.filters import SearchFilter
 #class CourseView(TemplateView):
 #    template_name = "index.html"
-
+from canvas import api as canvas_api
+from course.forms import UserForm
 
 """
 For more 'Detailed descriptions, with full methods and attributes, for each
@@ -308,11 +309,12 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         # putting this function inside create because it should only be accessible here.
         # there does not need to be this in the delete of a request...
         def update_course(self,course):
-            course.requested = True
+            #course.requested = True
             course.save()
             if course.crosslisted:
                 for crosslisted in course.crosslisted.all():
-                    crosslisted.requested = True
+
+                    #crosslisted.requested = True
                     crosslisted.request = course.request
                     #print("crosslisted.request , course.request",crosslisted.request , course.request)
                     crosslisted.save()
@@ -580,7 +582,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         instance = self.get_object()
         # Must get Course and set .request to true
         course = Course.objects.get(course_code=instance.course_requested)# get Course instance
-        course.requested = False
+        #course.requested = False
         course.save()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -1031,7 +1033,7 @@ class AutoAddViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 #print("template_name",response.template_name)
                 #print("qqq",repr(AutoAddSerializer))
                 #print("qqqq",AutoAddSerializer.fields)
-                response.data = {'results': response.data,'paginator':self.paginator,'serializer':AutoAddSerializer}
+                response.data = {'results': response.data,'paginator':self.paginator,'serializer':AutoAddSerializer,'autocompleteUser':UserForm()}
             #print("request.accepted_renderer.format",request.accepted_renderer.format)
             #print("yeah ok1",response.items())
             return response
@@ -1080,14 +1082,51 @@ class UpdateLogViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
 #@login_required(login_url='/accounts/login/')
 def userinfo(request):
+
     form = EmailChangeForm(request.user)
+    form2 = UserForm()
     #print(request.method)
     if request.method=='POST':
         form = EmailChangeForm(request.user, request.POST)
         if form.is_valid():
             form.save()
             return redirect('userinfo') # this should redirect to success page
-    return render(request, "user_info.html", {'form':form})
+    return render(request, "user_info.html", {'form':form,'form2':form2})
+
+# -------------- Canvas Proxies ----------------
+def myproxy(request,username):
+    from operator import itemgetter
+    print("user",username)
+    login_id = username
+    data = canvas_api.get_user_by_sis(login_id)
+    print(data)
+    print(data.get_courses())
+    other = []
+    courses = data.get_courses(enrollment_type='teacher')
+    items = ["id", "name", "sis_course_id","workflow_state"]
+    for course in courses:
+
+        other += [{k :course.attributes.get(k, "NONE") for k in items}]
+    print(other)
+    final = data.attributes
+    final["courses"] = other
+    return django.http.JsonResponse(final)
+
+#---------------- AUTO COMPLETE -------------------
+def autocompleteModel(request):
+    if request.is_ajax():
+        q = request.GET.get('term', '').capitalize()
+        print("q",q)
+        search_qs = user.objects.filter(username__startswith=q)
+        results = []
+        for r in search_qs:
+            results.append(r.username)
+        data = json.dumps(results)
+    else:
+        data = 'fail'
+    mimetype = 'application/json'
+    return HttpResponse(data, mimetype)
+
 
 # --------------- CONTACT view -------------------
 # add to your views

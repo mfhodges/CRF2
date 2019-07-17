@@ -1,0 +1,13 @@
+{% extends 'admin/change_form.html' %}
+
+{% block after_related_objects %}
+
+
+
+<!-- Markdown  -->
+{% include "../../admin_markdown.html" with elementid="id_notice_text" %}
+
+
+{% endblock %}
+
+<!-- I need to add the simpleMDE js here and also register this template in the admin.py -->

@@ -23,7 +23,7 @@
 <!--  {% render_form request_form %} -->
 
 
-  {% include "bits/request_form.html" %}
+  {% include "bits/request_form.html" with enrollments=request_instance.additional_enrollments.all %}
 
 
 

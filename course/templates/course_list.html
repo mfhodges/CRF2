@@ -56,7 +56,7 @@
         <!--<td>{{course.created|date:'m/d/Y'}} {{course.created|time:'h:i' }}</td> -->
         <td style="padding-left:4%;">
           <!-- REQUEST MODAL -->
-        <!--  {{course.requested}} -->
+          {{course.requested}} 
           {% if course.requested == True %}
               <!-- this button should pull up the submitted request! -->
               <a  href='{% url "UI-request-detail" pk=course.course_code %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</a>

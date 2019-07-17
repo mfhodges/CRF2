@@ -72,6 +72,8 @@ LOGIN_URL = ''
 """
 # Application definition
 INSTALLED_APPS = [
+    'dal',
+    'dal_select2',
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.auth',
@@ -81,7 +83,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 	'course',
 	'rest_framework',
-    #'corsheaders',
+    'corsheaders',
     'django_filters',
     'admin_auto_filters',
     'django_celery_beat',

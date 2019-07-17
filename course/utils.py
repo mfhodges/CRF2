@@ -2,7 +2,7 @@
 from __future__ import print_function
 from course.models import *
 from datawarehouse.datawarehouse import *
-
+from canvas import api as canvas_api
 import cx_Oracle
 from configparser import ConfigParser
 import logging
@@ -132,7 +132,6 @@ def update_request_status():
             st ="\t"+request_obj.course_requested.course_code+" "+ request_obj.status
             print("ok ",st)
             # process request ( create course)
-
     else:
         string= "\t no requests"
         print("\t no requests")
@@ -140,23 +139,17 @@ def update_request_status():
     return "how-dy!"
 
 
-
-
-
 def get_template_sites(user):
     """
     Function that determines which of a user's known course sites can
     be sourced for a Canvas content migration.
-    :param request:
-    :return course sites:
     """
-    from siterequest.models import CourseSite, CANVAS
 
-    pks = []
-    for x in user.coursesite_set.all():
-        if x.site_platform == CANVAS:
-            pks.append(x.pk)
-            continue
-        if x.has_export:
-            pks.append(x.pk)
-    return CourseSite.objects.filter(pk__in=pks)
+    courses = data.get_courses(enrollment_type='teacher')
+    items = ["id", "name", "account_id", "sis_course_id", "start_at","workflow_state"]
+    for course in courses:
+        # TO DO !
+        # CHECK THAT COURSES ARE SYNCED
+        print("course",course)
+        other += [{k :course.attributes.get(k, "NONE") for k in items}]
+    print(other)

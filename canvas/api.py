@@ -15,16 +15,29 @@ headers = {
 }
 
 
+# Import the Canvas class
+from canvasapi import Canvas
 
-def get_course(course_id):
-    #GET /api/v1/courses/:id
+# Canvas API URL
+API_URL = domain
+# Canvas API key
+API_KEY = key
 
-    url = domain + '/api/v1/courses/' + str(course_id)
-    response = requests.get(url,headers=headers)
-    r_json = response.json()
-    #print(r_json)
-    return(r_json)
 
+def get_user_by_sis(login_id):
+
+    #https://canvas.instructure.com/doc/api/users.html
+    # Initialize a new Canvas object
+    print("got here")
+    canvas = Canvas(API_URL, API_KEY)
+    #canvas.get_user(123)
+    login_id_user = canvas.get_user(login_id, 'sis_login_id')
+
+    print(login_id_user, login_id_user.attributes)
+    print(login_id_user.get_courses()[0].attributes)
+    return login_id_user
+
+#def get_user_courses():
 
 
 

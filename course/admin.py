@@ -19,7 +19,7 @@ class CourseAdmin(admin.ModelAdmin):
     list_display =['course_code','course_name','get_instructors','get_subjects','get_schools','course_term','course_activity','requested']
 
     list_filter = (
-        ('requested','course_activity','course_term','course_schools')
+        ('course_activity','course_term','course_schools')
     )
     search_fields = ('instructors__username','course_code','course_name')
     readonly_fields = ['created','updated','owner'] # maybe add requested to here.

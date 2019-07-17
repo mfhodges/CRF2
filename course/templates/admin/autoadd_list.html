@@ -8,7 +8,6 @@
 
 <h1> AutoAdd</h1>
 
-
 <!--<p> previous{{ data.previous }} </p>
 <p> next{{ data.next}} </p>
 <p> num_pages{{ data.total_pages}} </p> -->
@@ -56,7 +55,7 @@
 
   <!-- MODAL AUTO ADD -->
 
-  <div class="modal fade" id="AutoAddModal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal fade" id="AutoAddModal" role="dialog" aria-labelledby="" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -72,21 +71,36 @@
             Please double check that you have perfect spelling for the user's penn key and Subject abbreviation.
             If the values are not exact you will get a 400 Error. The Subject field should be the abbreviation.
           </h6>
-        <form action="/autoadds/" method="post">
+        <form action="/autoadds/" method="post" id="autoAddForm">
             {% csrf_token %}
+
+            <div class="form-group ">
+            <label>
+              User
+              </label>
+              {{ autocompleteUser.username }}
+
+
+          </div>
+
             {% render_form serializer %}
+            {{ autocompleteUser.media }}
+            <br>
             <input type="submit" value="Create" />
+
+
         </form>
       </div>
       </div>
     </div>
+
   </div>
   <!-- END MODAL AUTO ADD -->
 
 
 <!-- Delete MODAL -->
 
-<div class="modal fade in" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade in" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-focus="false" >
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                   <div class="modal-body">
@@ -125,14 +139,46 @@
 
 {% block template_page_js %}
 <script>
+// do some formatting of the form
+
+//$(document).onready ( function(){
+  // first delete the rendered user input
+  var form = document.getElementById("autoAddForm");
+  console.log(form.childNodes);
+  //list.removeChild(list.childNodes[0]);
+  form.removeChild(form.childNodes[5]);
+  // document.querySelector("#AutoAddModal > div > div > div.modal-body > form > div:nth-child(3)")
+  // #AutoAddModal > div > div > div.modal-body > form > div:nth-child(3)
+  // then edit the auto complete user input name from username -> user
+  var field = document.getElementById("id_username");
+  console.log("helo");
+  field.setAttribute("name", "user");
+  //var x = field.nextSibling.innerHTML;
+
+
+//});​
+
+
+
+//$.fn.modal.Constructor.prototype.enforceFocus = function() {};
 // For the Course List View
 $('#deleteModal').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget) // Button that triggered the modal
-  var id = button.data('autoadd') // Extract info from data-* attributes
+  var button = $(event.relatedTarget); // Button that triggered the modal
+  var id = button.data('autoadd'); // Extract info from data-* attributes
   // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
   // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
   console.log(id);
-  $('#formDelete').attr("action",'/api/autoadds/' + id + '/')
+  $('#formDelete').attr("action",'/api/autoadds/' + id + '/');
 });
+
+/*
+$(document).ready(function() {
+  $(".select2-container").select2({
+    dropdownParent: $("#AutoAddModal")
+  });
+});
+*/
+
 </script>
+
 {% endblock %}

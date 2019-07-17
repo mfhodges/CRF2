@@ -30,6 +30,8 @@ class Profile(models.Model):
         this class expands on the User model
 """
 
+
+
 class Activity(models.Model):
     name = models.CharField(max_length=40)
     abbr = models.CharField(max_length=3, unique=True, primary_key=True)
@@ -132,8 +134,8 @@ class CanvasSite(models.Model):
     section_name = models.CharField(max_length=50,blank=False,default=None)#CHEM 101-003 2019C General Chemistry I
 
     # i think this should be a school object ...
-    subaccount = models.CharField(max_length=50,blank=False,default=None)#School of Arts and Sciences
-    term = models.CharField(max_length=5,blank=False,default=None)#2019C
+    #subaccount = models.CharField(max_length=50,blank=False,default=None)
+    #term = models.CharField(max_length=5,blank=False,default=None)#2019C
         #name = models.CharField(max_length=50,unique=True)#BMIN 521 2019C AI II: Machine Learning
     """
     sis_course_id = #SRS_BMIN-521-401 2019C
@@ -192,13 +194,19 @@ class Course(models.Model):
     course_name = models.CharField(max_length=250) # Human Readable Name i.e. Late Antique Arts
     year = models.CharField(max_length=4,blank=False)
     crosslisted = models.ManyToManyField("self", blank=True, symmetrical=True, default=None)
-    requested =  models.BooleanField(default=False)# False -> not requested
+    #requested =  models.BooleanField(default=False)# False -> not requested
 
     class Meta:
         ordering = ('course_code',)
 
-
-
+    @property
+    def requested(self):
+        try:
+            exists = self.request
+            print("request obj",exists)
+        except:
+            return False
+        return True
     def save(self, *args, **kwargs):
         """
         some text

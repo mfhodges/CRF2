@@ -100,7 +100,7 @@
           </tr>
       </thead>
       <tbody>
-      {% for enrollment in request_instance.additional_enrollments %}
+      {% for enrollment in enrollments %}
         <tr>
         <td> {{enrollment.user}}</td> <td> {{enrollment.role}} </td>
       </tr>
