@@ -44,7 +44,7 @@ from django_celery_beat.models import PeriodicTask, IntervalSchedule, CrontabSch
 #class CourseView(TemplateView):
 #    template_name = "index.html"
 from canvas import api as canvas_api
-from course.forms import UserForm
+from course.forms import UserForm, SubjectForm
 
 """
 For more 'Detailed descriptions, with full methods and attributes, for each
@@ -144,14 +144,16 @@ class CourseFilter(filters.FilterSet):
     activity = filters.ModelChoiceFilter(queryset=Activity.objects.all(), field_name='course_activity', label='Activity')
     instructor = filters.CharFilter(field_name='instructors__username', label='Instructor')
     #school = filters.CharFilter(field_name='course_schools__abbreviation',label='School (abbreviation)')
-    school = filters.ModelChoiceFilter(queryset=School.objects.all(),field_name='course_schools__abbreviation',label='School (abbreviation)')
+    school = filters.ModelChoiceFilter(queryset=School.objects.all(), field_name='course_schools',to_field_name='abbreviation',label='School (abbreviation)')
 
     subject = filters.CharFilter(field_name='course_subject__abbreviation', label='Subject (abbreviation)')
     term = filters.ChoiceFilter(choices=Course.TERM_CHOICES, field_name='course_term', label='Term')
     class Meta:
         model = Course
-        fields = ['instructor','subject','term','activity','school']#,'activity', school
+        # fields using custom autocomplete = ['instructor', 'subject']
 
+        fields = ['term','activity','school','instructor', 'subject']#,'activity', school
+        
 
 class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     """
@@ -195,7 +197,9 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     # I AM NOT SURE IF THIS IS OKAY WITH AUTHENTICATION
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-        #print("course query_set", queryset)
+        print(args,kwargs)
+        print("DATA",request.query_params)
+        print("course query_set", queryset)
         page = self.paginate_queryset(queryset)
 
         ##print(",,",self.filter_backends[0].get_filterset(request,self.get_queryset(),self))
@@ -217,9 +221,11 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
                 # https://github.com/encode/django-rest-framework/blob/master/rest_framework/utils/urls.py
 
-                #print('filterfield', CourseFilter.Meta.fields)
+                print('filterfield', CourseFilter)
+                print('filterfield', CourseFilter.Meta.fields)
                 #print('request.query_params', request.query_params.keys())
-                response.data = {'results': response.data,'paginator':self.paginator, 'filter':CourseFilter, 'request':request, 'autocompleteUser':UserForm()}
+
+                response.data = {'results': response.data,'paginator':self.paginator, 'filter':CourseFilter, 'request':request, 'autocompleteUser':UserForm(), 'autocompleteSubject': SubjectForm(),'style':{'template_pack': 'rest_framework/vertical/'}}
             ##print("yeah ok1",response.items())
             ##print("o")
             return response
@@ -270,6 +276,7 @@ class RequestFilter(filters.FilterSet):
     status = filters.ChoiceFilter(choices=Request.REQUEST_PROCESS_CHOICES, field_name='status', label='Status')
     requestor = filters.CharFilter(field_name='owner__username', label='Requestor') # does not include masquerade! and needs validator on input!
     date = filters.DateTimeFilter(field_name='created',label='Created')
+
     #school = filters.CharFilter(field_name='course_schools__abbreviation',label='School (abbreviation)')
     #subject = filters.CharFilter(field_name='course_subjects__abbreviation', label='Subject (abbreviation)')
     #term = filters.ChoiceFilter(choices=Course.TERM_CHOICES, field_name='course_term', label='Term')
@@ -1123,6 +1130,20 @@ def autocompleteModel(request):
         results = []
         for r in search_qs:
             results.append(r.username)
+        data = json.dumps(results)
+    else:
+        data = 'fail'
+    mimetype = 'application/json'
+    return HttpResponse(data, mimetype)
+
+def autocompleteSubjectModel(request):
+    if request.is_ajax():
+        q = request.GET.get('term', '').capitalize()
+        print("q",q)
+        search_qs = subject.objects.filter(abbreviation__startswith=q)
+        results = []
+        for r in search_qs:
+            results.append(r.abbreviation)
         data = json.dumps(results)
     else:
         data = 'fail'

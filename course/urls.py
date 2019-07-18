@@ -7,7 +7,7 @@ from rest_framework_swagger.views import get_swagger_view
 from rest_framework import renderers
 from django.views.generic.base import TemplateView
 #from rest_framework.schemas import get_schema_view # new
-from course.autocomplete import UserAutocomplete
+from course.autocomplete import UserAutocomplete, SubjectAutocomplete
 schema_view = get_swagger_view(title='Pastebin API')
 
 
@@ -126,10 +126,16 @@ urlpatterns = [
     # --------------- Canvas Proxies -------------------
     url(r'^canvasuser/(?P<username>\w+)/$',views.myproxy ),
     # --------------- autocomplete -------------------
+    # views are defined in autocomplete.py
     url(
         r'^user-autocomplete/$',
         UserAutocomplete.as_view(),
         name='user-autocomplete',
+    ),
+    url(
+        r'^subject-autocomplete/$',
+        SubjectAutocomplete.as_view(),
+        name='subject-autocomplete',
     ),
 
 

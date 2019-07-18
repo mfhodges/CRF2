@@ -79035,3 +79035,1309 @@ AttributeError: 'str' object has no attribute 'get'
 (07/17/2019 04:10:01 PM) WARNING:Not Found: /favicon.ico
 (07/17/2019 04:12:52 PM) WARNING:Not Found: /favicon.ico
 (07/17/2019 04:28:36 PM) WARNING:Not Found: /favicon.ico
+(07/18/2019 11:46:24 AM) DEBUG:Successfuly imported extension module "markdown.extensions.toc".
+(07/18/2019 11:46:24 AM) DEBUG:Successfully loaded extension "markdown.extensions.toc.TocExtension".
+(07/18/2019 11:46:26 AM) DEBUG:Successfuly imported extension module "markdown.extensions.toc".
+(07/18/2019 11:46:26 AM) DEBUG:Successfully loaded extension "markdown.extensions.toc.TocExtension".
+(07/18/2019 11:46:51 AM) DEBUG:Successfuly imported extension module "markdown.extensions.toc".
+(07/18/2019 11:46:51 AM) DEBUG:Successfully loaded extension "markdown.extensions.toc.TocExtension".
+(07/18/2019 03:01:12 PM) ERROR:Internal Server Error: /courses/
+Traceback (most recent call last):
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/viewsets.py", line 116, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 495, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 455, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 492, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/crf2/course/views.py", line 197, in list
+    queryset = self.filter_queryset(self.get_queryset())
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/generics.py", line 152, in filter_queryset
+    queryset = backend().filter_queryset(self.request, queryset, self)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/rest_framework/backends.py", line 96, in filter_queryset
+    return filterset.qs
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/filterset.py", line 237, in qs
+    qs = self.filter_queryset(qs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/filterset.py", line 224, in filter_queryset
+    queryset = self.filters[name].filter(queryset, value)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/filters.py", line 170, in filter
+    return super().filter(qs, value)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/filters.py", line 149, in filter
+    qs = self.get_method(qs)(**{lookup: value})
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/query.py", line 844, in filter
+    return self._filter_or_exclude(False, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/query.py", line 862, in _filter_or_exclude
+    clone.query.add_q(Q(*args, **kwargs))
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1263, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1287, in _add_q
+    split_subq=split_subq,
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1164, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1028, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1389, in names_to_path
+    "Choices are: %s" % (name, ", ".join(available)))
+django.core.exceptions.FieldError: Cannot resolve keyword 'school' into field. Choices are: course_activity, course_activity_id, course_code, course_name, course_number, course_primary_subject, course_primary_subject_id, course_schools, course_schools_id, course_section, course_subject, course_subject_id, course_term, created, crosslisted, instructors, owner, owner_id, request, updated, year
+(07/18/2019 03:01:12 PM) WARNING:Not Found: /favicon.ico
+(07/18/2019 03:02:56 PM) ERROR:Internal Server Error: /courses/
+Traceback (most recent call last):
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/viewsets.py", line 116, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 495, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 455, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 492, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/crf2/course/views.py", line 197, in list
+    queryset = self.filter_queryset(self.get_queryset())
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/generics.py", line 152, in filter_queryset
+    queryset = backend().filter_queryset(self.request, queryset, self)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/rest_framework/backends.py", line 96, in filter_queryset
+    return filterset.qs
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/filterset.py", line 237, in qs
+    qs = self.filter_queryset(qs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/filterset.py", line 224, in filter_queryset
+    queryset = self.filters[name].filter(queryset, value)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/filters.py", line 170, in filter
+    return super().filter(qs, value)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/filters.py", line 149, in filter
+    qs = self.get_method(qs)(**{lookup: value})
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/query.py", line 844, in filter
+    return self._filter_or_exclude(False, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/query.py", line 862, in _filter_or_exclude
+    clone.query.add_q(Q(*args, **kwargs))
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1263, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1287, in _add_q
+    split_subq=split_subq,
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1164, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1028, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1389, in names_to_path
+    "Choices are: %s" % (name, ", ".join(available)))
+django.core.exceptions.FieldError: Cannot resolve keyword 'school' into field. Choices are: course_activity, course_activity_id, course_code, course_name, course_number, course_primary_subject, course_primary_subject_id, course_schools, course_schools_id, course_section, course_subject, course_subject_id, course_term, created, crosslisted, instructors, owner, owner_id, request, updated, year
+(07/18/2019 03:03:04 PM) ERROR:Internal Server Error: /courses/
+Traceback (most recent call last):
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/viewsets.py", line 116, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 495, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 455, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 492, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/crf2/course/views.py", line 197, in list
+    queryset = self.filter_queryset(self.get_queryset())
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/generics.py", line 152, in filter_queryset
+    queryset = backend().filter_queryset(self.request, queryset, self)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/rest_framework/backends.py", line 96, in filter_queryset
+    return filterset.qs
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/filterset.py", line 237, in qs
+    qs = self.filter_queryset(qs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/filterset.py", line 224, in filter_queryset
+    queryset = self.filters[name].filter(queryset, value)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/filters.py", line 170, in filter
+    return super().filter(qs, value)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/filters.py", line 149, in filter
+    qs = self.get_method(qs)(**{lookup: value})
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/query.py", line 844, in filter
+    return self._filter_or_exclude(False, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/query.py", line 862, in _filter_or_exclude
+    clone.query.add_q(Q(*args, **kwargs))
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1263, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1287, in _add_q
+    split_subq=split_subq,
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1164, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1028, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1389, in names_to_path
+    "Choices are: %s" % (name, ", ".join(available)))
+django.core.exceptions.FieldError: Cannot resolve keyword 'school' into field. Choices are: course_activity, course_activity_id, course_code, course_name, course_number, course_primary_subject, course_primary_subject_id, course_schools, course_schools_id, course_section, course_subject, course_subject_id, course_term, created, crosslisted, instructors, owner, owner_id, request, updated, year
+(07/18/2019 03:03:26 PM) ERROR:Internal Server Error: /courses/
+Traceback (most recent call last):
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/viewsets.py", line 116, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 495, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 455, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 492, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/crf2/course/views.py", line 197, in list
+    queryset = self.filter_queryset(self.get_queryset())
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/generics.py", line 152, in filter_queryset
+    queryset = backend().filter_queryset(self.request, queryset, self)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/rest_framework/backends.py", line 94, in filter_queryset
+    if not filterset.is_valid() and self.raise_exception:
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/filterset.py", line 206, in is_valid
+    return self.is_bound and self.form.is_valid()
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/forms/forms.py", line 185, in is_valid
+    return self.is_bound and not self.errors
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/forms/forms.py", line 180, in errors
+    self.full_clean()
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/forms/forms.py", line 381, in full_clean
+    self._clean_fields()
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/forms/forms.py", line 399, in _clean_fields
+    value = field.clean(value)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/forms/fields.py", line 147, in clean
+    value = self.to_python(value)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/fields.py", line 302, in to_python
+    return super().to_python(value)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/forms/models.py", line 1250, in to_python
+    value = self.queryset.get(**{key: value})
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/query.py", line 390, in get
+    clone = self.filter(*args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/query.py", line 844, in filter
+    return self._filter_or_exclude(False, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/query.py", line 862, in _filter_or_exclude
+    clone.query.add_q(Q(*args, **kwargs))
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1263, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1287, in _add_q
+    split_subq=split_subq,
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1164, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1028, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1389, in names_to_path
+    "Choices are: %s" % (name, ", ".join(available)))
+django.core.exceptions.FieldError: Cannot resolve keyword 'course_schools' into field. Choices are: abbreviation, autoadd, canvas_subaccount, courses, name, opendata_abbr, subjects, visible
+(07/18/2019 03:03:26 PM) WARNING:Not Found: /favicon.ico
+(07/18/2019 03:04:05 PM) ERROR:Internal Server Error: /courses/
+Traceback (most recent call last):
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/viewsets.py", line 116, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 495, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 455, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 492, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/crf2/course/views.py", line 197, in list
+    queryset = self.filter_queryset(self.get_queryset())
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/generics.py", line 152, in filter_queryset
+    queryset = backend().filter_queryset(self.request, queryset, self)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/rest_framework/backends.py", line 94, in filter_queryset
+    if not filterset.is_valid() and self.raise_exception:
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/filterset.py", line 206, in is_valid
+    return self.is_bound and self.form.is_valid()
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/forms/forms.py", line 185, in is_valid
+    return self.is_bound and not self.errors
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/forms/forms.py", line 180, in errors
+    self.full_clean()
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/forms/forms.py", line 381, in full_clean
+    self._clean_fields()
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/forms/forms.py", line 399, in _clean_fields
+    value = field.clean(value)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/forms/fields.py", line 147, in clean
+    value = self.to_python(value)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django_filters/fields.py", line 302, in to_python
+    return super().to_python(value)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/forms/models.py", line 1250, in to_python
+    value = self.queryset.get(**{key: value})
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/query.py", line 390, in get
+    clone = self.filter(*args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/query.py", line 844, in filter
+    return self._filter_or_exclude(False, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/query.py", line 862, in _filter_or_exclude
+    clone.query.add_q(Q(*args, **kwargs))
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1263, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1287, in _add_q
+    split_subq=split_subq,
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1164, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1028, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/db/models/sql/query.py", line 1389, in names_to_path
+    "Choices are: %s" % (name, ", ".join(available)))
+django.core.exceptions.FieldError: Cannot resolve keyword 'course_schools' into field. Choices are: abbreviation, autoadd, canvas_subaccount, courses, name, opendata_abbr, subjects, visible
+(07/18/2019 03:04:05 PM) WARNING:Not Found: /favicon.ico
+(07/18/2019 03:15:56 PM) WARNING:Not Found: /favicon.ico
+(07/18/2019 03:16:06 PM) ERROR:Internal Server Error: /subject-autocomplete/
+Traceback (most recent call last):
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/views/generic/base.py", line 68, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/dal/views.py", line 49, in dispatch
+    return super(ViewMixin, self).dispatch(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/views/generic/base.py", line 88, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/views/generic/list.py", line 142, in get
+    self.object_list = self.get_queryset()
+  File "/Users/mfhodges/Desktop/CRF2/crf2/course/autocomplete.py", line 41, in get_queryset
+    qs = Subject.objects.all()
+NameError: name 'Subject' is not defined
+(07/18/2019 03:19:51 PM) ERROR:Internal Server Error: /courses/
+Traceback (most recent call last):
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/viewsets.py", line 116, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 495, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 455, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 492, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/crf2/course/views.py", line 224, in list
+    response.data = {'results': response.data,'paginator':self.paginator, 'filter':CourseFilter, 'request':request, 'autocompleteUser':UserForm(), autocompleteSubject: SubjectForm()}
+NameError: name 'autocompleteSubject' is not defined
+(07/18/2019 03:29:57 PM) ERROR:Internal Server Error: /courses/
+Traceback (most recent call last):
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 156, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 154, in _get_response
+    response = response.render()
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/response.py", line 106, in render
+    self.content = self.rendered_content
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/response.py", line 72, in rendered_content
+    ret = renderer.render(self.data, accepted_media_type, context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/renderers.py", line 177, in render
+    return template.render(context, request=request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/backends/django.py", line 61, in render
+    return self.template.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 937, in render
+    bit = node.render_annotated(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 904, in render_annotated
+    return self.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/loader_tags.py", line 150, in render
+    return compiled_parent._render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 937, in render
+    bit = node.render_annotated(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 904, in render_annotated
+    return self.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/loader_tags.py", line 62, in render
+    result = block.nodelist.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 937, in render
+    bit = node.render_annotated(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 904, in render_annotated
+    return self.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/loader_tags.py", line 188, in render
+    return template.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 173, in render
+    return self._render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 937, in render
+    bit = node.render_annotated(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 904, in render_annotated
+    return self.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/library.py", line 192, in render
+    output = self.func(*resolved_args, **resolved_kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/templatetags/rest_framework.py", line 90, in render_field
+    return renderer.render_field(field, style)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/renderers.py", line 339, in render_field
+    if isinstance(field._field, serializers.HiddenField):
+AttributeError: 'str' object has no attribute '_field'
+(07/18/2019 03:29:58 PM) WARNING:Not Found: /favicon.ico
+(07/18/2019 03:34:43 PM) ERROR:Internal Server Error: /courses/
+Traceback (most recent call last):
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 156, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 154, in _get_response
+    response = response.render()
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/response.py", line 106, in render
+    self.content = self.rendered_content
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/response.py", line 72, in rendered_content
+    ret = renderer.render(self.data, accepted_media_type, context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/renderers.py", line 177, in render
+    return template.render(context, request=request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/backends/django.py", line 61, in render
+    return self.template.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 937, in render
+    bit = node.render_annotated(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 904, in render_annotated
+    return self.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/loader_tags.py", line 150, in render
+    return compiled_parent._render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 937, in render
+    bit = node.render_annotated(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 904, in render_annotated
+    return self.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/loader_tags.py", line 62, in render
+    result = block.nodelist.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 937, in render
+    bit = node.render_annotated(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 904, in render_annotated
+    return self.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/loader_tags.py", line 188, in render
+    return template.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 173, in render
+    return self._render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 937, in render
+    bit = node.render_annotated(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 904, in render_annotated
+    return self.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/library.py", line 192, in render
+    output = self.func(*resolved_args, **resolved_kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/templatetags/rest_framework.py", line 90, in render_field
+    return renderer.render_field(field, style)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/renderers.py", line 339, in render_field
+    if isinstance(field._field, serializers.HiddenField):
+AttributeError: 'str' object has no attribute '_field'
+(07/18/2019 03:35:04 PM) ERROR:Internal Server Error: /courses/
+Traceback (most recent call last):
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 156, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 154, in _get_response
+    response = response.render()
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/response.py", line 106, in render
+    self.content = self.rendered_content
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/response.py", line 72, in rendered_content
+    ret = renderer.render(self.data, accepted_media_type, context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/renderers.py", line 177, in render
+    return template.render(context, request=request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/backends/django.py", line 61, in render
+    return self.template.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 937, in render
+    bit = node.render_annotated(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 904, in render_annotated
+    return self.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/loader_tags.py", line 150, in render
+    return compiled_parent._render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 937, in render
+    bit = node.render_annotated(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 904, in render_annotated
+    return self.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/loader_tags.py", line 62, in render
+    result = block.nodelist.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 937, in render
+    bit = node.render_annotated(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 904, in render_annotated
+    return self.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/loader_tags.py", line 188, in render
+    return template.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 173, in render
+    return self._render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 937, in render
+    bit = node.render_annotated(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 904, in render_annotated
+    return self.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/library.py", line 192, in render
+    output = self.func(*resolved_args, **resolved_kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/templatetags/rest_framework.py", line 90, in render_field
+    return renderer.render_field(field, style)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/renderers.py", line 339, in render_field
+    if isinstance(field._field, serializers.HiddenField):
+AttributeError: 'BoundField' object has no attribute '_field'
+(07/18/2019 03:36:26 PM) ERROR:Internal Server Error: /courses/
+Traceback (most recent call last):
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/viewsets.py", line 116, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 495, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 455, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 492, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/crf2/course/views.py", line 224, in list
+    CourseFilter.Meta.fields.remove('instructor').remove('subject')
+AttributeError: 'NoneType' object has no attribute 'remove'
+(07/18/2019 03:36:30 PM) ERROR:Internal Server Error: /courses/
+Traceback (most recent call last):
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/viewsets.py", line 116, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 495, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 455, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/views.py", line 492, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/mfhodges/Desktop/CRF2/crf2/course/views.py", line 224, in list
+    CourseFilter.Meta.fields.remove('instructor').remove('subject')
+ValueError: list.remove(x): x not in list
+(07/18/2019 03:42:23 PM) WARNING:Bad Request: /courses/
+(07/18/2019 03:55:27 PM) ERROR:Internal Server Error: /courses/
+Traceback (most recent call last):
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 156, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/core/handlers/base.py", line 154, in _get_response
+    response = response.render()
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/response.py", line 106, in render
+    self.content = self.rendered_content
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/response.py", line 72, in rendered_content
+    ret = renderer.render(self.data, accepted_media_type, context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/rest_framework/renderers.py", line 177, in render
+    return template.render(context, request=request)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/backends/django.py", line 61, in render
+    return self.template.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 937, in render
+    bit = node.render_annotated(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 904, in render_annotated
+    return self.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/loader_tags.py", line 150, in render
+    return compiled_parent._render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 937, in render
+    bit = node.render_annotated(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 904, in render_annotated
+    return self.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/loader_tags.py", line 62, in render
+    result = block.nodelist.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 937, in render
+    bit = node.render_annotated(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 904, in render_annotated
+    return self.render(context)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/loader_tags.py", line 176, in render
+    template = context.template.engine.get_template(template_name)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/engine.py", line 144, in get_template
+    template, origin = self.find_template(template_name)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/engine.py", line 126, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/loaders/base.py", line 30, in get_template
+    contents, origin, origin.template_name, self.engine,
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 156, in __init__
+    self.nodelist = self.compile_nodelist()
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 194, in compile_nodelist
+    return parser.parse()
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 449, in parse
+    raise self.error(token, e)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 447, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 563, in compile_filter
+    return FilterExpression(token, self)
+  File "/Users/mfhodges/Desktop/CRF2/envcrf/lib/python3.6/site-packages/django/template/base.py", line 663, in __init__
+    "from '%s'" % (token[upto:], token))
+django.template.exceptions.TemplateSyntaxError: Could not parse the remainder: '[1]' from 'filter.form[1]'
+(07/18/2019 03:55:28 PM) WARNING:Not Found: /favicon.ico
+(07/18/2019 04:23:13 PM) WARNING:Not Found: /favicon.ico
+(07/18/2019 04:27:13 PM) INFO:Request: GET https://canvas.upenn.edu/api/v1/users/sis_login_id:mfhodges
+(07/18/2019 04:27:13 PM) DEBUG:Headers: {'Authorization': '****fdKK'}
+(07/18/2019 04:27:13 PM) DEBUG:Starting new HTTPS connection (1): canvas.upenn.edu:443
+(07/18/2019 04:27:13 PM) DEBUG:https://canvas.upenn.edu:443 "GET /api/v1/users/sis_login_id:mfhodges HTTP/1.1" 200 323
+(07/18/2019 04:27:13 PM) INFO:Response: GET https://canvas.upenn.edu/api/v1/users/sis_login_id:mfhodges 200
+(07/18/2019 04:27:13 PM) DEBUG:Headers: {'Cache-Control': 'max-age=0, private, must-revalidate', 'Content-Encoding': 'gzip', 'Content-Type': 'application/json; charset=utf-8', 'Date': 'Thu, 18 Jul 2019 20:27:13 GMT', 'ETag': 'W/"a8da4f42f0e360b737064ef865c11a3a-gzip"', 'P3P': 'CP="None, see http://www.instructure.com/privacy-policy"', 'Server': 'Apache', 'Set-Cookie': '_csrf_token=Ko61A0ZD43l%2BHCgRB%2B8JuQNYS7UdLZqSi3yDtmmK5axo3twoBQWUEzUpX19Np3HqVA19%2FHlkyMHRTsHECr%2FKxw%3D%3D; path=/; secure, log_session_id=28153273e29095e951826e91c6f40fc7; path=/, canvas_session=mDFWBr5eoXyK6hLK5DR5Mg.QBlfe337AlUeVjPXDgx5aXnhuE5dyPYm-QpkOd64HnmvKt_GyfXhZqYTGrYXRkghxEzXb9V-53GGxYQrk4G5fUaZuJ2bt6hIGSOQ61L6MVBB6SMsQiOlA5-HHOHkm1hM.bt4HCQBdE_Cl2tAFn6sL2N20p-Q.XTDWIQ; path=/; secure; HttpOnly', 'Status': '200 OK', 'Strict-Transport-Security': 'max-age=31536000', 'Vary': 'Accept-Encoding', 'X-A11y-Ally': 'Dana Danger Grey', 'X-Canvas-Meta': 'q=1234;at=250000000661212;dk=170000000000016;a=96678;g=iSEp4yPWglXrea6ydolZgTRVSAJt0vfsUKzJp9hS;s=25;c=cluster20;z=us-east-1c;o=users;n=api_show;x=5.0;p=f;f=2019-07-18T20:27:13.38Z;b=1417628;m=1417628;u=0.13;y=0.00;d=0.03;', 'X-Canvas-User-Id': '250000005443278', 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'SAMEORIGIN', 'X-Rate-Limit-Remaining': '700.0', 'X-Request-Context-Id': 'fb2b753e-ec90-4714-8a92-099aedd36b89', 'X-Request-Cost': '0.15665046099999547', 'X-Request-Processor': '04934444aa57b2943', 'X-Runtime': '0.201757', 'X-Session-Id': '28153273e29095e951826e91c6f40fc7', 'X-UA-Compatible': 'IE=Edge,chrome=1', 'X-XSS-Protection': '1; mode=block', 'Content-Length': '323', 'Connection': 'keep-alive'}
+(07/18/2019 04:27:13 PM) DEBUG:Data: {'avatar_url': 'https://canvas.upenn.edu/images/thumbnails/71818003/DDzvzMoJDPFboU4HK0lNPqR0d4EvBYGAVkNRPmgU',
+ 'created_at': '2017-09-04T13:48:07-04:00',
+ 'effective_locale': 'en',
+ 'email': 'mfhodges@upenn.edu',
+ 'id': 5443278,
+ 'integration_id': None,
+ 'locale': None,
+ 'login_id': 'mfhodges',
+ 'name': 'Madeleine Hodges',
+ 'permissions': {'can_update_avatar': True, 'can_update_name': False},
+ 'short_name': 'Madeleine Hodges',
+ 'sis_import_id': None,
+ 'sis_user_id': '89450759',
+ 'sortable_name': 'Hodges, Madeleine'}
+(07/18/2019 04:27:13 PM) INFO:Request: GET https://canvas.upenn.edu/api/v1/users/5443278/courses
+(07/18/2019 04:27:13 PM) DEBUG:Headers: {'Authorization': '****fdKK'}
+(07/18/2019 04:27:13 PM) DEBUG:Data: [('per_page', 100)]
+(07/18/2019 04:27:13 PM) DEBUG:https://canvas.upenn.edu:443 "GET /api/v1/users/5443278/courses?per_page=100 HTTP/1.1" 200 1451
+(07/18/2019 04:27:13 PM) INFO:Response: GET https://canvas.upenn.edu/api/v1/users/5443278/courses 200
+(07/18/2019 04:27:13 PM) DEBUG:Headers: {'Cache-Control': 'max-age=0, private, must-revalidate', 'Content-Encoding': 'gzip', 'Content-Type': 'application/json; charset=utf-8', 'Date': 'Thu, 18 Jul 2019 20:27:13 GMT', 'ETag': 'W/"5218323be3b449e6adaee9ea1c62f012-gzip"', 'Link': '<https://canvas.upenn.edu/api/v1/users/5443278/courses?page=1&per_page=100>; rel="current",<https://canvas.upenn.edu/api/v1/users/5443278/courses?page=1&per_page=100>; rel="first",<https://canvas.upenn.edu/api/v1/users/5443278/courses?page=1&per_page=100>; rel="last"', 'P3P': 'CP="None, see http://www.instructure.com/privacy-policy"', 'Server': 'Apache', 'Set-Cookie': '_csrf_token=cN%2BZu2j3%2BUrgrVWqSwJHHIP80HD%2B0qLVApl%2Frp8dmxkyj%2FCQK7GOIKuYIuQBSj9P1KnmOZqb8IZYqz3c%2FCi0cg%3D%3D; path=/; secure', 'Status': '200 OK', 'Strict-Transport-Security': 'max-age=31536000', 'Vary': 'Accept-Encoding', 'X-A11y-Ally': 'Dana Danger Grey', 'X-Canvas-Meta': 'q=1013;at=250000000661212;dk=170000000000016;a=96678;g=iSEp4yPWglXrea6ydolZgTRVSAJt0vfsUKzJp9hS;s=25;c=cluster20;z=us-east-1b;o=courses;n=user_index;x=5.0;p=f;f=2019-07-18T20:27:13.58Z;b=1489772;m=1489772;u=0.12;y=0.00;d=0.02;', 'X-Canvas-User-Id': '250000005443278', 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'SAMEORIGIN', 'X-Rate-Limit-Remaining': '700.0', 'X-Request-Context-Id': '16356f0c-d79d-4fc6-8356-d4f500848a04', 'X-Request-Cost': '0.13801541800000455', 'X-Request-Processor': '0dfac534c40021f15', 'X-Runtime': '0.153506', 'X-Session-Id': '28153273e29095e951826e91c6f40fc7', 'X-UA-Compatible': 'IE=Edge,chrome=1', 'X-XSS-Protection': '1; mode=block', 'Content-Length': '1451', 'Connection': 'keep-alive'}
+(07/18/2019 04:27:13 PM) DEBUG:Data: [{'account_id': 96678,
+  'apply_assignment_group_weights': False,
+  'blueprint': False,
+  'calendar': {'ics': 'https://canvas.upenn.edu/feeds/calendars/course_TDaK94IomVMXoYKPudVwcP4YoERhhleVkTgd4PWw.ics'},
+  'course_code': 'zNS-BADLINK-A2019',
+  'created_at': '2019-04-01T14:56:39Z',
+  'default_view': 'wiki',
+  'end_at': None,
+  'enrollment_term_id': 4373,
+  'enrollments': [{'enrollment_state': 'active',
+                   'role': 'StudentEnrollment',
+                   'role_id': 2022,
+                   'type': 'student',
+                   'user_id': 5443278}],
+  'grading_standard_id': None,
+  'hide_final_grades': False,
+  'id': 1448756,
+  'integration_id': None,
+  'is_public': False,
+  'is_public_to_auth_users': False,
+  'license': 'private',
+  'name': 'Bad Link Testing',
+  'public_syllabus': False,
+  'public_syllabus_to_auth': False,
+  'restrict_enrollments_to_course_dates': False,
+  'root_account_id': 96678,
+  'sis_course_id': 'zNS-BADLINK-A2019',
+  'sis_import_id': None,
+  'start_at': '2019-04-01T14:59:31Z',
+  'storage_quota_mb': 1000,
+  'time_zone': 'America/New_York',
+  'uuid': 'TDaK94IomVMXoYKPudVwcP4YoERhhleVkTgd4PWw',
+  'workflow_state': 'available'},
+ {'account_id': 96678,
+  'apply_assignment_group_weights': False,
+  'blueprint': False,
+  'calendar': {'ics': 'https://canvas.upenn.edu/feeds/calendars/course_Vp83cWs0yvEcX4YBF4Vfcuq2YMa6pBydNtoSHxiz.ics'},
+  'course_code': 'zNS-CNVS-ADMNS-001-B2014',
+  'created_at': '2014-06-03T17:13:10Z',
+  'default_view': 'modules',
+  'end_at': None,
+  'enrollment_term_id': 4373,
+  'enrollments': [{'enrollment_state': 'active',
+                   'role': 'TeacherEnrollment',
+                   'role_id': 2023,
+                   'type': 'teacher',
+                   'user_id': 5443278}],
+  'grading_standard_id': None,
+  'hide_final_grades': False,
+  'id': 1242274,
+  'integration_id': None,
+  'is_public': None,
+  'is_public_to_auth_users': False,
+  'license': None,
+  'name': 'Canvas Admins',
+  'public_syllabus': False,
+  'public_syllabus_to_auth': False,
+  'restrict_enrollments_to_course_dates': False,
+  'root_account_id': 96678,
+  'sis_course_id': None,
+  'sis_import_id': None,
+  'start_at': '2014-06-03T17:15:11Z',
+  'storage_quota_mb': 1000,
+  'time_zone': 'America/New_York',
+  'uuid': 'Vp83cWs0yvEcX4YBF4Vfcuq2YMa6pBydNtoSHxiz',
+  'workflow_state': 'available'},
+ {'account_id': 99238,
+  'apply_assignment_group_weights': False,
+  'blueprint': False,
+  'calendar': {'ics': 'https://canvas.upenn.edu/feeds/calendars/course_tS9eumBmbiaBvz8cVrZDj5DWrVJIYAX9eBfVDbkn.ics'},
+  'course_code': 'SRS_CIS-520-001 2017C',
+  'created_at': '2017-08-16T19:20:32Z',
+  'default_view': 'wiki',
+  'end_at': None,
+  'enrollment_term_id': 5818,
+  'enrollments': [{'enrollment_state': 'active',
+                   'role': 'StudentEnrollment',
+                   'role_id': 2022,
+                   'type': 'student',
+                   'user_id': 5443278}],
+  'grading_standard_id': None,
+  'hide_final_grades': False,
+  'id': 1374627,
+  'integration_id': None,
+  'is_public': True,
+  'is_public_to_auth_users': False,
+  'license': 'private',
+  'name': 'CIS 520 2017C Machine Learning',
+  'public_syllabus': True,
+  'public_syllabus_to_auth': False,
+  'restrict_enrollments_to_course_dates': False,
+  'root_account_id': 96678,
+  'sis_course_id': 'SRS_CIS-520-001 2017C',
+  'sis_import_id': None,
+  'start_at': '2017-08-22T22:25:00Z',
+  'storage_quota_mb': 1000,
+  'time_zone': 'America/New_York',
+  'uuid': 'tS9eumBmbiaBvz8cVrZDj5DWrVJIYAX9eBfVDbkn',
+  'workflow_state': 'available'},
+ {'account_id': 96679,
+  'apply_assignment_group_weights': True,
+  'blueprint': False,
+  'calendar': {'ics': 'https://canvas.upenn.edu/feeds/calendars/course_Bklo6Xtdeidp6FJXv0YehHqbu27Ffbj2LBpGxJui.ics'},
+  'course_code': 'zNS-LIB-CO-001-B2012',
+  'created_at': '2012-06-05T19:49:14Z',
+  'default_view': 'wiki',
+  'end_at': None,
+  'enrollment_term_id': 4373,
+  'enrollments': [{'enrollment_state': 'active',
+                   'role': 'TeacherEnrollment',
+                   'role_id': 2023,
+                   'type': 'teacher',
+                   'user_id': 5443278}],
+  'grading_standard_id': 4184586,
+  'hide_final_grades': True,
+  'id': 592387,
+  'integration_id': None,
+  'is_public': False,
+  'is_public_to_auth_users': False,
+  'license': 'private',
+  'locale': 'en',
+  'name': 'Contemporary Social Policy (Demo)',
+  'public_syllabus': False,
+  'public_syllabus_to_auth': False,
+  'restrict_enrollments_to_course_dates': False,
+  'root_account_id': 96678,
+  'sis_course_id': None,
+  'sis_import_id': None,
+  'start_at': '2012-11-29T05:00:00Z',
+  'storage_quota_mb': 600,
+  'time_zone': 'America/New_York',
+  'uuid': 'Bklo6Xtdeidp6FJXv0YehHqbu27Ffbj2LBpGxJui',
+  'workflow_state': 'available'},
+ {'account_id': 96679,
+  'apply_assignment_group_weights': False,
+  'blueprint': False,
+  'calendar': {'ics': 'https://canvas.upenn.edu/feeds/calendars/course_1RrIZ8RWJsMrrlAzMe7zORfo8pTJAiIQnYNH8zIW.ics'},
+  'course_code': 'zNS-LIB-CNVS-CDEB-C2016',
+  'created_at': '2016-10-12T15:12:57Z',
+  'default_view': 'modules',
+  'end_at': None,
+  'enrollment_term_id': 4373,
+  'enrollments': [{'enrollment_state': 'active',
+                   'role': 'TeacherEnrollment',
+                   'role_id': 2023,
+                   'type': 'teacher',
+                   'user_id': 5443278}],
+  'grading_standard_id': None,
+  'hide_final_grades': False,
+  'id': 1338368,
+  'integration_id': None,
+  'is_public': False,
+  'is_public_to_auth_users': False,
+  'license': 'private',
+  'name': 'Courseware Documentation Editorial Board',
+  'public_syllabus': False,
+  'public_syllabus_to_auth': False,
+  'restrict_enrollments_to_course_dates': False,
+  'root_account_id': 96678,
+  'sis_course_id': None,
+  'sis_import_id': None,
+  'start_at': '2016-10-12T15:14:00Z',
+  'storage_quota_mb': 1000,
+  'time_zone': 'America/New_York',
+  'uuid': '1RrIZ8RWJsMrrlAzMe7zORfo8pTJAiIQnYNH8zIW',
+  'workflow_state': 'unpublished'},
+ {'account_id': 131963,
+  'apply_assignment_group_weights': False,
+  'blueprint': False,
+  'calendar': {'ics': 'https://canvas.upenn.edu/feeds/calendars/course_eoj6dA7MZYmy9DITEJe0TVMN5ReH5VJ5t9Fqlaqb.ics'},
+  'course_code': 'zNS-LIB-CNVS-JS-002-C2018',
+  'created_at': '2018-09-19T21:07:36Z',
+  'default_view': 'wiki',
+  'end_at': None,
+  'enrollment_term_id': 4373,
+  'enrollments': [{'enrollment_state': 'active',
+                   'role': 'TeacherEnrollment',
+                   'role_id': 2023,
+                   'type': 'teacher',
+                   'user_id': 5443278}],
+  'grading_standard_id': None,
+  'hide_final_grades': False,
+  'id': 1424497,
+  'integration_id': None,
+  'is_public': True,
+  'is_public_to_auth_users': False,
+  'license': 'private',
+  'name': 'Fall 2018 Teaching + Tech Workshops',
+  'public_syllabus': True,
+  'public_syllabus_to_auth': False,
+  'restrict_enrollments_to_course_dates': False,
+  'root_account_id': 96678,
+  'sis_course_id': None,
+  'sis_import_id': None,
+  'start_at': '2018-10-02T17:15:00Z',
+  'storage_quota_mb': 1000,
+  'time_zone': 'America/New_York',
+  'uuid': 'eoj6dA7MZYmy9DITEJe0TVMN5ReH5VJ5t9Fqlaqb',
+  'workflow_state': 'available'},
+ {'account_id': 127623,
+  'apply_assignment_group_weights': False,
+  'blueprint': False,
+  'calendar': {'ics': 'https://canvas.upenn.edu/feeds/calendars/course_hhvkDd63kxpOd9s8toNtUIEI1JiERCNnIOzrh5yG.ics'},
+  'course_code': 'zNS-LIB-CNVS-JS-006-A2019',
+  'created_at': '2019-03-14T15:33:57Z',
+  'default_view': 'modules',
+  'end_at': None,
+  'enrollment_term_id': 4373,
+  'enrollments': [{'enrollment_state': 'active',
+                   'role': 'TeacherEnrollment',
+                   'role_id': 2023,
+                   'type': 'teacher',
+                   'user_id': 5443278}],
+  'grading_standard_id': None,
+  'hide_final_grades': False,
+  'id': 1447876,
+  'integration_id': None,
+  'is_public': True,
+  'is_public_to_auth_users': False,
+  'license': 'private',
+  'name': 'Spring 2019 Teaching + Tech Workshops',
+  'public_syllabus': True,
+  'public_syllabus_to_auth': False,
+  'restrict_enrollments_to_course_dates': False,
+  'root_account_id': 96678,
+  'sis_course_id': None,
+  'sis_import_id': None,
+  'start_at': '2019-03-14T19:47:00Z',
+  'storage_quota_mb': 1000,
+  'time_zone': 'America/New_York',
+  'uuid': 'hhvkDd63kxpOd9s8toNtUIEI1JiERCNnIOzrh5yG',
+  'workflow_state': 'available'},
+ {'account_id': 96679,
+  'apply_assignment_group_weights': False,
+  'blueprint': False,
+  'calendar': {'ics': 'https://canvas.upenn.edu/feeds/calendars/course_Mx6clJ7kESjpMIf0yi7UpYZGJsOLNI7Xlc4MjRUH.ics'},
+  'course_code': 'zNS-LIB-SAA-001-B2016',
+  'created_at': '2016-06-01T16:53:33Z',
+  'default_view': 'modules',
+  'end_at': None,
+  'enrollment_term_id': 4373,
+  'enrollments': [{'enrollment_state': 'active',
+                   'role': 'TeacherEnrollment',
+                   'role_id': 2023,
+                   'type': 'teacher',
+                   'user_id': 5443278}],
+  'grading_standard_id': None,
+  'hide_final_grades': False,
+  'id': 1326679,
+  'integration_id': None,
+  'is_public': False,
+  'is_public_to_auth_users': False,
+  'license': 'private',
+  'name': 'Sub-Account Admin Training',
+  'public_syllabus': False,
+  'public_syllabus_to_auth': False,
+  'restrict_enrollments_to_course_dates': True,
+  'root_account_id': 96678,
+  'sis_course_id': None,
+  'sis_import_id': None,
+  'start_at': '2016-06-15T17:00:00Z',
+  'storage_quota_mb': 1000,
+  'time_zone': 'America/New_York',
+  'uuid': 'Mx6clJ7kESjpMIf0yi7UpYZGJsOLNI7Xlc4MjRUH',
+  'workflow_state': 'available'}]
+(07/18/2019 04:27:13 PM) INFO:Request: GET https://canvas.upenn.edu/api/v1/users/5443278/courses
+(07/18/2019 04:27:13 PM) DEBUG:Headers: {'Authorization': '****fdKK'}
+(07/18/2019 04:27:13 PM) DEBUG:Data: [('enrollment_type', 'teacher'), ('per_page', 100)]
+(07/18/2019 04:27:13 PM) DEBUG:https://canvas.upenn.edu:443 "GET /api/v1/users/5443278/courses?enrollment_type=teacher&per_page=100 HTTP/1.1" 200 1204
+(07/18/2019 04:27:13 PM) INFO:Response: GET https://canvas.upenn.edu/api/v1/users/5443278/courses 200
+(07/18/2019 04:27:13 PM) DEBUG:Headers: {'Cache-Control': 'max-age=0, private, must-revalidate', 'Content-Encoding': 'gzip', 'Content-Type': 'application/json; charset=utf-8', 'Date': 'Thu, 18 Jul 2019 20:27:13 GMT', 'ETag': 'W/"dbcccf3d20be5c011e3aa2dae7064140-gzip"', 'Link': '<https://canvas.upenn.edu/api/v1/users/5443278/courses?enrollment_type=teacher&page=1&per_page=100>; rel="current",<https://canvas.upenn.edu/api/v1/users/5443278/courses?enrollment_type=teacher&page=1&per_page=100>; rel="first",<https://canvas.upenn.edu/api/v1/users/5443278/courses?enrollment_type=teacher&page=1&per_page=100>; rel="last"', 'P3P': 'CP="None, see http://www.instructure.com/privacy-policy"', 'Server': 'Apache', 'Set-Cookie': '_csrf_token=T3cd6ZQ6y08ktY5o8SqbbKgg0U2h5B2oo4LPwypgvQcNJ3TC13y8JW%2BA%2BSa7YuM%2F%2F3XnBMWtT%2Fv5sI2xSVWSbA%3D%3D; path=/; secure', 'Status': '200 OK', 'Strict-Transport-Security': 'max-age=31536000', 'Vary': 'Accept-Encoding', 'X-A11y-Ally': 'Dana Danger Grey', 'X-Canvas-Meta': 'q=1228;at=250000000661212;dk=170000000000016;a=96678;g=iSEp4yPWglXrea6ydolZgTRVSAJt0vfsUKzJp9hS;s=25;c=cluster20;z=us-east-1b;o=courses;n=user_index;x=5.0;p=f;f=2019-07-18T20:27:13.78Z;b=1535748;m=1535748;u=0.13;y=0.00;d=0.02;', 'X-Canvas-User-Id': '250000005443278', 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'SAMEORIGIN', 'X-Rate-Limit-Remaining': '700.0', 'X-Request-Context-Id': 'd076f344-ace2-4fbe-9dda-82da65232e62', 'X-Request-Cost': '0.14783805099999545', 'X-Request-Processor': '06755f2d38c795bcf', 'X-Runtime': '0.180664', 'X-Session-Id': '28153273e29095e951826e91c6f40fc7', 'X-UA-Compatible': 'IE=Edge,chrome=1', 'X-XSS-Protection': '1; mode=block', 'Content-Length': '1204', 'Connection': 'keep-alive'}
+(07/18/2019 04:27:13 PM) DEBUG:Data: [{'account_id': 96678,
+  'apply_assignment_group_weights': False,
+  'blueprint': False,
+  'calendar': {'ics': 'https://canvas.upenn.edu/feeds/calendars/course_Vp83cWs0yvEcX4YBF4Vfcuq2YMa6pBydNtoSHxiz.ics'},
+  'course_code': 'zNS-CNVS-ADMNS-001-B2014',
+  'created_at': '2014-06-03T17:13:10Z',
+  'default_view': 'modules',
+  'end_at': None,
+  'enrollment_term_id': 4373,
+  'enrollments': [{'enrollment_state': 'active',
+                   'role': 'TeacherEnrollment',
+                   'role_id': 2023,
+                   'type': 'teacher',
+                   'user_id': 5443278}],
+  'grading_standard_id': None,
+  'hide_final_grades': False,
+  'id': 1242274,
+  'integration_id': None,
+  'is_public': None,
+  'is_public_to_auth_users': False,
+  'license': None,
+  'name': 'Canvas Admins',
+  'public_syllabus': False,
+  'public_syllabus_to_auth': False,
+  'restrict_enrollments_to_course_dates': False,
+  'root_account_id': 96678,
+  'sis_course_id': None,
+  'sis_import_id': None,
+  'start_at': '2014-06-03T17:15:11Z',
+  'storage_quota_mb': 1000,
+  'time_zone': 'America/New_York',
+  'uuid': 'Vp83cWs0yvEcX4YBF4Vfcuq2YMa6pBydNtoSHxiz',
+  'workflow_state': 'available'},
+ {'account_id': 96679,
+  'apply_assignment_group_weights': True,
+  'blueprint': False,
+  'calendar': {'ics': 'https://canvas.upenn.edu/feeds/calendars/course_Bklo6Xtdeidp6FJXv0YehHqbu27Ffbj2LBpGxJui.ics'},
+  'course_code': 'zNS-LIB-CO-001-B2012',
+  'created_at': '2012-06-05T19:49:14Z',
+  'default_view': 'wiki',
+  'end_at': None,
+  'enrollment_term_id': 4373,
+  'enrollments': [{'enrollment_state': 'active',
+                   'role': 'TeacherEnrollment',
+                   'role_id': 2023,
+                   'type': 'teacher',
+                   'user_id': 5443278}],
+  'grading_standard_id': 4184586,
+  'hide_final_grades': True,
+  'id': 592387,
+  'integration_id': None,
+  'is_public': False,
+  'is_public_to_auth_users': False,
+  'license': 'private',
+  'locale': 'en',
+  'name': 'Contemporary Social Policy (Demo)',
+  'public_syllabus': False,
+  'public_syllabus_to_auth': False,
+  'restrict_enrollments_to_course_dates': False,
+  'root_account_id': 96678,
+  'sis_course_id': None,
+  'sis_import_id': None,
+  'start_at': '2012-11-29T05:00:00Z',
+  'storage_quota_mb': 600,
+  'time_zone': 'America/New_York',
+  'uuid': 'Bklo6Xtdeidp6FJXv0YehHqbu27Ffbj2LBpGxJui',
+  'workflow_state': 'available'},
+ {'account_id': 96679,
+  'apply_assignment_group_weights': False,
+  'blueprint': False,
+  'calendar': {'ics': 'https://canvas.upenn.edu/feeds/calendars/course_1RrIZ8RWJsMrrlAzMe7zORfo8pTJAiIQnYNH8zIW.ics'},
+  'course_code': 'zNS-LIB-CNVS-CDEB-C2016',
+  'created_at': '2016-10-12T15:12:57Z',
+  'default_view': 'modules',
+  'end_at': None,
+  'enrollment_term_id': 4373,
+  'enrollments': [{'enrollment_state': 'active',
+                   'role': 'TeacherEnrollment',
+                   'role_id': 2023,
+                   'type': 'teacher',
+                   'user_id': 5443278}],
+  'grading_standard_id': None,
+  'hide_final_grades': False,
+  'id': 1338368,
+  'integration_id': None,
+  'is_public': False,
+  'is_public_to_auth_users': False,
+  'license': 'private',
+  'name': 'Courseware Documentation Editorial Board',
+  'public_syllabus': False,
+  'public_syllabus_to_auth': False,
+  'restrict_enrollments_to_course_dates': False,
+  'root_account_id': 96678,
+  'sis_course_id': None,
+  'sis_import_id': None,
+  'start_at': '2016-10-12T15:14:00Z',
+  'storage_quota_mb': 1000,
+  'time_zone': 'America/New_York',
+  'uuid': '1RrIZ8RWJsMrrlAzMe7zORfo8pTJAiIQnYNH8zIW',
+  'workflow_state': 'unpublished'},
+ {'account_id': 131963,
+  'apply_assignment_group_weights': False,
+  'blueprint': False,
+  'calendar': {'ics': 'https://canvas.upenn.edu/feeds/calendars/course_eoj6dA7MZYmy9DITEJe0TVMN5ReH5VJ5t9Fqlaqb.ics'},
+  'course_code': 'zNS-LIB-CNVS-JS-002-C2018',
+  'created_at': '2018-09-19T21:07:36Z',
+  'default_view': 'wiki',
+  'end_at': None,
+  'enrollment_term_id': 4373,
+  'enrollments': [{'enrollment_state': 'active',
+                   'role': 'TeacherEnrollment',
+                   'role_id': 2023,
+                   'type': 'teacher',
+                   'user_id': 5443278}],
+  'grading_standard_id': None,
+  'hide_final_grades': False,
+  'id': 1424497,
+  'integration_id': None,
+  'is_public': True,
+  'is_public_to_auth_users': False,
+  'license': 'private',
+  'name': 'Fall 2018 Teaching + Tech Workshops',
+  'public_syllabus': True,
+  'public_syllabus_to_auth': False,
+  'restrict_enrollments_to_course_dates': False,
+  'root_account_id': 96678,
+  'sis_course_id': None,
+  'sis_import_id': None,
+  'start_at': '2018-10-02T17:15:00Z',
+  'storage_quota_mb': 1000,
+  'time_zone': 'America/New_York',
+  'uuid': 'eoj6dA7MZYmy9DITEJe0TVMN5ReH5VJ5t9Fqlaqb',
+  'workflow_state': 'available'},
+ {'account_id': 127623,
+  'apply_assignment_group_weights': False,
+  'blueprint': False,
+  'calendar': {'ics': 'https://canvas.upenn.edu/feeds/calendars/course_hhvkDd63kxpOd9s8toNtUIEI1JiERCNnIOzrh5yG.ics'},
+  'course_code': 'zNS-LIB-CNVS-JS-006-A2019',
+  'created_at': '2019-03-14T15:33:57Z',
+  'default_view': 'modules',
+  'end_at': None,
+  'enrollment_term_id': 4373,
+  'enrollments': [{'enrollment_state': 'active',
+                   'role': 'TeacherEnrollment',
+                   'role_id': 2023,
+                   'type': 'teacher',
+                   'user_id': 5443278}],
+  'grading_standard_id': None,
+  'hide_final_grades': False,
+  'id': 1447876,
+  'integration_id': None,
+  'is_public': True,
+  'is_public_to_auth_users': False,
+  'license': 'private',
+  'name': 'Spring 2019 Teaching + Tech Workshops',
+  'public_syllabus': True,
+  'public_syllabus_to_auth': False,
+  'restrict_enrollments_to_course_dates': False,
+  'root_account_id': 96678,
+  'sis_course_id': None,
+  'sis_import_id': None,
+  'start_at': '2019-03-14T19:47:00Z',
+  'storage_quota_mb': 1000,
+  'time_zone': 'America/New_York',
+  'uuid': 'hhvkDd63kxpOd9s8toNtUIEI1JiERCNnIOzrh5yG',
+  'workflow_state': 'available'},
+ {'account_id': 96679,
+  'apply_assignment_group_weights': False,
+  'blueprint': False,
+  'calendar': {'ics': 'https://canvas.upenn.edu/feeds/calendars/course_Mx6clJ7kESjpMIf0yi7UpYZGJsOLNI7Xlc4MjRUH.ics'},
+  'course_code': 'zNS-LIB-SAA-001-B2016',
+  'created_at': '2016-06-01T16:53:33Z',
+  'default_view': 'modules',
+  'end_at': None,
+  'enrollment_term_id': 4373,
+  'enrollments': [{'enrollment_state': 'active',
+                   'role': 'TeacherEnrollment',
+                   'role_id': 2023,
+                   'type': 'teacher',
+                   'user_id': 5443278}],
+  'grading_standard_id': None,
+  'hide_final_grades': False,
+  'id': 1326679,
+  'integration_id': None,
+  'is_public': False,
+  'is_public_to_auth_users': False,
+  'license': 'private',
+  'name': 'Sub-Account Admin Training',
+  'public_syllabus': False,
+  'public_syllabus_to_auth': False,
+  'restrict_enrollments_to_course_dates': True,
+  'root_account_id': 96678,
+  'sis_course_id': None,
+  'sis_import_id': None,
+  'start_at': '2016-06-15T17:00:00Z',
+  'storage_quota_mb': 1000,
+  'time_zone': 'America/New_York',
+  'uuid': 'Mx6clJ7kESjpMIf0yi7UpYZGJsOLNI7Xlc4MjRUH',
+  'workflow_state': 'available'}]
+(07/18/2019 04:27:18 PM) WARNING:Not Found: /courselookup
+(07/18/2019 04:32:15 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:32:15 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=1&term=2019B HTTP/1.1" 200 104213
+(07/18/2019 04:32:15 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:32:16 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=2&term=2019B HTTP/1.1" 200 99198
+(07/18/2019 04:32:23 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:32:23 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=3&term=2019B HTTP/1.1" 200 97654
+(07/18/2019 04:32:35 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:32:35 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=4&term=2019B HTTP/1.1" 200 111411
+(07/18/2019 04:32:38 PM) WARNING:couldnt find subject CHEM 
+(07/18/2019 04:32:38 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:32:38 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_info/CHEM/?results_per_page=2 HTTP/1.1" 200 24829
+(07/18/2019 04:35:48 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:35:48 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=1&term=2019B HTTP/1.1" 200 104213
+(07/18/2019 04:35:48 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:35:49 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=2&term=2019B HTTP/1.1" 200 99198
+(07/18/2019 04:35:49 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:35:49 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=3&term=2019B HTTP/1.1" 200 97654
+(07/18/2019 04:35:49 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:35:49 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=4&term=2019B HTTP/1.1" 200 111411
+(07/18/2019 04:35:59 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:36:00 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=5&term=2019B HTTP/1.1" 200 87069
+(07/18/2019 04:36:11 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:36:12 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=6&term=2019B HTTP/1.1" 200 102402
+(07/18/2019 04:36:21 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:36:21 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=7&term=2019B HTTP/1.1" 200 89471
+(07/18/2019 04:36:30 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:36:30 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=8&term=2019B HTTP/1.1" 200 91184
+(07/18/2019 04:36:41 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:38:25 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:38:25 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=1&term=2019B HTTP/1.1" 200 104213
+(07/18/2019 04:38:25 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:38:25 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=2&term=2019B HTTP/1.1" 200 99198
+(07/18/2019 04:38:25 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:38:25 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=3&term=2019B HTTP/1.1" 200 97654
+(07/18/2019 04:38:26 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:38:26 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=4&term=2019B HTTP/1.1" 200 111411
+(07/18/2019 04:38:26 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:38:26 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=5&term=2019B HTTP/1.1" 200 87069
+(07/18/2019 04:38:26 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:38:26 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=6&term=2019B HTTP/1.1" 200 102402
+(07/18/2019 04:38:26 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:38:27 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=7&term=2019B HTTP/1.1" 200 89471
+(07/18/2019 04:38:27 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:38:27 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=8&term=2019B HTTP/1.1" 200 91184
+(07/18/2019 04:38:27 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:38:27 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=9&term=2019B HTTP/1.1" 200 104447
+(07/18/2019 04:38:40 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:38:40 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=10&term=2019B HTTP/1.1" 200 114899
+(07/18/2019 04:38:47 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:40:57 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:40:57 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=1&term=2019B HTTP/1.1" 200 104213
+(07/18/2019 04:40:57 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:40:57 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=2&term=2019B HTTP/1.1" 200 99198
+(07/18/2019 04:40:57 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:40:58 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=3&term=2019B HTTP/1.1" 200 97654
+(07/18/2019 04:40:58 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:40:58 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=4&term=2019B HTTP/1.1" 200 111411
+(07/18/2019 04:40:58 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:40:58 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=5&term=2019B HTTP/1.1" 200 87069
+(07/18/2019 04:40:58 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:40:59 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=6&term=2019B HTTP/1.1" 200 102402
+(07/18/2019 04:40:59 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:40:59 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=7&term=2019B HTTP/1.1" 200 89471
+(07/18/2019 04:40:59 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:40:59 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=8&term=2019B HTTP/1.1" 200 91184
+(07/18/2019 04:40:59 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:40:59 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=9&term=2019B HTTP/1.1" 200 104447
+(07/18/2019 04:41:00 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:41:00 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=10&term=2019B HTTP/1.1" 200 114899
+(07/18/2019 04:41:00 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:41:00 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=11&term=2019B HTTP/1.1" 200 102288
+(07/18/2019 04:41:10 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:44:13 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:44:13 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=1&term=2019B HTTP/1.1" 200 104213
+(07/18/2019 04:44:13 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:44:14 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=2&term=2019B HTTP/1.1" 200 99198
+(07/18/2019 04:44:14 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:44:14 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=3&term=2019B HTTP/1.1" 200 97654
+(07/18/2019 04:44:14 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:44:15 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=4&term=2019B HTTP/1.1" 200 111411
+(07/18/2019 04:44:15 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:44:15 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=5&term=2019B HTTP/1.1" 200 87069
+(07/18/2019 04:44:15 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:44:15 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=6&term=2019B HTTP/1.1" 200 102402
+(07/18/2019 04:44:15 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:44:16 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=7&term=2019B HTTP/1.1" 200 89471
+(07/18/2019 04:44:16 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:44:16 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=8&term=2019B HTTP/1.1" 200 91184
+(07/18/2019 04:44:16 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:44:16 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=9&term=2019B HTTP/1.1" 200 104447
+(07/18/2019 04:44:16 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:44:16 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=10&term=2019B HTTP/1.1" 200 114899
+(07/18/2019 04:44:16 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:44:17 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=11&term=2019B HTTP/1.1" 200 102288
+(07/18/2019 04:44:17 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:44:17 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=12&term=2019B HTTP/1.1" 200 103937
+(07/18/2019 04:44:31 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:44:31 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=13&term=2019B HTTP/1.1" 200 99229
+(07/18/2019 04:44:39 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:59:40 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:59:40 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=1&term=2019B HTTP/1.1" 200 104213
+(07/18/2019 04:59:41 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:59:42 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=2&term=2019B HTTP/1.1" 200 99198
+(07/18/2019 04:59:51 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:59:52 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=3&term=2019B HTTP/1.1" 200 97654
+(07/18/2019 04:59:59 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 04:59:59 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=4&term=2019B HTTP/1.1" 200 111411
+(07/18/2019 05:00:06 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:00:06 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=5&term=2019B HTTP/1.1" 200 87069
+(07/18/2019 05:00:13 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:04:14 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:04:14 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=1&term=2019B HTTP/1.1" 200 104213
+(07/18/2019 05:04:19 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:04:19 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=2&term=2019B HTTP/1.1" 200 99198
+(07/18/2019 05:04:19 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:04:19 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=3&term=2019B HTTP/1.1" 200 97654
+(07/18/2019 05:04:20 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:04:20 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=4&term=2019B HTTP/1.1" 200 111411
+(07/18/2019 05:04:29 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:04:29 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=5&term=2019B HTTP/1.1" 200 87069
+(07/18/2019 05:04:43 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:04:43 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=6&term=2019B HTTP/1.1" 200 102402
+(07/18/2019 05:04:54 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:09:10 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:09:10 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=1&term=2019B HTTP/1.1" 200 104213
+(07/18/2019 05:09:11 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:09:11 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=2&term=2019B HTTP/1.1" 200 99198
+(07/18/2019 05:09:11 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:09:11 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=3&term=2019B HTTP/1.1" 200 97654
+(07/18/2019 05:09:11 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:09:12 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=4&term=2019B HTTP/1.1" 200 111411
+(07/18/2019 05:09:12 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:09:12 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=5&term=2019B HTTP/1.1" 200 87069
+(07/18/2019 05:09:12 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:09:12 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=6&term=2019B HTTP/1.1" 200 102402
+(07/18/2019 05:09:12 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:09:12 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=7&term=2019B HTTP/1.1" 200 89471
+(07/18/2019 05:09:24 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:10:43 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:10:44 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=1&term=2019B HTTP/1.1" 200 104213
+(07/18/2019 05:10:46 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:10:47 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=2&term=2019B HTTP/1.1" 200 99198
+(07/18/2019 05:10:47 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:10:47 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=3&term=2019B HTTP/1.1" 200 97654
+(07/18/2019 05:10:47 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:10:48 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=4&term=2019B HTTP/1.1" 200 111411
+(07/18/2019 05:10:48 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:10:48 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=5&term=2019B HTTP/1.1" 200 87069
+(07/18/2019 05:10:48 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:10:49 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=6&term=2019B HTTP/1.1" 200 102402
+(07/18/2019 05:10:52 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:10:53 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=7&term=2019B HTTP/1.1" 200 89471
+(07/18/2019 05:10:55 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:10:55 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=8&term=2019B HTTP/1.1" 200 91184
+(07/18/2019 05:11:10 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:11:10 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=9&term=2019B HTTP/1.1" 200 104447
+(07/18/2019 05:11:19 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:11:19 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=10&term=2019B HTTP/1.1" 200 114899
+(07/18/2019 05:11:28 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:11:29 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=11&term=2019B HTTP/1.1" 200 102288
+(07/18/2019 05:11:41 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:11:41 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=12&term=2019B HTTP/1.1" 200 103937
+(07/18/2019 05:12:01 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:12:01 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=13&term=2019B HTTP/1.1" 200 99229
+(07/18/2019 05:12:10 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:17:53 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:17:54 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=1&term=2019B HTTP/1.1" 200 104213
+(07/18/2019 05:17:54 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:17:54 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=2&term=2019B HTTP/1.1" 200 99198
+(07/18/2019 05:17:54 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:17:54 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=3&term=2019B HTTP/1.1" 200 97654
+(07/18/2019 05:17:54 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:17:55 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=4&term=2019B HTTP/1.1" 200 111411
+(07/18/2019 05:17:55 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:17:55 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=5&term=2019B HTTP/1.1" 200 87069
+(07/18/2019 05:17:55 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:17:55 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=6&term=2019B HTTP/1.1" 200 102402
+(07/18/2019 05:17:55 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:17:56 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=7&term=2019B HTTP/1.1" 200 89471
+(07/18/2019 05:17:56 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:17:56 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=8&term=2019B HTTP/1.1" 200 91184
+(07/18/2019 05:17:56 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:17:56 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=9&term=2019B HTTP/1.1" 200 104447
+(07/18/2019 05:17:56 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:17:57 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=10&term=2019B HTTP/1.1" 200 114899
+(07/18/2019 05:17:57 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:17:57 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=11&term=2019B HTTP/1.1" 200 102288
+(07/18/2019 05:17:57 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:17:57 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=12&term=2019B HTTP/1.1" 200 103937
+(07/18/2019 05:17:57 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:17:57 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=13&term=2019B HTTP/1.1" 200 99229
+(07/18/2019 05:17:58 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:17:58 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=14&term=2019B HTTP/1.1" 200 94117
+(07/18/2019 05:18:07 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:18:07 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=15&term=2019B HTTP/1.1" 200 94497
+(07/18/2019 05:18:19 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:18:19 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=16&term=2019B HTTP/1.1" 200 129239
+(07/18/2019 05:18:33 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:18:33 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=17&term=2019B HTTP/1.1" 200 114130
+(07/18/2019 05:18:39 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:18:40 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=18&term=2019B HTTP/1.1" 200 101222
+(07/18/2019 05:18:50 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:18:51 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=19&term=2019B HTTP/1.1" 200 101588
+(07/18/2019 05:19:05 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:19:05 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=20&term=2019B HTTP/1.1" 200 98625
+(07/18/2019 05:19:10 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:19:10 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=21&term=2019B HTTP/1.1" 200 97584
+(07/18/2019 05:19:31 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:19:31 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=22&term=2019B HTTP/1.1" 200 93150
+(07/18/2019 05:19:37 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:19:38 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=23&term=2019B HTTP/1.1" 200 82466
+(07/18/2019 05:19:46 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:19:46 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=24&term=2019B HTTP/1.1" 200 80341
+(07/18/2019 05:19:53 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:19:53 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=25&term=2019B HTTP/1.1" 200 93181
+(07/18/2019 05:20:03 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:20:03 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=26&term=2019B HTTP/1.1" 200 104850
+(07/18/2019 05:20:12 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:20:13 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=27&term=2019B HTTP/1.1" 200 96782
+(07/18/2019 05:20:20 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:20:20 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=28&term=2019B HTTP/1.1" 200 89579
+(07/18/2019 05:20:24 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:20:25 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=29&term=2019B HTTP/1.1" 200 84690
+(07/18/2019 05:20:30 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:20:30 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=30&term=2019B HTTP/1.1" 200 86127
+(07/18/2019 05:20:34 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:20:34 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=31&term=2019B HTTP/1.1" 200 83281
+(07/18/2019 05:20:35 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:20:35 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=32&term=2019B HTTP/1.1" 200 65504
+(07/18/2019 05:20:36 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:20:37 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=33&term=2019B HTTP/1.1" 200 43874
+(07/18/2019 05:20:37 PM) DEBUG:Starting new HTTPS connection (1): esb.isc-seo.upenn.edu:443
+(07/18/2019 05:20:37 PM) DEBUG:https://esb.isc-seo.upenn.edu:443 "GET /8091/open_data/course_section_search?number_of_results_per_page=30&page_number=34&term=2019B HTTP/1.1" 200 224
+(07/18/2019 05:22:33 PM) WARNING:Not Found: /favicon.ico

@@ -122,10 +122,12 @@ class Command(BaseCommand):
                                 print("instructor",instructor)
                                 try:
                                     found = find_or_create_user(instructor['penn_id'])
+                                    print("we are waiting!!!!")
                                     print(found)
+                                    instructors +=[User.objects.get(username=found['penn_key'])]
                                 except:
                                     print("sad")
-                                print("list of instructors",instructors)
+                            print("list of instructors",instructors)
                             course.instructors.set(instructors)
                     except:
                         if Course.objects.filter(course_code = datum['section_id']+year_term).exists():

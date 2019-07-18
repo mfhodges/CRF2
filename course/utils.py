@@ -51,7 +51,9 @@ def check_by_penn_id(PENN_ID):
         # check if in penn db
         print("checking datawarehouse for: ", PENN_ID)
         user = datawarehouse_lookup(PPENN_ID=PENN_ID)
+        print("we looked up user",user)
         if user:
+            print("we are now creating the user", user)
             #clean up first and last names
             first_name = user['firstname'].title()
             last_name = user['lastname'].title()
@@ -64,33 +66,37 @@ def check_by_penn_id(PENN_ID):
 
 
 def datawarehouse_lookup(PPENN_KEY=None,PPENN_ID=None):
+    input_id = PPENN_ID
     ## connects to the db and makes a query
     config = ConfigParser()
     config.read('config/config.ini') # this works
     info = dict(config.items('datawarehouse'))
-    #print(info)
-    print("not ok",PPENN_KEY,PPENN_ID,(PPENN_ID !=None))
+    print(info)
+    print("not ok",PPENN_KEY,input_id,(PPENN_ID !=None))
+
     connection = cx_Oracle.connect(info['user'], info['password'], info['service'])
     cursor = connection.cursor()
-    if PPENN_KEY != None:
+    print("coafasfjewj f")
+    if PPENN_KEY:
         print("looking by penn key")
         cursor.execute("""
             SELECT FIRST_NAME, LAST_NAME, EMAIL_ADDRESS, PENN_ID
             FROM EMPLOYEE_GENERAL
-            WHERE PENNKEY=:pennkey""",
+            WHERE PENNKEY = :pennkey""",
             pennkey = PPENN_KEY)
         for fname, lname, email, pennid in cursor:
             print("Values:", [fname, lname, email, pennid])
 
             return {'firstname':fname, 'lastname':lname, 'email':email, 'penn_id':pennid}
 
-    if (PPENN_ID !=None)==True:
+    #FIRST_NAME, LAST_NAME, EMAIL_ADDRESS, PENN_KEY
+    if input_id:
         print("llooking by penn id")
         cursor.execute("""
-            SELECT FIRST_NAME, LAST_NAME, EMAIL_ADDRESS, PENN_KEY
+            SELECT FIRST_NAME, LAST_NAME, EMAIL_ADDRESS, PENNKEY
             FROM EMPLOYEE_GENERAL
-            WHERE PENN_ID=:pennid""",
-            pennid = PPENN_ID)
+            WHERE PENN_ID = :pennid""",
+            pennid = input_id)
         print(cursor)
         for fname, lname, email, penn_key in cursor:
             print("Values:", [fname, lname, email, penn_key])
@@ -98,12 +104,12 @@ def datawarehouse_lookup(PPENN_KEY=None,PPENN_ID=None):
             return {'firstname':fname, 'lastname':lname, 'email':email, 'penn_key':penn_key}
 
     #if no results
-    print("no resutl?")
+    print("no result?")
     return False
 
 
 def find_or_create_user(pennid):
-    print("checking")
+    print("checking in find_or_create_user()")
     user = check_by_penn_id(pennid)
     if user: # the user exists
         print("user",user)

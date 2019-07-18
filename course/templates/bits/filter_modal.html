@@ -13,14 +13,66 @@
       <form id="filterform" action="" method="GET">
           <div class="modal-body">
             <p><mark> date filtering doesnt work.</mark></p>
+            {{ filter.form.tags.errors }}
+
+
+            {#  this is only for the Courselist filter #}
+            {% if autocompleteSubject %}
             <div class="form-group ">
             <label>
               Instructor <i>(pennkey)</i>
               </label>
               {{ autocompleteUser.username }}
               {{ autocompleteUser.media }}
-          </div>
-              {{ filter.form.as_p }}
+            </div>
+            <div class="form-group">
+              <label> Subject <i>(abbreviation)</i></label>
+              {{ autocompleteSubject.abbreviation }}
+              {{ autocompleteSubject.media }}
+            </div>
+
+
+            <div class="form-group">
+                {{ filter.form.term.errors }}
+                <label for="{{ filter.form.term.id_for_label }}">Term</label>
+                {{ filter.form.term }}
+            </div>
+
+            <div class="form-group">
+                {{ filter.form.school.errors }}
+                <label for="{{ filter.form.term.id_for_label }}">School</label>
+                {{ filter.form.school }}
+            </div>
+
+            <div class="form-group">
+                {{ filter.form.activity.errors }}
+                <label for="{{ filter.form.term.id_for_label }}">Activity</label>
+                {{ filter.form.activity }}
+            </div>
+
+            {% else %}
+            {#  heres stuff for the Requestlist filter #}
+            <div class="form-group">
+                {{ filter.form.status.errors }}
+                <label for="{{ filter.form.term.id_for_label }}">Status</label>
+                {{ filter.form.status }}
+            </div>
+
+            <div class="form-group">
+                {{ filter.form.requestor.errors }}
+                <label for="{{ filter.form.term.id_for_label }}">Requestor</label>
+                {{ filter.form.requestor }}
+            </div>
+
+
+
+            {% endif %}
+
+
+
+
+
+              {# {{ filter.form.as_p }} #}
 
           </div>
           <div class="modal-footer">

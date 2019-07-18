@@ -2,6 +2,7 @@
 from django import forms
 from course.models import AdditionalEnrollment
 from django.contrib.auth.models import User
+from course.models import Subject
 from dal import autocomplete
 
 
@@ -19,11 +20,24 @@ class UserForm(forms.ModelForm):
     # please only use this when you need to auto complete on the name field !
     username = forms.ModelChoiceField(label='user',
         queryset=User.objects.all(),
+        #required=False,
         widget=autocomplete.ModelSelect2(url='user-autocomplete')
     )
     class Meta:
         model = User
         fields = ('__all__')
+
+class SubjectForm(forms.ModelForm):
+    # please only use this when you need to auto complete on the name field !
+    abbreviation = forms.ModelChoiceField(label='Abbreviation',
+        queryset=Subject.objects.all(),
+        required=False,
+        widget=autocomplete.ModelSelect2(url='subject-autocomplete')
+    )
+    class Meta:
+        model = Subject
+        fields = ('__all__')
+
 
 
 class EmailChangeForm(forms.Form):
