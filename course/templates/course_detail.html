@@ -1,18 +1,30 @@
 {% extends "base_generic.html" %}
 {% load rest_framework %}
-
+{% load template_extra %}
 
 {% block content %}
 
-  <!-- course info -->
-{% include "bits/course_info.html" %}
+<!-- course info -->
+
+ {% include "bits/course_info.html" %}
 
 <!-- end course info -->
 
 
-
 <!-- Request Form -->
-  {% if not course.requested %}
+
+
+<!-- THE COURSE IS TIED TO ANOTHER REQUEST -->
+{% if course.multisection_request %}
+<fieldset >
+  <legend>Submitted Request</legend>
+  <p> This course has been added as a section of another request for {{course.multisection_request}}.</p>
+
+  <a href="{% url 'UI-request-detail' pk=course.multisection_request %}"> See {{course.multisection_request}} Request</a>
+</fieldset>
+
+
+  {% elif not course.requested %}
 
   <fieldset >
   <legend>Canvas Site Options</legend>
@@ -23,7 +35,7 @@
 <!--  {% render_form request_form %} -->
 
 
-  {% include "bits/request_form.html" with enrollments=request_instance.additional_enrollments.all %}
+   {% include "bits/request_form.html" with enrollments=request_instance.additional_enrollments.all %}
 
 
 
@@ -38,24 +50,15 @@
   <fieldset >
     <legend>Submitted Request</legend>
 
-    {% include "bits/request_form_disabled.html" %}
+    {% include "bits/request_form_disabled.html" %} 
 
     <a href="{% url 'UI-request-detail' pk=course.course_code %}"> See Full Request</a>
   </fieldset>
   {% endif %}
 <!-- end request form -->
 
-
-<!-- Canvas Site info -->
-{% include "bits/canvas_site_info.html" %}
-<!-- END Canvas Site info -->
-
-
-
-
-
-
-
-
+  <!-- Canvas Site info -->
+   {% include "bits/canvas_site_info.html" %}
+  <!-- END Canvas Site info -->
 
 {% endblock %}

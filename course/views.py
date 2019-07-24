@@ -243,7 +243,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         #print('CourseViewSet.retrieve lookup field', self.lookup_field)
         response = super(CourseViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
-            #print("bye george(detail)!\n",response.data)
+            print("bye george(detail)!\n",response.data)
             course_instance = self.get_object()
             #print("iii",course_instance)
             # okay so at this point none of this is working soe
@@ -251,11 +251,16 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             # should check if requested and if so get that request obj! is this efficient ??
             if course_instance.requested == True:
                 # course detail needs form history
-
+                print("we here")
                 #NOTE there must be an associated course and if there isnt... we r in trouble!
-                request_instance = course_instance.get_request()
+                if course_instance.multisection_request:
+                    request_instance =''
+                else:
+                    request_instance = course_instance.get_request()
                 ##print("hfaweuifh ",request_instance)
                 this_form = ''#RequestSerializer()
+
+
             else:
                 # course detail needs to get form
                 # URGENT is this creating many copies of the ob?

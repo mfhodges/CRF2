@@ -42,7 +42,9 @@
       {% for course in results %}
       <tr>
 
-        <td><a href='{% url "UI-course-detail" course_code=course.course_code %}'>{{ course|asrepr }} </a></td>
+        <td>
+          <a href='{% url "UI-course-detail" course_code=course.course_code %}'>{{ course|asrepr }} </a>
+        </td>
         <td>{{ course.course_name }}</td>
         <td>{{ course.course_activity }}</td>
 
@@ -55,11 +57,14 @@
 
         <!--<td>{{course.created|date:'m/d/Y'}} {{course.created|time:'h:i' }}</td> -->
         <td style="padding-left:4%;">
-          <!-- REQUEST MODAL -->
 
           {% if course.requested == True %}
               <!-- this button should pull up the submitted request! -->
               <a  href='{% url "UI-request-detail" pk=course.course_code %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</a>
+
+          {% elif course.multisection_request %}
+          <a  href='{% url "UI-request-detail" pk=course.multisection_request %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</a>
+
           {% else %}
             <!--  <input type="hidden" name="requested" value="true">
               <button type="submit" class="button" >Request</button>-->

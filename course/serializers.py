@@ -254,7 +254,7 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
     title_override = serializers.CharField(allow_null=True,required=False , style={'base_template': 'input.html'})
     additional_enrollments = AdditionalEnrollmentSerializer(many=True,default=[], style={'base_template':'list_fieldset.html'})
 
-    #additional_sections = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(),slug_field='course_code')
+    additional_sections = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(),slug_field='course_code')
 
     #sections_requested = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(),slug_field='course_code')
     # IF REQUEST STATUS IS CHANGED TO CANCELED IT SHOULD BE DISASSOCIATED FROM COURSE INSTANCE
@@ -337,7 +337,7 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
 
 
         add_enrolls_data = validated_data.pop('additional_enrollments')
-        #add_sections_data = validated_data.pop('additional_sections')
+        add_sections_data = validated_data.pop('additional_sections')
         # CHECK FOR AUTOADDS AND THEN ADD !
         # check for school and then check for subject
         autoadds = AutoAdd.objects.filter(school=validated_data['course_requested'].course_schools).filter(subject=validated_data["course_requested"].course_subject)
@@ -363,7 +363,11 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
         if add_sections_data:
             print("add_sections_data",add_sections_data)
             for section_data in add_sections_data:
-                print("section_data",section_data)
+                # we need to add point the multisection_request to this request
+                print("section_data",section_data.replace("_",""))
+                section = Course.objects.get(course_code=section_data)
+                section.multisection_request = request_object
+
                 # FINISH
 
         #print("RequestSerializer.create", validated_data)
@@ -399,9 +403,11 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
         if add_sections_data:
             print("add_sections_data",add_sections_data)
             for section_data in add_sections_data:
-                print("section_data",section_data)
-                # FINISH
-
+                # we need to add point the multisection_request to this request
+                print("section_data",section_data.course_code)
+                section = Course.objects.get(course_code=section_data.course_code)
+                section.multisection_request = instance
+                section.save()
 
         #instance.additional_enrollments = validated_data.set('additional_enrollments',instance.additional_enrollments)
         #print("instance.status", instance.status)
