@@ -144,7 +144,7 @@
     <div class="homepage-container">
     <dl>
       	<dt>Courses ({{data.srs_courses_count}})</dt>
-      	<dd>SRS Course assignments  </dd>
+      	<dd>SRS Course Assignments  </dd>
      </dl>
       {% if data.srs_courses %}
        <table class="striped-table">
@@ -191,31 +191,40 @@
 
     <div class="homepage-container">
      <dl>
-     	<dt>Canvas Sites</dt>
-     	<dd>Existing Canvas Sites</dd>
+     	<dt>Canvas Sites ({{data.canvas_sites_count}})</dt>
+     	<dd>Existing Canvas Sites (either an instructor or custom permission)</dd>
     </dl>
-
+      {% if data.canvas_sites %}
       <table class="striped-table">
         <thead>
           <tr>
             <th>Title </th>
-            <th>Title</th>
-            <th>Title</th>
-            <th>Title</th>
+            <th>SIS ID</th>
+            <th>Request</th>
+            <th>Workflow State</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
-          <tr><td>xx</td><td>xx</td><td>xx</td><td>xx</td></tr>
+          {% for site in data.canvas_sites %}
+            <tr>
+              <td>{{site.name}}</td>
+              <td>{{site.sis_course_id}}</td>
+              <td>
+                {% if site.request_instance %}
+                <a href="{% url 'UI-request-detail' site.request_instance %}">request</a>
+                {% else %}
+                None
+                {% endif %}
+              </td>
+              <td>{{site.workflow_state}}</td>
+            </tr>
+          {% endfor %}
         </tbody>
       </table>
       <div class="vertical-center"><a href="/">see more </a></div>
+      {% else %}
+      <center><p> No Canvas Sites for this user... </p></center>
+      {% endif %}
     </div>
 
 

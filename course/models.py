@@ -7,6 +7,7 @@ import django.core.exceptions
 from django.utils.html import mark_safe
 from markdown import markdown
 from django.db.models.signals import pre_delete
+from django.db.models import Q
 # This model is to represent a Course object in the CRF
 # the meta-data that is important with this is information that will help the course be
 # discoverable in the CRF2. all of these objects with be populated from the data
@@ -122,16 +123,18 @@ class CanvasSite(models.Model):
     """
     this contains all the relevant info about the canvas site once it has been created
     """
-    url = models.URLField()
+    #url = models.URLField()
+    canvas_id = models.CharField(max_length=10,blank=False,default=None)
     request_instance = models.ForeignKey(
         'Request',
-        on_delete=models.CASCADE,null=True) # there doesnt have to be one!
+        on_delete=models.CASCADE,null=True,blank=True) # there doesnt have to be one!
     owners = models.ManyToManyField(User,related_name='Canvas_Sites',blank=True) # should be allowed to be null --> "STAFF"
     added_permissions = models.ManyToManyField(User,related_name='Canvas_Site_Permissions',blank=True,default=None)
     name = models.CharField(max_length=50,blank=False,default=None) #CHEM 101 2019C General Chemistry I
-    sis_course_id = models.CharField(max_length=50,blank=False,default=None) # SRS_CHEM-101-003 2019C
-    sis_section_id = models.CharField(max_length=50,blank=False,default=None)#SRS_CHEM-101-003 2019C
-    section_name = models.CharField(max_length=50,blank=False,default=None)#CHEM 101-003 2019C General Chemistry I
+    sis_course_id = models.CharField(max_length=50,blank=True,default=None,null=True) # SRS_CHEM-101-003 2019C
+    workflow_state = models.CharField(max_length=15,blank=False,default=None)
+    #sis_section_id = models.CharField(max_length=50,blank=False,default=None)#SRS_CHEM-101-003 2019C
+    #section_name = models.CharField(max_length=50,blank=False,default=None)#CHEM 101-003 2019C General Chemistry I
 
     # i think this should be a school object ...
     #subaccount = models.CharField(max_length=50,blank=False,default=None)
@@ -148,6 +151,10 @@ class CanvasSite(models.Model):
 
     #
     #def get_additional_enrollements(self):
+
+    def __str__(self):
+        return self.name
+
 
 
 
@@ -195,18 +202,40 @@ class Course(models.Model):
     year = models.CharField(max_length=4,blank=False)
     crosslisted = models.ManyToManyField("self", blank=True, symmetrical=True, default=None)
     #requested =  models.BooleanField(default=False)# False -> not requested
+    #section_request = models.ForeignKey('course.Request',on_delete=models.CASCADE, related_name="additional_sections",default=None,null=True)
+    requested_override = models.BooleanField(default=False) # this field is just for certain cases !
+    multisection_request = models.ForeignKey('course.Request',on_delete=models.CASCADE, related_name="additional_sections",default=None,blank=True,null=True)
+
+
 
     class Meta:
         ordering = ('course_code',)
 
+
+
     @property
     def requested(self):
-        try:
-            exists = self.request
-            print("request obj",exists)
-        except:
-            return False
-        return True
+        if self.requested_override ==True:
+            return True
+        else:
+            # check if the course has a direct request
+            try:
+                exists = self.request
+                print("request obj",exists)
+                return True
+            except:
+                # check if the course has been tied into other requests
+                try:
+                    exists = self.multisection_request
+                    print(" multi section request obj",exists)
+                    if exists: # check that its not none
+                        return True
+                    else: return False
+                except:
+                    return False
+        print("we hit base case that i havent planned for")
+
+
     def save(self, *args, **kwargs):
         """
         some text
@@ -262,10 +291,14 @@ class Course(models.Model):
             return("STAFF")
         return ",\n".join([inst.username for inst in self.instructors.all()])
 
+    @property
     def get_sections(self):
         # when all but the course code is the same ?
-        # filter all courses that have the same
-        return None
+        # filter all courses that have the same <subj>,<code>, <term>
+        print("in get sections", self.course_subject,self.course_number,self.course_term,self.year)
+        courses = Course.objects.filter(Q(course_subject=self.course_subject) & Q(course_number=self.course_number) & Q(course_term=self.course_term) & Q(year=self.year))
+        print("sections",courses)
+        return courses
 
     def __str__(self):
         return "_".join([self.course_primary_subject.abbreviation, self.course_number, self.course_section, self.year+self.course_term])
@@ -339,6 +372,7 @@ class Request(models.Model):
         on_delete=models.CASCADE,
         primary_key=True) # once the course is deleted the request will be deleted too.
 
+    #additional_sections = models.ForeignKey(Course,null=True,default=None,blank=True,related_name='sections')
     copy_from_course =models.CharField(max_length=100, null=True,default=None,blank=True) # previously content source
     # this should be a list of courses they have rights too
     # SuperUsers have access to all courses
@@ -364,14 +398,14 @@ class Request(models.Model):
         #verbose_name = 'Site Request'
         #verbose_name_plural = 'Site Requests'
 
+
     def save(self, *args, **kwargs):
-        """
-        some text
-        """
+        #some text
         print("saving")
-        #print("..",self.status,args,kwargs)
+        print("..",self.status,args,kwargs)
         #print("(Model.py) Request self.pk",self.pk)
         super(Request, self).save(*args,**kwargs)
+
 
     def delete(self, *args, **kwargs):
         print("ohhh")

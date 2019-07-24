@@ -124,7 +124,10 @@ class Command(BaseCommand):
                                     found = find_or_create_user(instructor['penn_id'])
                                     print("we are waiting!!!!")
                                     print(found)
-                                    instructors +=[User.objects.get(username=found['penn_key'])]
+                                    if found:
+                                        instructors +=[found]
+                                    else:
+                                        print("we need to log here")
                                 except:
                                     print("sad")
                             print("list of instructors",instructors)

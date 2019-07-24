@@ -65,10 +65,25 @@
     <p style="font-size:0.9rem;"> Sections of a course can share a single Canvas site. If you are teaching a large introductory course
       or several sections of a course, you can have the sections broken out into a single site. please select all sections you would like included.
     </p>
-    {% if course.get_sections %} <!-- if there are sections -->
-    <b><p> ADD CONTENT HERE </p></b>
+    {% if course.sections %} <!-- if there are sections -->
+    <div class="contain-table vertical-center">
+      <table style="max-width:500px;">
+        <thead>
+          <tr>
+            <th>Course Code</th>
+            <th>Activity</th>
+            <th>Request Status</th>
+          </tr>
+      </thead>
+      <tbody>
+        {% for section_code,section_activity,section_requested in course.sections %}
+          <tr>
+          <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}} </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-    <small> </small>
     {% else %}
     <center><i><p>There are no other sections associated with this course. </p></i></center>
       {% endif %}

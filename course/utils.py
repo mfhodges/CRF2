@@ -50,14 +50,16 @@ def check_by_penn_id(PENN_ID):
     except:# User.DoesNotExist or Profile.DoesNotExist:
         # check if in penn db
         print("checking datawarehouse for: ", PENN_ID)
-        user = datawarehouse_lookup(PPENN_ID=PENN_ID)
-        print("we looked up user",user)
-        if user:
+        lookupuser = datawarehouse_lookup(PPENN_ID=PENN_ID)
+        print("we looked up user",lookupuser)
+        if lookupuser:
             print("we are now creating the user", user)
             #clean up first and last names
-            first_name = user['firstname'].title()
-            last_name = user['lastname'].title()
-            Profile.objects.create(user=User.objects.create_user(username=user['penn_key'],first_name=first_name,last_name=last_name,email=user['email']),penn_id=PENN_ID)
+            first_name = lookupuser['firstname'].title()
+            last_name = lookupuser['lastname'].title()
+            user =User.objects.create_user(username=user['penn_key'],first_name=first_name,last_name=last_name,email=lookupuser['email'])
+            Profile.objects.create(user=user,penn_id=PENN_ID)
+
         else:
             print("WE HAVE A BIG PROBLEM")
             user=None
@@ -71,12 +73,11 @@ def datawarehouse_lookup(PPENN_KEY=None,PPENN_ID=None):
     config = ConfigParser()
     config.read('config/config.ini') # this works
     info = dict(config.items('datawarehouse'))
-    print(info)
-    print("not ok",PPENN_KEY,input_id,(PPENN_ID !=None))
+
+    #print("not ok",PPENN_KEY,input_id,(PPENN_ID !=None))
 
     connection = cx_Oracle.connect(info['user'], info['password'], info['service'])
     cursor = connection.cursor()
-    print("coafasfjewj f")
     if PPENN_KEY:
         print("looking by penn key")
         cursor.execute("""
@@ -109,7 +110,7 @@ def datawarehouse_lookup(PPENN_KEY=None,PPENN_ID=None):
 
 
 def find_or_create_user(pennid):
-    print("checking in find_or_create_user()")
+
     user = check_by_penn_id(pennid)
     if user: # the user exists
         print("user",user)
@@ -159,3 +160,17 @@ def get_template_sites(user):
         print("course",course)
         other += [{k :course.attributes.get(k, "NONE") for k in items}]
     print(other)
+
+
+
+
+
+def updateCanvasSites(pennkey):
+    canvas_courses = canvas_api.get_user_courses(pennkey)
+    for canvas_course in canvas_courses:
+        here = CanvasSite.objects.update_or_create(
+        canvas_id=str(canvas_course.id),
+        workflow_state=canvas_course.workflow_state,
+        sis_course_id=canvas_course.sis_course_id,
+        name=canvas_course.name)
+        here[0].owners.add(User.objects.get(username=pennkey))

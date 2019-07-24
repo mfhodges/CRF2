@@ -5,6 +5,8 @@ import datetime
 from django.contrib import messages
 from canvas import api
 import collections
+from django.db.models import Q
+
 # Serializer Classes provide a way of serializing and deserializing
 # the model instances into representations such as json. We can do this
 # by declaring serializers that work very similar to Django forms
@@ -33,6 +35,7 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
     crosslisted = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(), slug_field='course_code', required=False)
     #request_info = serializers.HyperlinkedRelatedField(many=False, lookup_field='course_requested',view_name='courses-detail',read_only=True)
     requested = serializers.SerializerMethodField(initial=False)
+    sections = serializers.SerializerMethodField()#serializers.Field(source='get_sections',read_only=True)
 
 
     # Eventually the queryset should also filter by Group = Instructors
@@ -47,9 +50,10 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
     class Meta:
         model = Course
         fields = '__all__' # or a list of field from model like ('','')
-        #read_only_fields = ('requested',)
+        #read_only_fields = ('sections',)
 
     def get_requested(self, obj):
+        # if the object has a request or if it is added as an additional_section in a request
         try:
             exists = obj.request
             print("request obj",exists)
@@ -57,6 +61,18 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
             return False
         return True
 
+
+    def get_sections(self,obj):
+        # when all but the course code is the same ?
+        # filter all courses that have the same <subj>,<code>, <term>
+        print("obj",obj)
+        courses = Course.objects.filter(Q(course_subject=obj.course_subject) & Q(course_number=obj.course_number) & Q(course_term=obj.course_term) & Q(year=obj.year)).exclude(course_code=obj.course_code)
+        print("sections",courses)
+        result = []
+        for course in courses:
+            result += [(course.course_code,course.course_activity.abbr,course.requested)]
+        print("sections",result)
+        return result
 
 
     def create(self, validated_data):
@@ -229,13 +245,18 @@ class AdditionalEnrollmentSerializer(serializers.ModelSerializer):
 class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerializer
     #this adds a field that is not defined in the model
     #url = serializers.HyperlinkedIdentityField(view_name='UI-requests', looku
-    owner = serializers.ReadOnlyField(source='owner.username')
+    owner = serializers.ReadOnlyField(source='owner.username',required=False)
     course_info = CourseSerializer(source='course_requested', read_only=True)
     masquerade = serializers.ReadOnlyField()
-
+    #additional_sections = CourseSerializer()
+    #sections = serializers.SerializerMethodField()
     course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='course_code' , style={'base_template': 'input.html'})
     title_override = serializers.CharField(allow_null=True,required=False , style={'base_template': 'input.html'})
     additional_enrollments = AdditionalEnrollmentSerializer(many=True,default=[], style={'base_template':'list_fieldset.html'})
+
+    #additional_sections = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(),slug_field='course_code')
+
+    #sections_requested = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(),slug_field='course_code')
     # IF REQUEST STATUS IS CHANGED TO CANCELED IT SHOULD BE DISASSOCIATED FROM COURSE INSTANCE
     # IN ORDER TO PRESERVE THE ONE TO ONE COURSE -> REQUEST RELATIONSHIP
     # IF REQUEST IS MADE THE COURSE INSTANCE SHOULD CHANGE COURSE.REQUESTED to TRUE
@@ -244,6 +265,7 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
         fields = '__all__' # or a list of field from model like ('','')
         #exclude = ('masquerade',)
         #depth=2
+
 
 
     def to_internal_value(self, data):
@@ -315,13 +337,13 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
 
 
         add_enrolls_data = validated_data.pop('additional_enrollments')
+        #add_sections_data = validated_data.pop('additional_sections')
         # CHECK FOR AUTOADDS AND THEN ADD !
         # check for school and then check for subject
         autoadds = AutoAdd.objects.filter(school=validated_data['course_requested'].course_schools).filter(subject=validated_data["course_requested"].course_subject)
 
         request_object = Request.objects.create(**validated_data)
         #validated_data['course_requested'].requested = False
-
         if add_enrolls_data:
             print("add_enrolls_data",add_enrolls_data)
             for enroll_data in add_enrolls_data:
@@ -329,7 +351,6 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
                 print("enroll_data",enroll_data)
                 AdditionalEnrollment.objects.create(course_request=request_object,**enroll_data)
                 #request_object.additional_enrollments.add(enroll_data)
-
         if autoadds:
             for autoadd in autoadds:
                 print(autoadd)
@@ -337,6 +358,14 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
 
                 enroll_data=collections.OrderedDict([('user',autoadd.user),('role',autoadd.role)])
                 AdditionalEnrollment.objects.create(course_request=request_object,**enroll_data)
+
+
+        if add_sections_data:
+            print("add_sections_data",add_sections_data)
+            for section_data in add_sections_data:
+                print("section_data",section_data)
+                # FINISH
+
         #print("RequestSerializer.create", validated_data)
         return request_object
 
@@ -365,6 +394,14 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
                 print("instance",instance)
                 AdditionalEnrollment.objects.update_or_create(course_request=instance,**enroll_data)
                 #request_object.additional_enrollments.add(enroll_data)
+
+        add_sections_data = validated_data.get('additional_sections')
+        if add_sections_data:
+            print("add_sections_data",add_sections_data)
+            for section_data in add_sections_data:
+                print("section_data",section_data)
+                # FINISH
+
 
         #instance.additional_enrollments = validated_data.set('additional_enrollments',instance.additional_enrollments)
         #print("instance.status", instance.status)

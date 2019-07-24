@@ -153,7 +153,7 @@ class CourseFilter(filters.FilterSet):
         # fields using custom autocomplete = ['instructor', 'subject']
 
         fields = ['term','activity','school','instructor', 'subject']#,'activity', school
-        
+
 
 class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     """
@@ -362,39 +362,36 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
 
         additional_enrollments_partial = html.parse_html_list(request.data, prefix ='additional_enrollments')
+        additional_sections_partial = html.parse_html_list(request.data, prefix ='additional_sections')
+
         print("request.data, data to create!",request.data, additional_enrollments_partial)
         d = request.data.dict()
         # check if we are updating
-        if additional_enrollments_partial:
-            ok= additional_enrollments_partial[0].dict()
-            print("ok in create",ok)
-            # removing spaces from keys
-            # storing them in sam dictionary
-            ok = {x.replace('[', '').replace(']',''): v
-                for x, v in ok.items()}
-            final_add_enroll = []
-            #for k in additional_enrollments_partial:
-            for add in additional_enrollments_partial:
-                add = add.dict()
-                new_add = {x.replace('[', '').replace(']',''): v
-                    for x, v in add.items()}
-                print("newadd",new_add)
-                if '' in new_add.values():
-                    #print("")
-                    pass
-                else:
-                    final_add_enroll +=[new_add]
-            print("(create)final_add_enroll",final_add_enroll)
-            #print(additional_enrollments_partial.dict())
-            d['additional_enrollments']=final_add_enroll#[{'user':'molly','role':'DES'}]})
-
+        if additional_enrollments_partial or additional_sections_partial:
+            if additional_enrollments_partial:
+                final_add_enroll = clean_custom_input(additional_enrollments_partial)
+                #print(additional_enrollments_partial.dict())
+                d['additional_enrollments']=final_add_enroll#[{'user':'molly','role':'DES'}]})
+            else:
+                d['additional_enrollments']=[]
+            if additional_sections_partial:
+                final_add_sects = clean_custom_input(additional_sections_partial)
+                print("final_add_sects",final_add_sects)
+                d['additional_sections']=[d['course_code'] for d in final_add_sects]
+            else:
+                d['additional_sections']=[]
             serializer = self.get_serializer(data=d)
             print("(create) serializer.initial_data",serializer.initial_data)
             #request.data['additional_enrollments'] = additional_enrollments_partial
+
+
+
         else:
-            data = dict( [(x,y) for x,y in d.items() if not x.startswith('additional_enrollments')] )
+            data = dict( [(x,y) for x,y in d.items() if not x.startswith('additional_enrollments') or x.startswith('additional_sections')] )
             print("data",data)
             data['additional_enrollments'] = []
+            data['additional_sections'] = []
+            print('data',data)
             serializer = self.get_serializer(data=data)
 
 
@@ -429,7 +426,8 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
 
     def perform_create(self, serializer):
-        #print("Request perform_create")
+        print("Request perform_create")
+
         serializer.save(owner=self.request.user)
         #serializer.save(masquerade="test")# NOTE fix this!
 
@@ -450,6 +448,8 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 response.data = {'results': response.data,'paginator':self.paginator, 'filter': RequestFilter, 'autocompleteUser':UserForm()}
             #print("request.accepted_renderer.format",request.accepted_renderer.format)
             return response
+
+
 
 
 
@@ -614,48 +614,46 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
 
     def update(self, request, *args, **kwargs):
-        #print("in update")
+        print("in update")
 
         partial = kwargs.pop('partial', False)#see if partial
+        print("partial",partial)
         instance = self.get_object() # get request to update
         additional_enrollments_partial = html.parse_html_list(request.data, prefix ='additional_enrollments')
-        print("request.data, data to update!",request.data, additional_enrollments_partial)
+        additional_sections_partial = html.parse_html_list(request.data, prefix ='additional_sections')
+
+        print("request.data, data to create!",request.data, additional_enrollments_partial)
         d = request.data.dict()
         # check if we are updating
-        if additional_enrollments_partial:
-            ok= additional_enrollments_partial[0].dict()
-            print("ok",ok)
-            # removing spaces from keys
-            # storing them in sam dictionary
-            ok = {x.replace('[', '').replace(']',''): v
-                for x, v in ok.items()}
-            final_add_enroll = []
-            #for k in additional_enrollments_partial:
-            for add in additional_enrollments_partial:
-                add = add.dict()
-                new_add = {x.replace('[', '').replace(']',''): v
-                    for x, v in add.items()}
-                print("newadd",new_add)
-                if '' in new_add.values():
-                    pass
-                else:
-                    final_add_enroll +=[new_add]
-            print("final_add_enroll",final_add_enroll)
-            #print(additional_enrollments_partial.dict())
-            d['additional_enrollments']=final_add_enroll#[{'user':'molly','role':'DES'}]})
-
-            serializer = self.get_serializer(instance, data=d, partial=partial)
-            print("serializer.initial_data",serializer.initial_data)
+        if additional_enrollments_partial or additional_sections_partial:
+            if additional_enrollments_partial:
+                final_add_enroll = clean_custom_input(additional_enrollments_partial)
+                #print(additional_enrollments_partial.dict())
+                d['additional_enrollments']=final_add_enroll#[{'user':'molly','role':'DES'}]})
+            else:
+                d['additional_enrollments']=[]
+            if additional_sections_partial:
+                final_add_sects = clean_custom_input(additional_sections_partial)
+                print("final_add_sects",final_add_sects)
+                d['additional_sections']=[d['course_code'] for d in final_add_sects]
+            else:
+                d['additional_sections']=[]
+            #d['owner']=self.request.user
+            serializer = self.get_serializer(instance,data=d,partial=True)
+            print("(create) serializer.initial_data",serializer.initial_data)
             #request.data['additional_enrollments'] = additional_enrollments_partial
         else:
-            data = dict( [(x,y) for x,y in d.items() if not x.startswith('additional_enrollments')] )
+            data = dict( [(x,y) for x,y in d.items() if not x.startswith('additional_enrollments') or x.startswith('additional_sections')] )
             data['additional_enrollments'] = []
+            data['additional_sections'] =[]
             serializer = self.get_serializer(instance, data=data, partial=partial)
         print("about to check if serializer is valid")
         serializer.is_valid()#raise_exception=True)
         if not serializer.is_valid():
             messages.add_message(request, messages.ERROR, "An error occurred: Please add the Content Copy information to the additional instructions field and a Courseware Support team memeber will assist you.")
             raise serializers.ValidationError(serializer.errors)
+        else:
+            serializer.save(owner=self.request.user)
 
         self.perform_update(serializer)
         #print(":^) !")
@@ -678,6 +676,27 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 #return redirect('UI-request-detail', pk=request.data['course_requested'])
 
         return Response(serializer.data)
+
+
+def clean_custom_input(partial):
+    ok= partial[0].dict()
+    # removing spaces from keys & storing them in sam dictionary
+    ok = {x.replace('[', '').replace(']',''): v
+        for x, v in ok.items()}
+    final_add = []
+    for add in partial:
+        add = add.dict()
+        new_add = {x.replace('[', '').replace(']',''): v
+            for x, v in add.items()}
+        print("newadd",new_add)
+        if '' in new_add.values():
+            #print("")
+            pass
+        else:
+            final_add +=[new_add]
+    print("(create)final_add",final_add)
+    return final_add
+
 
 
 class UserViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
@@ -941,6 +960,10 @@ class HomePage(APIView):#,
         site_requests_count = site_requests.count()
         site_requests= site_requests[:15]
 
+
+        canvas_sites = CanvasSite.objects.filter(Q(owners__in=[user]))
+        canvas_sites_count = canvas_sites.count()
+        canvas_sites = canvas_sites[:15]
         ##print(site_requests, site_requests[0].course_requested.course_name)
         # for courses do instructors.courses since there is a manytomany relationship
         return Response({'data':
@@ -949,6 +972,8 @@ class HomePage(APIView):#,
             'site_requests_count':site_requests_count,
             'srs_courses': courses,
             'srs_courses_count': courses_count,
+            'canvas_sites':canvas_sites,
+            'canvas_sites_count':canvas_sites_count,
             'username':request.user}})
 
     # get the user id and then do three queries to create these tables

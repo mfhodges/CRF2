@@ -1,4 +1,5 @@
 config/
+course/migrations/
 datawarehouse/
 db.sqlite3
 config.inii

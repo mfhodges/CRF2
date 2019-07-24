@@ -15,6 +15,7 @@ class AdditionalEnrollmentInline(admin.StackedInline):
     autocomplete_fields = ['user']
 
 
+
 class CourseAdmin(admin.ModelAdmin):
     list_display =['course_code','course_name','get_instructors','get_subjects','get_schools','course_term','course_activity','requested']
 
@@ -22,8 +23,27 @@ class CourseAdmin(admin.ModelAdmin):
         ('course_activity','course_term','course_schools')
     )
     search_fields = ('instructors__username','course_code','course_name')
-    readonly_fields = ['created','updated','owner'] # maybe add requested to here.
+    readonly_fields = ['created','updated','owner','course_code'] # maybe add requested to here.
     autocomplete_fields = ['crosslisted','instructors']
+
+    fieldsets = (
+        (None, {
+            'fields': ('course_code','course_name',
+            ('course_subject','course_number','course_section','year','course_term'),
+            'instructors', 'course_schools', 'course_activity')
+        }),
+        ('Crosslist info', {
+            'fields': ('crosslisted','course_primary_subject'),
+        }),
+        ('Request Info', {
+            'fields': ('requested_override', 'multisection_request'),
+        }),
+        ('Metadata', {
+            'fields': ('created','updated','owner'),
+        }),
+    )
+
+
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == "course":
@@ -46,9 +66,24 @@ class RequestAdmin(admin.ModelAdmin):
         ('status',)
     )
     search_fields = ('owner__username','masquerade','course_requested__course_code')
-    readonly_fields = ['created','updated','masquerade']
+    readonly_fields = ['created','updated','masquerade','additional_sections']
     inlines = [AdditionalEnrollmentInline]
     autocomplete_fields = ['owner','course_requested']
+
+    fieldsets = (
+        (None, {
+            'fields': ('course_requested','copy_from_course','title_override','additional_sections',
+            'additional_instructions','reserves','status','canvas_instance')
+        }),
+        ('Metadata', {
+            'fields': ('created','updated','owner','masquerade'),
+        }),
+    )
+
+    def additional_sections(self, instance):
+        return instance.additional_sections.course_code
+
+
     #def formfield_for_manytomany(self, db_field, request, **kwargs):
     #    if db_field.name == "request":
     #        kwargs["queryset"] = Course.objects.filter(course_schools__abbreviation=request.user)
@@ -93,6 +128,7 @@ admin.site.register(Subject)
 admin.site.register(AutoAdd)
 admin.site.register(UpdateLog)
 admin.site.register(PageContent)
+admin.site.register(CanvasSite)
 
 
 # https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Admin_site

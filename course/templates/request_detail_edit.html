@@ -47,7 +47,8 @@
       {% csrf_token %}
       <input name="view_type" class="form-control" type="hidden" value="UI-request-detail">
       <input name='course_requested' value='{{request_instance.course_requested}}' type='hidden'>
-      {% include "bits/request_form.html" with course=request_instance.course_requested %}
+
+      {% include "bits/request_form.html" with course=request_instance.course_info %}
       <input type="submit" value="Update Request" />
   </form>
 </fieldset>

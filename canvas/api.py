@@ -32,29 +32,17 @@ def get_user_by_sis(login_id):
     canvas = Canvas(API_URL, API_KEY)
     #canvas.get_user(123)
     login_id_user = canvas.get_user(login_id, 'sis_login_id')
-
     print(login_id_user, login_id_user.attributes)
     print(login_id_user.get_courses()[0].attributes)
     return login_id_user
 
-#def get_user_courses():
+def get_user_courses(login_id):
+    user = get_user_by_sis(login_id)
+    return user.get_courses(enrollment_type='teacher')
 
 
 
-def get_course_users(course_id):
-    #GET /api/v1/courses/:course_id/users
-    # enrollment_type[] Allowed values: teacher, student, student_view, ta, observer, designer
-    # returns teachers, ta, and designers of a course
-    data = {
-        'enrollment_type[]':['teacher','ta']
-    }
-    url = domain + '/api/v1/courses/%s/search_users' % (str(course_id))
-    response = requests.get(url,headers=headers,data=data)
-    print(response.status_code, url)
-    if response.status_code != 200:
-        return {"error" : response.status_code} # maybe return something better/more easily identifiable ?
-    r_json = response.json()
-    return [x['login_id'] for x in r_json]
+
 
 
 def search_course(terms):
