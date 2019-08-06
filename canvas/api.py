@@ -24,6 +24,9 @@ API_URL = domain
 API_KEY = key
 
 
+
+#--------------- RETREIVEING FROM CANVAS ------------------
+
 def get_user_by_sis(login_id):
 
     #https://canvas.instructure.com/doc/api/users.html
@@ -50,7 +53,7 @@ def search_course(terms):
     return None
 
 
-
+#--------------- PUTTING IN  CANVAS ------------------
 
 """
 #######################################

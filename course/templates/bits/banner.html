@@ -12,7 +12,7 @@
       <!--<strong>strong text!</strong>-->
 
       {% get_markdown "Welcome-Banner" %}
-      {% if request.user.is_staff %}
+      {% if staff %}
 
         {% get_markdown_id 'Welcome-Banner' as page_id %}
         {% if page_id %}

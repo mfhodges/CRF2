@@ -6,20 +6,37 @@ from django.contrib import messages
 from canvas import api
 import collections
 from django.db.models import Q
-
+from course.utils import *
 # Serializer Classes provide a way of serializing and deserializing
 # the model instances into representations such as json. We can do this
 # by declaring serializers that work very similar to Django forms
 #
 
 
+class DynamicFieldsModelSerializer(serializers.ModelSerializer):
+    """
+    A ModelSerializer that takes an additional `fields` argument that
+    controls which fields should be displayed.
+    """
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        fields = kwargs.pop('fields', None)
+
+        # Instantiate the superclass normally
+        super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
+
+        if fields is not None:
+            # Drop any fields that are not specified in the `fields` argument.
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
 
 
 
 
-
-
-class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSerializer
+class CourseSerializer(DynamicFieldsModelSerializer): #removed HyperlinkedModelSerializer
     """
 
     """
@@ -34,10 +51,10 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
     course_code = serializers.CharField()
     crosslisted = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(), slug_field='course_code', required=False)
     #request_info = serializers.HyperlinkedRelatedField(many=False, lookup_field='course_requested',view_name='courses-detail',read_only=True)
-    requested = serializers.SerializerMethodField(initial=False)
-    sections = serializers.SerializerMethodField()#serializers.Field(source='get_sections',read_only=True)
-
-
+    requested= serializers.BooleanField(default=False)
+    #requested = serializers.SerializerMethodField(initial=False)
+    sections = serializers.SerializerMethodField()#
+    #sections = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(), slug_field='sections')
     # Eventually the queryset should also filter by Group = Instructors
     instructors = serializers.SlugRelatedField(many=True,queryset=User.objects.all(), slug_field='username')
     course_schools = serializers.SlugRelatedField(many=False,queryset=School.objects.all(), slug_field='abbreviation')
@@ -50,28 +67,30 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
     class Meta:
         model = Course
         fields = '__all__' # or a list of field from model like ('','')
-        #read_only_fields = ('sections',)
+        read_only_fields = ('sections',)
 
+    """
     def get_requested(self, obj):
         # if the object has a request or if it is added as an additional_section in a request
+
         try:
             exists = obj.request
             print("request obj",exists)
         except:
             return False
         return True
-
+    """
 
     def get_sections(self,obj):
         # when all but the course code is the same ?
         # filter all courses that have the same <subj>,<code>, <term>
-        print("obj",obj)
-        courses = Course.objects.filter(Q(course_subject=obj.course_subject) & Q(course_number=obj.course_number) & Q(course_term=obj.course_term) & Q(year=obj.year)).exclude(course_code=obj.course_code)
-        print("sections",courses)
+        print("in get sections")
+        courses = obj.sections.all()
         result = []
         for course in courses:
+            #print(dir(course),course.request)
             result += [(course.course_code,course.course_activity.abbr,course.requested)]
-        print("sections",result)
+        #print("sections",result)
         return result
 
 
@@ -167,27 +186,6 @@ class CourseSerializer(serializers.ModelSerializer): #removed HyperlinkedModelSe
 
 
 
-"""
-CROSS LISTING UPDATE ISSUE
-Currently bc of the ManyToMany self relationship of cross listing if we have course A and update it
-so it is cross listed with B, C and D the resulting courses crosslistings would be:
-
-    A       B       C          D
-   ---     ---     ---        ---
-    B       A       A          A
-    C
-    D
-
-But we want
-    A       B       C          D
-   ---     ---     ---        ---
-    B       A       A          A
-    C       C       B          B
-    D       D       D          C
-
-
-
-"""
 class UserSerializer(serializers.ModelSerializer):
     """
 
@@ -242,7 +240,18 @@ class AdditionalEnrollmentSerializer(serializers.ModelSerializer):
         #fields = '__all__'
         exclude = ('id','course_request')
 
-class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerializer
+
+class CanvasSiteSerializer(serializers.ModelSerializer):
+    #user = serializers.SlugRelatedField(queryset=User.objects.all(), slug_field='username',style={'base_template': 'input.html'})
+    #role = serializers.SlugRelatedField(many=False, )
+    #models.CharField(max_length=4, choices=ENROLLMENT_TYPE,default='TA')
+    #course_request = models.ForeignKey(Request,on_delete=models.CASCADE, default=None)
+
+    class Meta:
+        model = CanvasSite
+        fields = '__all__'
+
+class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializer
     #this adds a field that is not defined in the model
     #url = serializers.HyperlinkedIdentityField(view_name='UI-requests', looku
     owner = serializers.ReadOnlyField(source='owner.username',required=False)
@@ -282,6 +291,15 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
             CourseCopy Course has user or masquerade listed as an instructor
         """
         print("data in validate",data)
+        print(data.keys())
+
+        if 'additional_enrollments' in data.keys():
+            #check if additional_enrollments is not none
+            if data['additional_enrollments'] != []:
+                for enrollment in data['additional_enrollments']:
+                    user = validate_pennkey(enrollment['user'])
+                    if user == None:
+                        raise serializers.ValidationError({"error":"an error occurred please check that the pennkey's you entered are correct and add the course information to the additional instructions field."})
 
         # Lets check if we want to update content source and if so, lets check if its valid
         if 'copy_from_course' in data.keys():
@@ -293,9 +311,7 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
             instructors = api.get_course_users(data['copy_from_course'])
             user = self.context['request'].user
             masquerade =self.context['request'].session['on_behalf_of']
-            print(instructors)
-            print(user)
-            print(masquerade)
+            print({"instructors":instructors, "user":user, "masquerade":masquerade})
             if user in instructors:
                 #validate!
                 #print("you taught the course")
@@ -312,12 +328,6 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
             #if not in the instructors raise an error
             # error message should be like "an error occurred please add the course information to the additional instructions field"
 
-
-        ##print(data)
-        ##print(self.instance)
-        ##print('data[owner]',data['owner'])
-        ##print('data[masquerade]', data['masquerade'])
-        ##print("data['course_info']", data['course_info'])
         #if data['owner'] in data['course_info']['instructors']:
         #    raise serializers.ValidationError("you do not have permissions to request this course")
         #print("data was fine")
@@ -364,9 +374,10 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
             print("add_sections_data",add_sections_data)
             for section_data in add_sections_data:
                 # we need to add point the multisection_request to this request
-                print("section_data",section_data.replace("_",""))
-                section = Course.objects.get(course_code=section_data)
+                print("section_data",section_data)
+                section = Course.objects.get(course_code=section_data.course_code)
                 section.multisection_request = request_object
+                section.save()
 
                 # FINISH
 
@@ -400,7 +411,24 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
                 #request_object.additional_enrollments.add(enroll_data)
 
         add_sections_data = validated_data.get('additional_sections')
-        if add_sections_data:
+        c_data = instance.additional_sections.all()
+        if add_sections_data or instance.additional_sections.all():
+            print('instance',instance)
+            instance.additional_sections.clear()
+            print("instance.course_info",instance.course_requested)
+            c = CourseSerializer(instance.course_requested)
+            print(c.data)
+            # now that the relationship has been removed - the objects should be re-serialized
+            #print(temp)
+            for course in c_data:
+
+                print("coure.requested",coure.requested)
+                course.multisection_request = None
+                course.save()
+                print("")
+
+            #instance.additional_sections.set()
+            print("2instance.additional_sections",instance.additional_sections.all())
             print("add_sections_data",add_sections_data)
             for section_data in add_sections_data:
                 # we need to add point the multisection_request to this request
@@ -408,12 +436,16 @@ class RequestSerializer(serializers.ModelSerializer): #HyperlinkedModelSerialize
                 section = Course.objects.get(course_code=section_data.course_code)
                 section.multisection_request = instance
                 section.save()
+                print("section.requested",section.requested)
+            print() #
 
         #instance.additional_enrollments = validated_data.set('additional_enrollments',instance.additional_enrollments)
         #print("instance.status", instance.status)
         #print("instance.title_override", instance.title_override)
         #instance.course = validated_data.get('course_requested', instance.course_requested)
         instance.save()
+        print("c_Data",c_data)
+        print("3instance.additional_sections",instance.additional_sections.all())
         #print('additional_instructions',validated_data.get('additional_instructions',instance.additional_instructions))
         #print('reserves',validated_data.get('reserves',instance.reserves))
         return instance

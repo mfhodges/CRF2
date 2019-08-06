@@ -201,7 +201,8 @@ class Course(models.Model):
     course_name = models.CharField(max_length=250) # Human Readable Name i.e. Late Antique Arts
     year = models.CharField(max_length=4,blank=False)
     crosslisted = models.ManyToManyField("self", blank=True, symmetrical=True, default=None)
-    #requested =  models.BooleanField(default=False)# False -> not requested
+    sections = models.ManyToManyField("self",blank=True,symmetrical=True,default=None)
+    requested =  models.BooleanField(default=False)# False -> not requested
     #section_request = models.ForeignKey('course.Request',on_delete=models.CASCADE, related_name="additional_sections",default=None,null=True)
     requested_override = models.BooleanField(default=False) # this field is just for certain cases !
     multisection_request = models.ForeignKey('course.Request',on_delete=models.CASCADE, related_name="additional_sections",default=None,blank=True,null=True)
@@ -213,8 +214,8 @@ class Course(models.Model):
 
 
 
-    @property
-    def requested(self):
+
+    def find_requested(self):
         if self.requested_override ==True:
             return True
         else:
@@ -244,6 +245,8 @@ class Course(models.Model):
         self.course_code = self.course_subject.abbreviation + self.course_number + self.course_section + self.year + self.course_term
         #print("saving Course instance")
         #print("self.pk",self.pk)
+        self.sections.set(self.get_sections())
+        self.requested = self.find_requested()
         super().save(*args,**kwargs) #super(Course, self)
         # here is where you do the updating of cross listed instances
 
@@ -291,14 +294,15 @@ class Course(models.Model):
             return("STAFF")
         return ",\n".join([inst.username for inst in self.instructors.all()])
 
-    @property
+
     def get_sections(self):
         # when all but the course code is the same ?
         # filter all courses that have the same <subj>,<code>, <term>
         print("in get sections", self.course_subject,self.course_number,self.course_term,self.year)
-        courses = Course.objects.filter(Q(course_subject=self.course_subject) & Q(course_number=self.course_number) & Q(course_term=self.course_term) & Q(year=self.year))
+        courses = Course.objects.filter(Q(course_subject=self.course_subject) & Q(course_number=self.course_number) & Q(course_term=self.course_term) & Q(year=self.year)).exclude(course_code=self.course_code)
         print("sections",courses)
         return courses
+
 
     def __str__(self):
         return "_".join([self.course_primary_subject.abbreviation, self.course_number, self.course_section, self.year+self.course_term])
@@ -459,7 +463,7 @@ class AutoAdd(models.Model):
 
 
     class Meta:
-        ordering = ('user',)
+        ordering = ('user__username',)
 
 
 

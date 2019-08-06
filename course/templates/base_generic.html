@@ -60,6 +60,7 @@
     <script  type="text/javascript" href="{% static 'js/request_form.js' %}"> </script>
 
 </head>
+
   <body>
 
 
@@ -94,6 +95,7 @@
       {% endif %}
 
       {% endblock %}
+
 
       <!-- logout / login info -->
       <div class="flex-small text-right" id="sign_in">
@@ -172,7 +174,7 @@
               <li><a class="{% block schools %}{% endblock %}" href="/schools">Schools</a></li>
               <li><a class="{% block subjects %}{% endblock %}" href="/subjects">Subjects</a></li>
 
-              {% if user.is_staff  and user.is_authenticated %}
+              {% if staff %} {# and user.is_authenticated #}
 
               <li class="title">Admin</li>
               <li><a href="/admin">Admin Portal</a></li>
@@ -184,6 +186,7 @@
               {% endif %}
               <li class="title">temporary</li>
               <li><a href="/emails">Emails</a></li>
+
 
 
 
@@ -212,10 +215,12 @@
     </div>
     -->
           <div id="references" class="medium-container vertical-center" style="padding-bottom:10px;">
-              <b><a href="/documentation" aria-label="temporary documentation">Docs</a></b>
-              <a href='https://www.library.upenn.edu/vanpelt'> <img src="{% static 'images/2016-shield-only-RGB-1k.png' %}" style="height:50px;width:50px;margin:0px 10px;"></a>
-              <!--&nbsp;//&nbsp; -->
-              <b><a href="/contact">Contact</a></b>
+              <center style="margin-bottom:20px;">
+                <b ><a href="/documentation" aria-label="temporary documentation">Docs</a></b> <span>|</span> <b><a href="/contact">Contact</a></b>
+              </center>
+              <a href='https://www.library.upenn.edu/vanpelt'> <img src="{% static 'images/penn_libraries_logo.png' %}" style="height:50px;margin:0px 10px;"></a>
+              <!--&nbsp;//&nbsp; 'images/2016-shield-only-RGB-1k.png' -->
+
           </div>
 
       </aside>

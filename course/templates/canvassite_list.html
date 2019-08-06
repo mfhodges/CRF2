@@ -1,0 +1,92 @@
+{% extends "base_generic.html" %}
+{% load rest_framework %}
+{% load template_extra %}
+
+
+<!-- see for date format info https://docs.djangoproject.com/en/2.1/ref/settings/#date-input-formats -->
+
+{% block content %}
+
+
+
+  <!-- add filtering bit -->
+
+<h1>Canvas Sites</h1>
+<p> Here are all of your Canvas Sites that are recognized by the CRF. If you are not listed as an instructor the course may not be listed.</p>
+<p> Explain what to use this for</p>
+<!--   <i class="fas fa-info-circle"></i> -->
+
+
+<!-- FILTERING-->
+{#{% include "bits/filter_content.html" %} #}
+
+<!--  <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
+    <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+    <p> {{request}}</p>
+  </button> -->
+
+
+
+<!-- TABLE -->
+
+  <table class="striped-table">
+    <thead>
+      <tr>
+        <th>Section</th>
+        <th>Title</th>
+        <th>Activity</th>
+        <th>Instructor</th>
+        <!--<th>Created Date</th> -->
+        <th style="white-space: nowrap;">Request Status</th>
+      </tr>
+    </thead>
+    <tbody>
+    {#  {% for course in results %} #}
+      <tr>
+
+        <td>
+        </td>
+        <td></td>
+        <td></td>
+
+        <td id="instructors">
+
+        </td>
+        <!-- some how the time is being stored as a string ... -->
+  <!--      <td>{{ course.created }} a {{ course.created|time:'h:i' }} b {{ course.created|date:"SHORT_DATE_FORMAT" }} </td> -->
+
+        <!--<td>{{course.created|date:'m/d/Y'}} {{course.created|time:'h:i' }}</td> -->
+        <td style="padding-left:4%;">
+
+
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+
+
+<!-- END TABLE -->
+
+
+
+
+
+<!-- MODAL FILTERING-->
+  {% include "bits/filter_modal.html" %}
+
+
+
+
+
+  <!-- PAGINATION -->
+  {% include "bits/paginator.html" %}
+
+{% endblock %}
+
+
+{% block template_page_js %}
+
+
+
+{% endblock %}

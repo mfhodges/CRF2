@@ -6,150 +6,75 @@
 {% block content %}
 
 
+
 <h1> Course Lookup</h1>
 
-<p> Does something seem wrong about a course? Lets see if they exist in the Registrar Data, the CRF and if they exist in Canvas!
-    <mark>All of this is still in progress! </mark> </p>
-{% include "bits/course_lookup.html" %}
+<p> Does something seem wrong about a course? Lets see if they exist in the Registrar Data ( IN PROGRESS :, the CRF and if they exist in Canvas!)
+    <mark>All of this is still in progress! </mark>
+</p>
 
 
 
+<dl>
+	<dt>Course Id</dt>
+	<dd>All capitalized Subject code ( e.g. ACCT, MATH) plus the course number (optional) and section (optional) (e.g. ACCT101001 , ACCT101, ACCT)</dd>
+	<dt>Year/Term</dt>
+	<dd>Full numerical year appended by uppercase term letter </dd>
+  <dt>Instructor ** optional ** </dt>
+  <dd>valid pennkey (all lowecase)</dd>
+</dl>
+
+<fieldset> <legend>Course Lookup</legend>
+<form>
+  <div class="flex-row">
+    <div class="flex-large">
+    <label for="course_id">Course Id</label>
+    <input type="text" id="course_id" name="course_id" placeholder="Course Id">
+    </div>
+    <div class="flex-large">
+    <label for="term">Year/Term</label>
+    <input type="text" id="term" name="term" placeholder="e.g. 2019C">
+    </div>
+    <div class="flex-large">
+    <label for="instructor">Instructor</label>
+    <input type="text" id="instructor" name="instructor" placeholder="pennkey">
+  </div>
+</div>
+    <input type="submit" value="Submit">
+</form>
+</fieldset>
+
+
+<p> results ({{size}})</p>
+<div style="height:400px;">
+<pre style="overflow:auto;height:inherit;">
+   {{data | pprint}}
+</pre>
+
+
+
+<!--
 <fieldset id="showresults">
   <legend>CRF Data</legend>
   <p> search to load basic data from the CRF</p>
 </fieldset>
 
-
-
 <fieldset id="showresultscanvas">
   <legend>Canvas Data</legend>
   <p> search to load basic user data from canvas</p>
 </fieldset>
-
+-->
 {% endblock %}
 
-
-
-
+{#
 {% block template_page_js %}
+<script src="dist/json-formatter.js"></script>
 <script>
-document.getElementById("myForm").addEventListener("submit", submitForm);
-function submitForm() {
-  $('.apireq').click();
-  return False;
-}
+const myJSON = '{{data|escapejs}}';
 
+const formatter = new JSONFormatter(myJSON);
 
-$(document).ready(function(){
-    $("#pennkey").autocomplete({
-        source: "/ajax_calls/search/",
-        minLength: 2,
-        open: function(){
-            setTimeout(function () {
-                $('.ui-autocomplete').css('z-index', 99);
-            }, 0);
-        }
-      });
-});
-
-
-// ajax call
-
-  $('.apireq').click( function() {
-        var pennkey = $("#pennkey").val();
-        console.log(pennkey);
-        $.ajax({
-                 url : `/api/users/${pennkey}`,
-                 dataType: "json",
-                 success : function (data) {
-                        console.log(data);
-                        var test = data;
-                        $('#showresults').empty();
-                        for ( const element in data) {
-                          console.log(element, data[element]);
-                          if (Array.isArray(data[element])){
-                            $('#showresults').append(`<p>${element}:</p>`);
-                            var items = data[element];
-                            var ul = document.createElement('ul');
-                            document.getElementById('showresults').appendChild(ul);
-                            items.forEach(function (item) {
-                                var li = document.createElement('li');
-                                ul.appendChild(li);
-                                li.innerHTML += item;
-                            });
-                          }
-                          else {
-                            $('#showresults').append(`<p>${element}: ${data[element]}</p>`);
-                          }
-                        };
-                        console.log(data.username)
-                      },
-                error: function (xhr, status) {
-                   $('#showresults').append("<p>Sorry, there was a problem! Check that this user exists in the CRF</p>");
-              }
-                     });
-
-
-       $.ajax({
-                url : `/canvasuser/${pennkey}`,
-                dataType: "json",
-
-                success : function (data) {
-                       console.log(data);
-                       var test = data;
-                       $('#showresultscanvas').empty();
-                       for ( const element in data) {
-                         console.log(element, data[element]);
-                         if (Array.isArray(data[element])){
-                           $('#showresultscanvas').append(`<p>${element}:</p>`);
-                           var items = data[element];
-                           var ol = document.createElement('ol');
-                           document.getElementById('showresultscanvas').appendChild(ol);
-                           items.forEach(function (item) {
-                               var li = document.createElement('li');
-                               ol.appendChild(li);
-                               li.innerHTML += JSON.stringify(item);
-                           });
-                         }
-                         else {
-                           $('#showresultscanvas').append(`<p>${element}: ${data[element]}</p>`);
-                         }
-                       };
-                       console.log("ok");
-                       console.log(data.username)
-                     },
-               error: function (xhr, status) {
-                 $('#showresultscanvas').append("<p>Sorry, there was a problem! Check that this user exists in Canvas.</p>");
-                                        console.log("ok2");
-
-             }
-           });
-
-// both of these work !
-// https://canvas.upenn.edu/api/v1/users/sis_login_id:mfhodges
-// https://canvas.upenn.edu/api/v1/users/sis_user_id:89450759
-/*
-beforeSend : function( xhr ) {
-    xhr.setRequestHeader( "Authorization", "BEARER " + access_token );
-}
-*/
-
-
-
-                 });
-
-/*
-FROM THE DOCS
-
-The partial name or full ID of the users to match and return in the results list. Must be at least 3 characters.
-
-Note that the API will prefer matching on canonical user ID if the ID has a numeric form.
-It will only search against other fields if non-numeric in form, or if the numeric value doesn't yield any matches.
- Queries by administrative users will search on SIS ID, login ID, name,
-  or email address; non-administrative queries will only be compared against name.
-
-*/
-
-
+document.body.appendChild(formatter.render());
 </script>
 {% endblock %}
+#}

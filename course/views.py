@@ -8,20 +8,16 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, B
 from rest_framework.reverse import reverse
 from django.utils.datastructures import MultiValueDict
 from rest_framework.utils import html
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from django.contrib.auth.decorators import login_required
 from django.http.request import QueryDict
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from django.views.generic import TemplateView
-from rest_framework import status
-
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import path
-from course import views
-
+from course import views, email_processor, utils
 from django.core.mail import EmailMessage
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render, get_object_or_404
@@ -31,12 +27,9 @@ from django.db.models import Q
 from rest_framework.utils.urls import replace_query_param, remove_query_param
 from django_filters import rest_framework as filters
 from django.contrib.auth.mixins import LoginRequiredMixin
-
 from course.forms import ContactForm, EmailChangeForm
 from django.template.loader import get_template
 import datetime
-from course import email_processor
-from course import utils
 import json
 from rest_framework.exceptions import PermissionDenied
 from django_celery_beat.models import PeriodicTask, IntervalSchedule, CrontabSchedule
@@ -45,6 +38,12 @@ from django_celery_beat.models import PeriodicTask, IntervalSchedule, CrontabSch
 #    template_name = "index.html"
 from canvas import api as canvas_api
 from course.forms import UserForm, SubjectForm
+import time
+from OpenData import library
+from configparser import ConfigParser
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 """
 For more 'Detailed descriptions, with full methods and attributes, for each
@@ -195,11 +194,12 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
     # below allows for it to be passed to the template !!!!
     # I AM NOT SURE IF THIS IS OKAY WITH AUTHENTICATION
+
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-        print(args,kwargs)
-        print("DATA",request.query_params)
-        print("course query_set", queryset)
+        #print(args,kwargs)
+        #print("DATA",request.query_params)
+        #print("course query_set", queryset)
         page = self.paginate_queryset(queryset)
 
         ##print(",,",self.filter_backends[0].get_filterset(request,self.get_queryset(),self))
@@ -210,7 +210,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             ##print("...1",backend.filterset_base.filters)
 
         if page is not None:
-            serializer = self.get_serializer(page, many=True)
+            serializer = self.get_serializer(page, many=True,fields=['course_code','requested','instructors','course_activity','year','course_term','course_primary_subject','course_number','course_section','course_name'])
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
             #print("template_name",response.template_name)
             if request.accepted_renderer.format == 'html':
@@ -225,7 +225,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 print('filterfield', CourseFilter.Meta.fields)
                 #print('request.query_params', request.query_params.keys())
 
-                response.data = {'results': response.data,'paginator':self.paginator, 'filter':CourseFilter, 'request':request, 'autocompleteUser':UserForm(), 'autocompleteSubject': SubjectForm(),'style':{'template_pack': 'rest_framework/vertical/'}}
+                response.data = {'results': response.data,'paginator':self.paginator, 'filter':CourseFilter, 'request':request,'is_staff':request.user.is_staff, 'autocompleteUser':UserForm(), 'autocompleteSubject': SubjectForm(),'style':{'template_pack': 'rest_framework/vertical/'}}
             ##print("yeah ok1",response.items())
             ##print("o")
             return response
@@ -239,7 +239,10 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         return response
         """
 
+    #@method_decorator(cache_page(60*60*1))
     def retrieve(self, request, *args, **kwargs):
+        print ("Start Execution : ",end="")
+        print (time.ctime())
         #print('CourseViewSet.retrieve lookup field', self.lookup_field)
         response = super(CourseViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
@@ -269,7 +272,11 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 this_form.is_valid()
                 print("this_form",this_form.data)
                 request_instance =''
-            return Response({'course': response.data, 'request_instance':request_instance,'request_form':this_form ,'style':{'template_pack': 'rest_framework/vertical/'}}, template_name='course_detail.html')
+                print ("Stop Execution : ",end="")
+                print (time.ctime())
+            return Response({'course': response.data, 'request_instance':request_instance,'request_form':this_form ,'is_staff':request.user.is_staff,'style':{'template_pack': 'rest_framework/vertical/'}}, template_name='course_detail.html')
+        print ("Stop Execution : ",end="")
+        print (time.ctime())
         return response
 
 
@@ -443,7 +450,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         page = self.paginate_queryset(queryset)
         if page is not None:
 
-            serializer = self.get_serializer(page, many=True)
+            serializer = self.get_serializer(page, many=True,fields=['course_info','owner','masquerade','created','status','course_requested'])
             #print(";",serializer.data)
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
             #print("template_name",response.template_name)
@@ -586,7 +593,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
                 ##print(here.title_override)
                 ##print("RequestSerializer(response.data)",here)
-                print("request_form", here,here.data)
+                #print("request_form", here,here.data)
                 return Response({'request_instance': response.data,'permissions':permissions,'request_form':here,'style':{'template_pack': 'rest_framework/vertical/'}}, template_name='request_detail_edit.html') #data={'course_requested':response.data['course_requested']},partial_update=True
             return Response({'request_instance': response.data, 'permissions':permissions}, template_name='request_detail.html')
         return response
@@ -922,6 +929,36 @@ class NoticeViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
 
+
+
+
+
+class CanvasSiteViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
+    queryset = CanvasSite.objects.all()
+    serializer_class = CanvasSiteSerializer
+    permission_classes_by_action = {'create': [],
+                                        'list': [],
+                                        'retrieve':[],
+                                        'update':[],
+                                        'partial_update':[],
+                                        'delete':[]}
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
+            if request.accepted_renderer.format == 'html':
+                response.template_name = 'canvassite_list.html'
+                response.data = {'results': response.data,'paginator':self.paginator}
+                print("iiiii")
+            return response
+
+
+    def update():
+        return ''
+
 class HomePage(APIView):#,
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'home_content.html'
@@ -1037,6 +1074,7 @@ class AutoAddViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                                     'partial_update':[IsAdminUser],
                                     'delete':[IsAdminUser]}
 
+
     def create(self, request, *args, **kwargs):
         #print(self.request.user)
 
@@ -1150,6 +1188,49 @@ def myproxy(request,username):
     final = data.attributes
     final["courses"] = other
     return django.http.JsonResponse(final)
+
+
+
+# -------------- OpenData Proxy ----------------
+def openDataProxy(request):
+    """
+
+    Access the parameters passed by POST, you need to access this way:
+    request.data.get('role', None)
+    """
+    data = {'data':'none'}
+    print()
+    if request.GET:
+        course_id = request.GET.get('course_id',None)
+        term = request.GET.get('term',None)
+        instructor = request.GET.get('instructor',None)
+        config = ConfigParser()
+        config.read('config/config.ini')
+        domain = config.get('opendata', 'domain')
+        id = config.get('opendata', 'id')
+        key = config.get('opendata', 'key')
+        OD = library.OpenData(domain,id,key)
+        OD.set_uri('course_section_search')
+        OD.add_param('course_id',course_id)
+        if term: OD.add_param('term',term)
+        OD.add_param('number_of_results_per_page',5)
+        if instructor: OD.add_param('instructor',instructor)
+        data['data']= OD.call_api()#only_data=False)
+        if isinstance(data['data'], list):
+            size = len(data['data'])
+        else:
+            size =1
+        print(data)
+
+
+    return render(request, "admin/course_lookup.html",{'data':data,'size':size})
+
+
+
+    #return django.http.JsonResponse(data)
+#https://esb.isc-seo.upenn.edu/8091/open_data/course_section_search?course_id=ACCT101001
+#https://esb.isc-seo.upenn.edu/8091/open_data/course_section_search?course_id=ACCT&instructor=Altamuro&term=2013C
+
 
 #---------------- AUTO COMPLETE -------------------
 def autocompleteModel(request):

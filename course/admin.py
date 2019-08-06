@@ -23,7 +23,7 @@ class CourseAdmin(admin.ModelAdmin):
         ('course_activity','course_term','course_schools')
     )
     search_fields = ('instructors__username','course_code','course_name')
-    readonly_fields = ['created','updated','owner','course_code'] # maybe add requested to here.
+    #readonly_fields = ['created','updated','owner','course_code','course_section','course_term','year','course_number','course_subject'] # maybe add requested to here.
     autocomplete_fields = ['crosslisted','instructors']
 
     fieldsets = (
@@ -50,6 +50,11 @@ class CourseAdmin(admin.ModelAdmin):
             kwargs["queryset"] = Course.objects.filter(course_schools__abbreviation=request.user)
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return ['created','updated','owner','course_code','course_section','course_term','year','course_number','course_subject']
+        else:
+            return ['created','updated','owner','course_code']
 
     def save_model(self, request, obj, form, change):
         #print("checkin save")

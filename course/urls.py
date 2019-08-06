@@ -8,6 +8,7 @@ from rest_framework import renderers
 from django.views.generic.base import TemplateView
 #from rest_framework.schemas import get_schema_view # new
 from course.autocomplete import UserAutocomplete, SubjectAutocomplete
+from django.conf import settings
 schema_view = get_swagger_view(title='Pastebin API')
 
 
@@ -49,6 +50,9 @@ urlpatterns = [
     # --------------- Documentation url/view -------------------
     path('documentation/',TemplateView.as_view(template_name='documentation.html'),name='documentation'),
     path('userlookup/',TemplateView.as_view(template_name='admin/user_lookup.html'),name='user_lookup'),
+    url('courselookup/', views.openDataProxy),
+
+
 
     url(r'^api/', include(router.urls)),
     url(r'^api_doc/', schema_view),
@@ -99,6 +103,11 @@ urlpatterns = [
         {'get':'list','post':'create','delete':'list'},renderer_classes=[renderers.TemplateHTMLRenderer]),
          name='UI-autoadd-list'), # adding 'delete': 'list' is hacky but saves me from writiing a detail page in UI
     #path('users/<?:pennkey>/', UserDetail.asview(),name='user-detail'),
+
+    # --------------- CANVAS SITE view -------------------
+    path('canvas_sites/', views.CanvasSiteViewSet.as_view(
+        {'get':'list','put':'update'},renderer_classes=[renderers.TemplateHTMLRenderer]),
+             name='UI-canvassite-list'),
     # --------------- HOMEPAGE view -------------------
     path('', views.HomePage.as_view(), name='home'),
     # --------------- CONTACT view -------------------
@@ -137,8 +146,16 @@ urlpatterns = [
         SubjectAutocomplete.as_view(),
         name='subject-autocomplete',
     ),
-
-
-
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+
+        # For django versions before 2.0:
+        # url(r'^__debug__/', include(debug_toolbar.urls)),
+
+    ] + urlpatterns
+
 #path('course', views.CourseViewSet.as_view({'get': 'list'})),

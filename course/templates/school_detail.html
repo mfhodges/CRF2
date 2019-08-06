@@ -8,7 +8,7 @@
 
     <p><b>Abbreviation </b>: {{data.abbreviation}}</p>
 
-    {% if request.user.is_staff %}
+    {% if staff %}
     <button class="button" data-toggle="modal" data-target="#SchoolModal">
       {% if data.visible == True %}
         <b>REMOVE ALL</b> <i class="fas fa-minus-square"></i>
@@ -21,7 +21,7 @@
 <p><a href="/schools/"><i class="fas fa-arrow-left"></i>  Go Back to School List </a></p>
 
 <table class="striped-table">
-  <thead >    
+  <thead >
     <tr >
       <th style="width:40%;">Name</th>
       <th style="width:20%;">Abbr.</th>
@@ -39,7 +39,7 @@
       <td >{{subject.abbreviation}}</td>
       <td>
         <!-- <form action="{% url 'subject-detail' pk=1 %}" method="POST"> -->
-        {% if user.is_staff %}
+        {% if staff %}
             {% if subject.visible == True %}
             <!--  -->
             <button class="button" data-toggle="modal" data-target="#subjectModal" data-subject="{{subject.name}}" data-abbr="{{subject.abbreviation}}" data-id="{{ subject.id }}" data-visible='false'>

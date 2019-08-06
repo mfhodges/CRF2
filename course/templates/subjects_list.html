@@ -14,7 +14,7 @@
   <div class="bd-callout bd-callout-info" class="w-100" style="margin-bottom: 5%;">
 
   {% get_markdown "Subject-List" %}
-  {% if request.user.is_staff %}
+  {% if staff %}
     {% get_markdown_id 'Subject-List' as page_id %}
     {% if page_id %}
       <a href="{%  url 'admin:course_pagecontent_change' page_id %}" class="card-link" style="float:right;margin-top:-15px"> (change this message) </a>

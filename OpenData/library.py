@@ -61,7 +61,7 @@ class OpenData(object):
                 return None
 
 
-
+        # this needs to be tested and resolved!!!!
         def call_api(self,only_data=True):
             # if data = True then we are returning the contents otherwise we r returning the service_meta and result_data
             # probably something more should be happening here.
@@ -73,11 +73,13 @@ class OpenData(object):
             #print("url",url)
             print(response.status_code)
             r = response.json()
-            #print(r)
+            print(r)
             service_meta = r['service_meta']
             #print(service_meta)
-            if service_meta['current_page_number'] == service_meta['number_of_pages']:
+            if service_meta['current_page_number'] < self.params['page_number']:
+                print("here :()")
                 result_data = []
+            #elif
             else:
                 #print("1",r['result_data'])
                 if service_meta['results_per_page'] == len(r['result_data']):

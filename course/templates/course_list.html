@@ -18,14 +18,12 @@
 <!-- FILTERING-->
 {% include "bits/filter_content.html" %}
 
-<!--  <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
-    <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
-    <p> {{request}}</p>
-  </button> -->
+
 
 
 
 <!-- TABLE -->
+
 
   <table class="striped-table">
     <thead>
@@ -52,10 +50,8 @@
           {% if course.instructors|length == 0 %} STAFF {% else %}
           {{ course.instructors| join:", "}} {% endif %}
         </td>
-        <!-- some how the time is being stored as a string ... -->
-  <!--      <td>{{ course.created }} a {{ course.created|time:'h:i' }} b {{ course.created|date:"SHORT_DATE_FORMAT" }} </td> -->
 
-        <!--<td>{{course.created|date:'m/d/Y'}} {{course.created|time:'h:i' }}</td> -->
+
         <td style="padding-left:4%;">
 
           {% if course.requested == True %}
@@ -123,28 +119,6 @@
 <!-- MODAL FILTERING-->
   {% include "bits/filter_modal.html" %}
 
-<!--
-<div class="modal fade" id="FilterModal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Add Filter </h5>
-        <div class="close" data-dismiss="modal" aria-label="Close">
-          <i class="fas fa-times"></i>
-        </div>
-      </div>
-      <form id="filterform" action="" method="GET">
-          <div class="modal-body">
-            <p><mark> no validation of fields.</mark></p>
-                {{ filter.form.as_p }}
-          </div>
-          <div class="modal-footer">
-            <button onSubmit="mySubmitFunction()" id="submit-id-" type="submit" value="Submit" style="font-weight: 600;">Filter</button>
-          </div>
-      </form>
-    </div>
-  </div>
-</div>-->
 <!-- END MODAL FILTERING -->
 
 

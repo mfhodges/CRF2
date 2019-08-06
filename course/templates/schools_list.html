@@ -13,7 +13,7 @@
   <div class="bd-callout bd-callout-info" class="w-100" style="margin-bottom: 5%;">
 
   {% get_markdown "School-List" %}
-  {% if request.user.is_staff %}
+  {% if staff %}
     {% get_markdown_id 'School-List' as page_id %}
     {% if page_id %}
       <a href="{%  url 'admin:course_pagecontent_change' page_id %}" class="card-link" style="float:right;margin-top:-15px"> (change this message) </a>
@@ -21,7 +21,7 @@
       <a href="{%  url 'admin:course_pagecontent_add' %}" class="card-link" style="margin-top:-15px"> (add a message here) </a>
     {% endif %}
   {% endif %}
-  
+
   </div>
 
     <table class="striped-table">
@@ -29,7 +29,7 @@
         <tr>
           <th style="width:40%;">Name</th>
           <th style="width:10%;">Abbr.</th>
-          {% if user.is_staff %}
+          {% if staff %}
           <th>Subaccount ID</th>
           {% endif %}
           <th>Visibility</th>
@@ -46,14 +46,14 @@
           <td>{{school.name}}</td>
           {% endif %}
           <td>{{school.abbreviation}}</td>
-          {% if user.is_staff %}
+          {% if staff %}
           <td>{{school.canvas_subaccount|stringformat:"i"}}</td>
           {% endif %}
 
           <td>
 
             <!-- <form action="{% url 'school-detail' pk=1 %}" method="POST"> -->
-            {% if user.is_staff %}
+            {% if staff %}
                 {% if school.visible == True %}
                 <!--  -->
                 <button class="button" data-toggle="modal" data-target="#SchoolModal" data-school="{{school.name}}" data-abbr="{{school.abbreviation}}" data-id="{{ school.id }}" data-visible='false'>

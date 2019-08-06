@@ -41,7 +41,7 @@
       <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Instructor</dt>
       <dd class="col-8 col-md-9">{% if course.instructors|length == 0 %} STAFF {% else %}{{ course.instructors| join:", "}} {% endif %}</dd>
 
-      {% if user.is_staff %}
+      {% if staff %}
       <p class="text-right">
         <a href="{% url 'admin:course_course_change' course.course_code %}" target="_blank"><i class="fas fa-external-link-alt"></i> Edit Course Info in Admin Portal </a>
       </p>

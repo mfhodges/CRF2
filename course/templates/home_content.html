@@ -18,7 +18,7 @@
       <div style="width:100%;" id="notice">
       <p class="message"> <!--<b>{{ data.notice.notice_heading }}</b> <br> -->
           {{ data.notice.get_notice_as_markdown }}
-          {% if request.user.is_staff %}
+          {% if staff %}
         <a href="{%  url 'admin:course_notice_change'	data.notice.pk %}" style="float:right;"> (change this message) </a>
         {% endif %}
       </div>
@@ -114,7 +114,7 @@
        <tbody>
          {% for request_instance in data.site_requests %}
          <tr>
-           <td><a href="{% url 'UI-request-detail' pk=request_instance.course_requested %}"> {{request_instance.course_requested}} </a></td>
+           <td><a href="{% url 'UI-request-detail' pk=request_instance.course_requested.course_code %}"> {{request_instance.course_requested}} </a></td>
            <td>{{request_instance.course_requested.course_name }}</td>
            <td>{{request_instance.owner}}
              {% if request_instance.masquerade %}
@@ -221,7 +221,7 @@
           {% endfor %}
         </tbody>
       </table>
-      <div class="vertical-center"><a href="/">see more </a></div>
+      <div class="vertical-center"><a href="{% url 'UI-canvassite-list' %}">see more </a></div>
       {% else %}
       <center><p> No Canvas Sites for this user... </p></center>
       {% endif %}

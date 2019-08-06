@@ -29,7 +29,7 @@
 
 
       {% comment %}
-      {% if request.user.is_staff %}
+      {% if staff %}
         {% if request_instance.status=='COMPLETED' %}
         {% else %}
 

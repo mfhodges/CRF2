@@ -15,10 +15,11 @@
   <legend><h6 style="margin:0;">Mulit-Section Course Sites </h6></legend>
   <div class="form-group ">
     <p style="font-size:0.9rem;"> Sections of a course can share a single Canvas site. If you are teaching a large introductory course
-      or several sections of a course, you can have the sections broken out into a single site. Please select all sections you would like included.
+      or several sections of a course, you can have the sections broken out into a single site. Please select all sections you would like included. If a course is gray-ed out that means it has been already requested in another course request and therefore cannot be added to this one
     </p>
     {% if course.sections %} <!-- if there are sections -->
         <div class="contain-table vertical-center">
+
           <table style="max-width:500px;">
             <thead>
               <tr>
@@ -30,17 +31,36 @@
           </thead>
           <tbody>
         {% for section_code,section_activity,section_requested in course.sections %}
-          <tr>
 
-          <td>
-            <!-- check if already requested -> cannot be requested -->
-            <input  name="additional_sections[{{ forloop.counter0 }}][course_code]" value="{{section_code}}" class="form-control" type="checkbox"
-            {% if section_requested == True %}disabled{% endif %}
-            >
+          {% if section_code in request_instance.additional_sections %}
+            <tr>
+              <td>
+                <!-- check if already requested -> cannot be requested -->
+                <input  name="additional_sections[{{ forloop.counter0 }}][course_code]" value="{{section_code}}" class="form-control" type="checkbox" checked>
+              </td>
+              <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}} a</td>
+            </tr>
+          {# must be in some other request! #}
+          {% elif section_request %}
+            <tr style="background:#e9ecef;">
+              <td>
+                <!-- check if already requested -> cannot be requested -->
+                <input  name="additional_sections[{{ forloop.counter0 }}][course_code]" value="{{section_code}}" class="form-control" type="checkbox" disabled>
+              </td>
+              <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}} b</td>
+            </tr>
 
-          </td>
-              <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}} </td>
+          {% else %}
+          <tr >
+            <td>
+              <!-- check if already requested -> cannot be requested -->
+              <input  name="additional_sections[{{ forloop.counter0 }}][course_code]" value="{{section_code}}" class="form-control" type="checkbox">
+            </td>
+            <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}} c</td>
           </tr>
+          {% endif %}
+
+
         {% endfor %}
       </tbody>
     </table>
@@ -71,7 +91,7 @@
       {% if request_instance.additional_enrollments %}
         {% for enrollment in request_instance.additional_enrollments %}
 
-          <div id="addEnroll-1" class="row vertical-center" style="">
+          <div id="addEnroll-{{ forloop.counter0 }}" class="row vertical-center" style="">
             <label style="width: 45%;" for="name">
             User(pennkey)
             <input  name="additional_enrollments[{{ forloop.counter0 }}][user]" value="{{enrollment.user}}" class="form-control" type="text">
@@ -87,7 +107,7 @@
             <option value="INST" {% if enrollment.role == "INST" %} selected {% endif %}>Librarian</option>
           </select>
             </label>
-          <a onClick="removeElement('additional_enrollments', 'addEnroll-1');" style="padding-left:5px;"> Delete <i class="fas fa-times"></i></a>
+          <a onClick="removeElement('additional_enrollments', 'addEnroll-{{ forloop.counter0 }}');" style="padding-left:5px;"> Delete <i class="fas fa-times"></i></a>
         </div>
       {% endfor %}
     {% else %}

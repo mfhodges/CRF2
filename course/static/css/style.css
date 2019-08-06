@@ -1214,7 +1214,7 @@ div.alert-dismissible > p {
 		/*display: block !important;*/
 	}
   #references {
-    display: flex !important;
+    display: flow-root;
     height: fit-content;
   }
 
