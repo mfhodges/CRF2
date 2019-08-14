@@ -42,22 +42,22 @@ def validate_pennkey(pennkey):
 
 
 def check_by_penn_id(PENN_ID):
-    print("howdy")
+    print("in check_by_penn_id ",PENN_ID)
     try:
         user = Profile.objects.get(penn_id=PENN_ID).user
-        print("already exists")
+        print("already exists,", user)
         return user
     except:# User.DoesNotExist or Profile.DoesNotExist:
         # check if in penn db
         print("checking datawarehouse for: ", PENN_ID)
         lookupuser = datawarehouse_lookup(PPENN_ID=PENN_ID)
-        print("we looked up user",lookupuser)
+        print("we looked up user", lookupuser)
         if lookupuser:
-            print("we are now creating the user", user)
+            print("we are now creating the user", lookupuser['penn_key'])
             #clean up first and last names
             first_name = lookupuser['firstname'].title()
             last_name = lookupuser['lastname'].title()
-            user =User.objects.create_user(username=user['penn_key'],first_name=first_name,last_name=last_name,email=lookupuser['email'])
+            user =User.objects.create_user(username=lookupuser['penn_key'],first_name=first_name,last_name=last_name,email=lookupuser['email'])
             Profile.objects.create(user=user,penn_id=PENN_ID)
 
         else:
@@ -92,7 +92,7 @@ def datawarehouse_lookup(PPENN_KEY=None,PPENN_ID=None):
 
     #FIRST_NAME, LAST_NAME, EMAIL_ADDRESS, PENN_KEY
     if input_id:
-        print("llooking by penn id")
+        print("looking by penn id")
         cursor.execute("""
             SELECT FIRST_NAME, LAST_NAME, EMAIL_ADDRESS, PENNKEY
             FROM EMPLOYEE_GENERAL
@@ -151,7 +151,6 @@ def get_template_sites(user):
     Function that determines which of a user's known course sites can
     be sourced for a Canvas content migration.
     """
-
     courses = data.get_courses(enrollment_type='teacher')
     items = ["id", "name", "account_id", "sis_course_id", "start_at","workflow_state"]
     for course in courses:
@@ -163,14 +162,23 @@ def get_template_sites(user):
 
 
 
-
-
 def updateCanvasSites(pennkey):
     canvas_courses = canvas_api.get_user_courses(pennkey)
-    for canvas_course in canvas_courses:
-        here = CanvasSite.objects.update_or_create(
-        canvas_id=str(canvas_course.id),
-        workflow_state=canvas_course.workflow_state,
-        sis_course_id=canvas_course.sis_course_id,
-        name=canvas_course.name)
-        here[0].owners.add(User.objects.get(username=pennkey))
+    if canvas_courses !=None:
+        for canvas_course in canvas_courses:
+            try:
+                here = CanvasSite.objects.update_or_create(
+                canvas_id=str(canvas_course.id),
+                workflow_state=canvas_course.workflow_state,
+                sis_course_id=canvas_course.sis_course_id,
+                name=canvas_course.name)
+                here[0].owners.add(User.objects.get(username=pennkey))
+            except:
+                print("couldnt add course",canvas_course.id)
+
+
+def process_canvas():
+    users = User.objects.all()
+    for user in users:
+        print("adding for ", user.username)
+        updateCanvasSites(user.username)

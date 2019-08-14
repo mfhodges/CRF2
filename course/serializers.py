@@ -7,6 +7,7 @@ from canvas import api
 import collections
 from django.db.models import Q
 from course.utils import *
+from copy import deepcopy
 # Serializer Classes provide a way of serializing and deserializing
 # the model instances into representations such as json. We can do this
 # by declaring serializers that work very similar to Django forms
@@ -52,6 +53,7 @@ class CourseSerializer(DynamicFieldsModelSerializer): #removed HyperlinkedModelS
     crosslisted = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(), slug_field='course_code', required=False)
     #request_info = serializers.HyperlinkedRelatedField(many=False, lookup_field='course_requested',view_name='courses-detail',read_only=True)
     requested= serializers.BooleanField(default=False)
+    #multisection_request = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='additional_sections', required=False)
     #requested = serializers.SerializerMethodField(initial=False)
     sections = serializers.SerializerMethodField()#
     #sections = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(), slug_field='sections')
@@ -246,10 +248,19 @@ class CanvasSiteSerializer(serializers.ModelSerializer):
     #role = serializers.SlugRelatedField(many=False, )
     #models.CharField(max_length=4, choices=ENROLLMENT_TYPE,default='TA')
     #course_request = models.ForeignKey(Request,on_delete=models.CASCADE, default=None)
+    owners = serializers.SlugRelatedField(many=True,queryset=User.objects.all(), slug_field='username')
+    added_permissions = serializers.SlugRelatedField(many=True,queryset=User.objects.all(), slug_field='username')
 
     class Meta:
         model = CanvasSite
         fields = '__all__'
+
+
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('username', instance.username)
+        instance.save()
+        return instance
 
 class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializer
     #this adds a field that is not defined in the model
@@ -262,7 +273,8 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
     course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='course_code' , style={'base_template': 'input.html'})
     title_override = serializers.CharField(allow_null=True,required=False , style={'base_template': 'input.html'})
     additional_enrollments = AdditionalEnrollmentSerializer(many=True,default=[], style={'base_template':'list_fieldset.html'})
-
+    created = serializers.DateTimeField(format="%I:%M%p %b,%d %Y")
+    updated = serializers.DateTimeField(format="%I:%M%p %b,%d %Y")
     additional_sections = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(),slug_field='course_code')
 
     #sections_requested = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(),slug_field='course_code')
@@ -302,6 +314,7 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
                         raise serializers.ValidationError({"error":"an error occurred please check that the pennkey's you entered are correct and add the course information to the additional instructions field."})
 
         # Lets check if we want to update content source and if so, lets check if its valid
+        """
         if 'copy_from_course' in data.keys():
             if data['copy_from_course'] == None or data['copy_from_course'] == '':
                 print("no copy from course data")
@@ -327,7 +340,7 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
                 raise serializers.ValidationError({"error":"an error occurred please add the course information to the additional instructions field and a Courseware Support team memeber will assist you."})
             #if not in the instructors raise an error
             # error message should be like "an error occurred please add the course information to the additional instructions field"
-
+        """
         #if data['owner'] in data['course_info']['instructors']:
         #    raise serializers.ValidationError("you do not have permissions to request this course")
         #print("data was fine")
@@ -406,26 +419,28 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
             AdditionalEnrollment.objects.filter(course_request=instance).delete()
             for enroll_data in add_enrolls_data:
                 ##print("subject data", subject_data)
-                print("instance",instance)
+                #print("instance",instance)
                 AdditionalEnrollment.objects.update_or_create(course_request=instance,**enroll_data)
                 #request_object.additional_enrollments.add(enroll_data)
 
         add_sections_data = validated_data.get('additional_sections')
-        c_data = instance.additional_sections.all()
+        c_data = instance.additional_sections.all()#.update()
+        print("c_data",c_data)
+        c_copy = deepcopy(c_data)
         if add_sections_data or instance.additional_sections.all():
-            print('instance',instance)
-            instance.additional_sections.clear()
-            print("instance.course_info",instance.course_requested)
-            c = CourseSerializer(instance.course_requested)
-            print(c.data)
-            # now that the relationship has been removed - the objects should be re-serialized
-            #print(temp)
-            for course in c_data:
+            print('instance.',instance)
 
-                print("coure.requested",coure.requested)
-                course.multisection_request = None
+
+
+            # now that the relationship has been removed - there is still some other params to fix
+            print("c_data2",c_data)
+            for course in c_data:
+                course.multisection_request=None
+                course.requested=False
                 course.save()
-                print("")
+                print("course.requested",course.requested)
+            print('instance..',instance)
+            instance.additional_sections.clear()
 
             #instance.additional_sections.set()
             print("2instance.additional_sections",instance.additional_sections.all())
@@ -437,14 +452,16 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
                 section.multisection_request = instance
                 section.save()
                 print("section.requested",section.requested)
-            print() #
+
 
         #instance.additional_enrollments = validated_data.set('additional_enrollments',instance.additional_enrollments)
         #print("instance.status", instance.status)
         #print("instance.title_override", instance.title_override)
         #instance.course = validated_data.get('course_requested', instance.course_requested)
         instance.save()
+
         print("c_Data",c_data)
+        print("c_copy",c_copy)
         print("3instance.additional_sections",instance.additional_sections.all())
         #print('additional_instructions',validated_data.get('additional_instructions',instance.additional_instructions))
         #print('reserves',validated_data.get('reserves',instance.reserves))

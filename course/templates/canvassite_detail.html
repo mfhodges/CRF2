@@ -1,0 +1,47 @@
+{% extends "base_generic.html" %}
+{% load rest_framework %}
+{% load template_extra %}
+
+
+<!-- see for date format info https://docs.djangoproject.com/en/2.1/ref/settings/#date-input-formats -->
+
+{% block content %}
+
+<fieldset>
+<legend>Canvas Site Info: {{data.name}} </legend>
+<dl class="row" style="line-height:1.1;">
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Canvas ID</dt>
+      <dd class="col-8 col-md-9"> {{data.canvas_id}}</dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Workflow State</dt>
+      <dd class="col-8 col-md-9">{{data.workflow_state}}</dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">SIS course ID</dt>
+      <dd class="col-8 col-md-9">{{data.sis_course_id}}</dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Request</dt>
+      <dd class="col-8 col-md-9">{{data.request_instance}}</dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Owners</dt>
+      <dd class="col-8 col-md-9">{{data.owners|join:", "}}</dd>
+
+      <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Additional Permissions</dt>
+      <dd class="col-8 col-md-9">{{data.added_permissions|join:", "}}</dd>
+</dl>
+</fieldset>
+
+
+
+
+
+
+
+
+{% endblock %}
+
+
+{% block template_page_js %}
+
+
+
+{% endblock %}

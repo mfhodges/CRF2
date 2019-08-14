@@ -124,12 +124,12 @@ class CanvasSite(models.Model):
     this contains all the relevant info about the canvas site once it has been created
     """
     #url = models.URLField()
-    canvas_id = models.CharField(max_length=10,blank=False,default=None)
+    canvas_id = models.CharField(max_length=10,blank=False,default=None,primary_key=True)
     request_instance = models.ForeignKey(
         'Request',
-        on_delete=models.CASCADE,null=True,blank=True) # there doesnt have to be one!
-    owners = models.ManyToManyField(User,related_name='Canvas_Sites',blank=True) # should be allowed to be null --> "STAFF"
-    added_permissions = models.ManyToManyField(User,related_name='Canvas_Site_Permissions',blank=True,default=None)
+        on_delete=models.SET_NULL,null=True,default=None,blank=True) # there doesnt have to be one!
+    owners = models.ManyToManyField(User,related_name='canvas_sites',blank=True) # should be allowed to be null --> "STAFF"
+    added_permissions = models.ManyToManyField(User,related_name='added_permissions',blank=True,default=None)
     name = models.CharField(max_length=50,blank=False,default=None) #CHEM 101 2019C General Chemistry I
     sis_course_id = models.CharField(max_length=50,blank=True,default=None,null=True) # SRS_CHEM-101-003 2019C
     workflow_state = models.CharField(max_length=15,blank=False,default=None)
@@ -152,9 +152,19 @@ class CanvasSite(models.Model):
     #
     #def get_additional_enrollements(self):
 
+    def get_owners(self):
+        return "\n".join([p.username for p in self.owners.all()])
+    def get_added_permissions(self):
+        return "\n".join([p.username for p in self.added_permissions.all()])
+
     def __str__(self):
         return self.name
 
+
+    class Meta:
+        ordering = ('canvas_id',)
+        verbose_name = 'Canvas Site'
+        verbose_name_plural = 'Canvas Sites'
 
 
 
@@ -185,7 +195,7 @@ class Course(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     #id = models.CharField(max_length=250) # this is a number
-    # models.ForeignKey('auth.User', related_name='requests', on_delete=models.CASCADE)
+
     owner = models.ForeignKey('auth.User', related_name='created', on_delete=models.CASCADE) #this is who edited it
     updated = models.DateTimeField(auto_now=True)
     instructors = models.ManyToManyField(User,related_name='courses',blank=True) # should be allowed to be null --> "STAFF"
@@ -245,10 +255,16 @@ class Course(models.Model):
         self.course_code = self.course_subject.abbreviation + self.course_number + self.course_section + self.year + self.course_term
         #print("saving Course instance")
         #print("self.pk",self.pk)
-        self.sections.set(self.get_sections())
-        self.requested = self.find_requested()
-        super().save(*args,**kwargs) #super(Course, self)
-        # here is where you do the updating of cross listed instances
+        if self._state.adding == True: # creating
+            self.requested = self.find_requested()
+            super().save(*args,**kwargs) #super(Course, self)
+            self.sections.set(self.find_sections())
+            super().save(*args,**kwargs)
+            # here is where you do the updating of cross listed instances
+        else: #updating
+            self.sections.set(self.find_sections())
+            self.requested = self.find_requested()
+            super().save(*args,**kwargs) #super(Course, self)
 
     #def set_crosslistings(self):
 
@@ -258,6 +274,7 @@ class Course(models.Model):
         try:
             #print("course",self)
             requestinfo = self.request
+            print("found request info",requestinfo)
             return requestinfo
         except Request.DoesNotExist:
             print("Request.DoesNotExist!")
@@ -295,13 +312,18 @@ class Course(models.Model):
         return ",\n".join([inst.username for inst in self.instructors.all()])
 
 
-    def get_sections(self):
+    def find_sections(self):
         # when all but the course code is the same ?
         # filter all courses that have the same <subj>,<code>, <term>
         print("in get sections", self.course_subject,self.course_number,self.course_term,self.year)
         courses = Course.objects.filter(Q(course_subject=self.course_subject) & Q(course_number=self.course_number) & Q(course_term=self.course_term) & Q(year=self.year)).exclude(course_code=self.course_code)
         print("sections",courses)
         return courses
+
+    def srs_format(self):
+        term = self.year + self.course_term
+        #print(course['course_section'])
+        return("%s-%s-%s %s" % (self.course_primary_subject, self.course_number,self.course_section, term ))
 
 
     def __str__(self):

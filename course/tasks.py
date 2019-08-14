@@ -22,5 +22,33 @@ def task_process_approved():
 # there should be a task that checks all requests with status == Submitted if they have already been created in Canvas
 # if they have been then lock the request ! and create the associated CanvasSite Instance
 
-
 #def task_check_courses()
+
+
+
+@task()
+def task_check_course_in_canvas():
+    """
+    check to see if any of the courses that do not have a request object associated with them exist yet in Canvas
+    if they do then write to the file and set the course to request_override
+    """
+    courses = Course.objects.filter(requested=False).filter(requested_override=False)
+
+    for course in courses:
+        # if the section doesnt exist then it will return None
+        found = find_in_canvas("SRS_"+ course.srs_format())
+        if found:
+            pass # this course doesnt exist in canvas yet
+        else:
+            # set the course to requested
+            course.requested_override= True
+            # check that the canvas site exists
+            try:
+                CanvasSite.objects.get(canvas_id=found.course_id)
+
+@task()
+def process_canvas():
+    users = User.objects.all()
+    for user in users:
+        print("adding for ", user.username)
+        updateCanvasSites(user.username)

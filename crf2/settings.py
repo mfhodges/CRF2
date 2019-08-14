@@ -18,6 +18,9 @@ import django_heroku
 config = ConfigParser()
 config.read('config/config.ini')
 
+
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 print("basedir",BASE_DIR)
@@ -29,7 +32,7 @@ print("basedir",BASE_DIR)
 SECRET_KEY = config.get('django','secret_key',raw=True)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 #
 ALLOWED_HOSTS = ['*','localhost']#'128.91.177.58'
@@ -109,6 +112,7 @@ MIDDLEWARE = [
 #    'shibboleth.middleware.ShibbolethRemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.auth.middleware.RemoteUserMiddleware',
 ]
 
 ROOT_URLCONF = 'crf2.urls'
@@ -200,7 +204,7 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         #'rest_framework.renderers.TemplateHTMLRenderer', # this line messes up the browsable api
-        'rest_framework.renderers.BrowsableAPIRenderer',
+        #'rest_framework.renderers.BrowsableAPIRenderer',
     ),
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.SearchFilter','django_filters.rest_framework.DjangoFilterBackend',),
     #'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -213,6 +217,10 @@ REST_FRAMEWORK = {
     #)
 
 }
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.RemoteUserBackend',
+]
 
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',
@@ -253,3 +261,11 @@ CELERY_BEAT_SCHEDULER: 'django_celery_beat.schedulers:DatabaseScheduler'
 
 
 django_heroku.settings(locals())
+
+
+# importing logger settings
+try:
+    from .logger_settings import *
+except Exception as e:
+    # in case of any error, pass silently.
+    pass

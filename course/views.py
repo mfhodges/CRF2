@@ -37,7 +37,7 @@ from django_celery_beat.models import PeriodicTask, IntervalSchedule, CrontabSch
 #class CourseView(TemplateView):
 #    template_name = "index.html"
 from canvas import api as canvas_api
-from course.forms import UserForm, SubjectForm
+from course.forms import UserForm, SubjectForm, CanvasSiteForm
 import time
 from OpenData import library
 from configparser import ConfigParser
@@ -210,7 +210,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             ##print("...1",backend.filterset_base.filters)
 
         if page is not None:
-            serializer = self.get_serializer(page, many=True,fields=['course_code','requested','instructors','course_activity','year','course_term','course_primary_subject','course_number','course_section','course_name'])
+            serializer = self.get_serializer(page, many=True,fields=['course_code','requested','instructors','course_activity','year','course_term','course_primary_subject','course_number','course_section','course_name','multisection_request'])
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
             #print("template_name",response.template_name)
             if request.accepted_renderer.format == 'html':
@@ -274,7 +274,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 request_instance =''
                 print ("Stop Execution : ",end="")
                 print (time.ctime())
-            return Response({'course': response.data, 'request_instance':request_instance,'request_form':this_form ,'is_staff':request.user.is_staff,'style':{'template_pack': 'rest_framework/vertical/'}}, template_name='course_detail.html')
+            return Response({'course': response.data, 'request_instance':request_instance,'request_form':this_form ,'autocompleteCanvasSite': CanvasSiteForm(),'is_staff':request.user.is_staff,'style':{'template_pack': 'rest_framework/vertical/'}}, template_name='course_detail.html')
         print ("Stop Execution : ",end="")
         print (time.ctime())
         return response
@@ -594,7 +594,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 ##print(here.title_override)
                 ##print("RequestSerializer(response.data)",here)
                 #print("request_form", here,here.data)
-                return Response({'request_instance': response.data,'permissions':permissions,'request_form':here,'style':{'template_pack': 'rest_framework/vertical/'}}, template_name='request_detail_edit.html') #data={'course_requested':response.data['course_requested']},partial_update=True
+                return Response({'request_instance': response.data,'permissions':permissions,'request_form':here,'autocompleteCanvasSite': CanvasSiteForm(),'style':{'template_pack': 'rest_framework/vertical/'}}, template_name='request_detail_edit.html') #data={'course_requested':response.data['course_requested']},partial_update=True
             return Response({'request_instance': response.data, 'permissions':permissions}, template_name='request_detail.html')
         return response
 
@@ -936,12 +936,26 @@ class NoticeViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 class CanvasSiteViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     queryset = CanvasSite.objects.all()
     serializer_class = CanvasSiteSerializer
+    lookup_field ='canvas_id'
     permission_classes_by_action = {'create': [],
                                         'list': [],
                                         'retrieve':[],
                                         'update':[],
                                         'partial_update':[],
                                         'delete':[]}
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the purchases
+        for the currently authenticated user.
+        """
+        #masquerade = self.request.session['on_behalf_of']
+        #if masquerade:
+        #    user = User.objects.get(username=masquerade)
+        #else:
+        #    user = self.request.user
+        user = self.request.user
+        return CanvasSite.objects.filter(Q(owners=user)|Q(added_permissions=user))
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -954,6 +968,14 @@ class CanvasSiteViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 response.data = {'results': response.data,'paginator':self.paginator}
                 print("iiiii")
             return response
+
+    def retrieve(self, request, *args, **kwargs):
+        #print("request.data",request.data)
+        response = super(CanvasSiteViewSet, self).retrieve(request, *args, **kwargs)
+        if request.accepted_renderer.format == 'html':
+            ##print("bye george(UI-request-detail)!\n",response.data)
+            return Response({'data': response.data}, template_name='canvassite_detail.html')
+        return response
 
 
     def update():
@@ -1003,7 +1025,7 @@ class HomePage(APIView):#,
         site_requests= site_requests[:15]
 
 
-        canvas_sites = CanvasSite.objects.filter(Q(owners__in=[user]))
+        canvas_sites = CanvasSite.objects.filter(Q(owners=user))
         canvas_sites_count = canvas_sites.count()
         canvas_sites = canvas_sites[:15]
         ##print(site_requests, site_requests[0].course_requested.course_name)
@@ -1199,6 +1221,7 @@ def openDataProxy(request):
     request.data.get('role', None)
     """
     data = {'data':'none'}
+    size=0
     print()
     if request.GET:
         course_id = request.GET.get('course_id',None)
@@ -1255,6 +1278,22 @@ def autocompleteSubjectModel(request):
         results = []
         for r in search_qs:
             results.append(r.abbreviation)
+        data = json.dumps(results)
+    else:
+        data = 'fail'
+    mimetype = 'application/json'
+    return HttpResponse(data, mimetype)
+
+def autocompleteCanvasSiteModel(request):
+    print("noop")
+    if request.is_ajax():
+
+        q = request.GET.get('term', '').capitalize()
+        print("q",q)
+        search_qs = CanvasSite.objects.filter(Q(owners=q)|Q(added_permissions=q))
+        results = []
+        for r in search_qs:
+            results.append(r.name)
         data = json.dumps(results)
     else:
         data = 'fail'

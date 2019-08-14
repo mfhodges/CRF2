@@ -51,7 +51,7 @@ class OpenData(object):
 
             result_data, service_meta = self.call_api(only_data=False)
 
-            print("test",service_meta['current_page_number'],service_meta['number_of_pages'])
+            print('testing',service_meta['current_page_number'],service_meta['number_of_pages'],current)
             if service_meta['current_page_number'] == current+1:
 
                 # that means we were able to get the next page because it does exist !
@@ -73,19 +73,35 @@ class OpenData(object):
             #print("url",url)
             print(response.status_code)
             r = response.json()
-            print(r)
+            #print("r",r)
             service_meta = r['service_meta']
-            #print(service_meta)
+            if 'error_text' in service_meta:
+                if service_meta['error_text'] !='':
+                    print('error1')
+                    #return(service_meta['error_text'])
+                    return 'ERROR'
+                #return service_meta['error_text'].split('\n')[0]
+            #if we are asking for a page out of bounds
             if service_meta['current_page_number'] < self.params['page_number']:
-                print("here :()")
-                result_data = []
+                print('error2')
+                #return(service_meta['error_text'])
+                return 'ERROR'
+                #return service_meta['error_text'].split('/\n')[0]
             #elif
             else:
                 #print("1",r['result_data'])
                 if service_meta['results_per_page'] == len(r['result_data']):
                     result_data = r['result_data']
                 else:
-                    result_data = r['result_data'][0]
+                    #potentially wrong
+                    if isinstance(r['result_data'],list):
+                        print(r['result_data'])
+                        if r['result_data'] == []:
+                            result_data= []
+                        else:
+                            result_data = r['result_data'][0]
+                    else:
+                        result_data = r['result_data']
             if only_data== True:
                 #print("2")
                 return result_data
@@ -135,6 +151,14 @@ class OpenData(object):
             response = requests.get(url,headers=self.headers).json()
             #print(response)
             return response['result_data'][0]['activity_map']
+
+
+        def get_available_subj(self):
+            url = self.base_url + 'course_section_search_parameters/'
+            response = requests.get(url,headers=self.headers).json()
+            #print(response)
+            return response['result_data'][0]['departments_map']
+
 
 
 

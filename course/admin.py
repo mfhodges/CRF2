@@ -109,7 +109,10 @@ class RequestAdmin(admin.ModelAdmin):
         obj.save()
 
 
-
+class CanvasSiteAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['owners','added_permissions','request_instance']
+    list_display= ['name','get_owners','get_added_permissions']
+    search_fields = ('owners__username','added_permissions__username','name')
 
 class ProfileInline(admin.StackedInline):
     model = Profile
@@ -117,6 +120,9 @@ class ProfileInline(admin.StackedInline):
 
 class UserAdmin(BaseUserAdmin):
     inlines = [ProfileInline]
+
+class AutoAddAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['user']
 
 # unregister old user admin
 admin.site.unregister(User)
@@ -130,10 +136,10 @@ admin.site.register(Notice)
 admin.site.register(School)
 admin.site.register(Activity)
 admin.site.register(Subject)
-admin.site.register(AutoAdd)
+admin.site.register(AutoAdd,AutoAddAdmin)
 admin.site.register(UpdateLog)
 admin.site.register(PageContent)
-admin.site.register(CanvasSite)
+admin.site.register(CanvasSite,CanvasSiteAdmin)
 
 
 # https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Admin_site

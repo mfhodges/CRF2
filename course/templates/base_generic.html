@@ -100,7 +100,8 @@
       <!-- logout / login info -->
       <div class="flex-small text-right" id="sign_in">
         {% if user.is_authenticated %}
-        <a href="/accounts/logout" style="padding-right:15px;">
+
+        <a href="https://idp.pennkey.upenn.edu/logout" style="padding-right:15px;"><!-- "/accounts/logout" -->
           {{ user.username }},  logout
           <i class="fas fa-sign-out-alt"></i></a>
         {% else %}
@@ -248,6 +249,11 @@
 <!--<script src="https://taniarascia.github.io/primitive/js/example.js"></script>-->
     <script  type="text/javascript" href="{% static 'js/request_form.js' %}"> </script>
 <script>
+////// Enable Tool-tips //////
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
 ///// Toggle Nav /////
 $('.toggle-nav').click(function (e) {
   if ($('.toggle-nav').hasClass('active')) {

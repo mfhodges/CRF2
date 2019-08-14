@@ -1,10 +1,12 @@
 
 
 from dal import autocomplete
-from course.models import Subject
+from course.models import Subject, CanvasSite
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 
+#https://django-autocomplete-light.readthedocs.io/en/master/
 
 class UserAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
@@ -34,7 +36,7 @@ class UserAutocomplete(autocomplete.Select2QuerySetView):
 class SubjectAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         # Don't forget to filter out results depending on the visitor !
-        print("self.request.user.is_authenticated",self.request.user.is_authenticated)
+        #print("self.request.user.is_authenticated",self.request.user.is_authenticated)
         if not self.request.user.is_authenticated:
             return Subject.objects.none()
 
@@ -54,6 +56,31 @@ class SubjectAutocomplete(autocomplete.Select2QuerySetView):
         """
         #self.name, self.abbreviation
         return str(result.abbreviation)# + "("+str(result.name)+")"
+
+class CanvasSiteAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        # Don't forget to filter out results depending on the visitor !
+        print("self.request.user.is_authenticated",self.request.user.is_authenticated)
+        if not self.request.user.is_authenticated:
+            return CanvasSite.objects.none()
+
+        qs = CanvasSite.objects.filter(Q(owners=self.request.user)|Q(added_permissions=self.request.user))
+        if self.q:
+            # lets limit it to only the first 8 matches
+            qs = qs.filter(name__istartswith=self.q)[:8]
+        else:
+            # dont show all of them if there is nothing there
+            return qs#CanvasSite.objects.none()
+        return qs
+
+    def get_result_value(self, result):
+        """
+        this below is the default behavior,
+        change it to whatever you want returned
+        """
+
+        #self.name, self.abbreviation
+        return str(result.canvas_id)# + "("+str(result.name)+")"
 
 
 

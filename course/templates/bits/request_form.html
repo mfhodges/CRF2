@@ -8,15 +8,52 @@
 <p> Course site title will default to <i> {{ course.course_name }}  </i>. You may modify it in the box provided below. </p>
 {% render_field request_form.title_override style=style %}
 
-<p> If you would like to copy content from an existing course site, please select the source from the list below.</p>
-{% render_field request_form.copy_from_course style=style %}
+<p> If you would like to copy content from an existing course site, please click 'Select Copy' and select the source from the list.</p>
+
+{#{% if staff %}#}
+{#{% render_field request_form.copy_from_course style=style %}#}
+
+
+{#{% else %}#}
+<div class="form-group ">
+    <label>Copy from course</label>
+    {{copy_from_course}}
+<div class="input-group mb-3">
+  {% if request_instance.copy_from_course %}
+    {% if staff %}
+    <input name="copy_from_course" value="{{request_instance.copy_from_course}}" type="text" class="form-control" placeholder="Canvas Id" aria-label="Canvas ID for content copy" style="width:unset;margin-bottom:8px;">
+    {% else %}
+    <input name="copy_from_course" value="{{request_instance.copy_from_course}}" type="text" class="form-control" placeholder="Canvas Id" aria-label="Canvas ID for content copy" style="width:unset;margin-bottom:8px;" disabled>
+    {% endif %}
+  {% else %}
+    {% if staff %}
+      <input name="copy_from_course" value="" type="text" class="form-control" placeholder="Canvas Id" aria-label="Canvas ID for content copy" style="width:unset;margin-bottom:8px;">
+    {% else %}
+      <input name="copy_from_course" value="" type="text" class="form-control" placeholder="Canvas Id" aria-label="Canvas ID for content copy" style="width:unset;margin-bottom:8px;" disabled>
+    {% endif %}
+  {% endif %}
+  <div class="input-group-append">
+    <button class="btn btn-outline-secondary accent-button" type="button" data-toggle="modal"  data-target="#ContentCopy" style='z-index:unset;'>Select Copy</button>
+  </div>
+</div>
+
+</div>
+
+{% include "bits/copy_course_modal.html" %}
+
+{#{% endif %}#}
 
 <fieldset>
   <legend><h6 style="margin:0;">Mulit-Section Course Sites </h6></legend>
   <div class="form-group ">
-    <p style="font-size:0.9rem;"> Sections of a course can share a single Canvas site. If you are teaching a large introductory course
-      or several sections of a course, you can have the sections broken out into a single site. Please select all sections you would like included. If a course is gray-ed out that means it has been already requested in another course request and therefore cannot be added to this one
+    <p style="font-size:0.9rem;">Sections of a course can share a single Canvas site.
+      <i class="fas fa-info-circle" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample"></i>
     </p>
+    <div class="collapse" id="collapseExample">
+    <p style="font-size:0.9rem;"> If you are teaching a large introductory course or several sections of a course, you can have the sections broken out into a single site.
+       Please select all sections you would like included. If a course is gray-ed out that means it has been already requested in another course request and therefore cannot be added to this one
+    </p>
+  </div>
     {% if course.sections %} <!-- if there are sections -->
         <div class="contain-table vertical-center">
 
@@ -41,11 +78,13 @@
               <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}} a</td>
             </tr>
           {# must be in some other request! #}
-          {% elif section_request %}
+          {% elif section_requested %}
             <tr style="background:#e9ecef;">
               <td>
                 <!-- check if already requested -> cannot be requested -->
+                <span tabindex="0" data-toggle="tooltip" title="Disabled tooltip">
                 <input  name="additional_sections[{{ forloop.counter0 }}][course_code]" value="{{section_code}}" class="form-control" type="checkbox" disabled>
+              </span>
               </td>
               <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}} b</td>
             </tr>
@@ -144,6 +183,8 @@
 
 
 {% render_field request_form.additional_instructions style=style %}
+
+
 
 
 <!-- here is the field to edit the subaccount that is associated with the course.

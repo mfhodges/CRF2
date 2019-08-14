@@ -21,9 +21,10 @@
   {% else %}
   <p> No Canvas Site on File.</p>
   {% if staff %}
-  <!-- SRS_CIS-520-001 2013C -->
+  <!-- SRS_CIS-520-001 2013C
+'SRS_BIOL-101-601 2014C-->
 
-  <a target="_blank" href="https://canvas.upenn.edu/accounts/96678?search_term=SRS_{{course.course_subject}}-{{course.course_number}}-{{course.course_section}}"> CHECK FOR CANVAS SITE </a>
+  <a target="_blank" href="https://canvas.upenn.edu/api/v1/sections/sis_section_id:SRS_{{course|asrepr}}"> CHECK FOR CANVAS SITE </a>
   {% endif %}
   {% endif %}
 </fieldset>

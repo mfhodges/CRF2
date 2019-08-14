@@ -55,7 +55,7 @@
 
 
 <!-- Canvas Site info -->
-{% include "bits/canvas_site_info.html" with course=request_instance.course_info %}
+{% include "bits/canvas_site_info.html" with course=request_instance.course_info copy_from_course=request_instance.copy_from_course %}
 
 
 {% endblock %}

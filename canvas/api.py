@@ -17,6 +17,7 @@ headers = {
 
 # Import the Canvas class
 from canvasapi import Canvas
+from canvasapi.exceptions import CanvasException
 
 # Canvas API URL
 API_URL = domain
@@ -34,16 +35,41 @@ def get_user_by_sis(login_id):
     print("got here")
     canvas = Canvas(API_URL, API_KEY)
     #canvas.get_user(123)
-    login_id_user = canvas.get_user(login_id, 'sis_login_id')
-    print(login_id_user, login_id_user.attributes)
-    print(login_id_user.get_courses()[0].attributes)
-    return login_id_user
+    try:
+        login_id_user = canvas.get_user(login_id, 'sis_login_id')
+        #print(login_id_user, login_id_user.attributes)
+        #print(login_id_user.get_courses()[0].attributes)
+        return login_id_user
+    except CanvasException as e:
+        print("CanvasException: ", e)
+        return None
 
 def get_user_courses(login_id):
     user = get_user_by_sis(login_id)
+    if user== None:
+        return None
     return user.get_courses(enrollment_type='teacher')
 
 
+
+def find_in_canvas(sis_section_id):
+    """
+        :param sis_section_id: the SIS ID of a course. 'SRS_BIOL-101-601 2014C
+        :type sis_section_id: str
+    """
+    # to see if the course exits just search the section
+    #https://canvas.upenn.edu/api/v1/sections/sis_section_id:SRS_BIOL-101-601%202014C
+    # (line 1048) https://github.com/ucfopen/canvasapi/blob/49ddf3d12c411de25121a8a04b99a0b62b6a1de4/canvasapi/canvas.py
+
+    canvas = Canvas(API_URL, API_KEY)
+    try:
+        section = canvas.get_section(sis_section_id, use_sis_id=True)#, **kwargs)
+    except CanvasException as e:
+        print("CanvasException: ", e)
+        return None
+    #if bad: while(1);{"errors":[{"message":"The specified resource does not exist."}]}
+
+    return section
 
 
 
@@ -51,6 +77,27 @@ def get_user_courses(login_id):
 def search_course(terms):
     #https://github.com/instructure/canvas-lms/blob/master/app/controllers/search_controller.rb
     return None
+
+
+#--------------- CANVAS API JSON STRUCTURE ------------------
+
+"""
+################ SECTION OBJECT ################
+    {
+"id": 1440128,
+"course_id": 1254326,
+"name": "BIOL 101-603 2014C Intro Biology A",
+"start_at": null,
+"end_at": null,
+"created_at": "2014-08-18T21:51:30Z",
+"restrict_enrollments_to_section_dates": false,
+"nonxlist_course_id": null,
+"sis_section_id": "SRS_BIOL-101-603 2014C",
+"sis_course_id": "SRS_BIOL-101-601 2014C",
+"integration_id": null,
+"sis_import_id": null
+}
+"""
 
 
 #--------------- PUTTING IN  CANVAS ------------------

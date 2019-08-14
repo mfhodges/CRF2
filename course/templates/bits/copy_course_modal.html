@@ -1,0 +1,41 @@
+
+{% load rest_framework %}
+{% load template_extra %}
+
+
+
+<!--
+There should be a template tag that gets all of the users canvas sites and the sites inwhich they have added permissions or they are owners
+-->
+
+
+
+
+
+
+<div class="modal fade" id="ContentCopy" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Course Content Copy</h5>
+        <div class="close" data-dismiss="modal" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p>Start typing the Course Title to find the course. <p/>
+          <br>
+        {{ autocompleteCanvasSite.name }}
+        {{ autocompleteCanvasSite.media }}
+
+
+        <p><br>The Canvas sites available to copy are the ones which you (not the person you are masquerading as) have permissions/ownership of.</p>
+        <mark><small>If your course isn't listed please note this in the Additional Instructions field</small></mark>
+  </div>
+          <div class="modal-footer">
+            <button type='button' onclick="formUpdateContentCopy()"> Add Source</button>
+          </div>
+
+    </div>
+  </div>
+</div>

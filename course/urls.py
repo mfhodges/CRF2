@@ -7,7 +7,7 @@ from rest_framework_swagger.views import get_swagger_view
 from rest_framework import renderers
 from django.views.generic.base import TemplateView
 #from rest_framework.schemas import get_schema_view # new
-from course.autocomplete import UserAutocomplete, SubjectAutocomplete
+from course.autocomplete import UserAutocomplete, SubjectAutocomplete, CanvasSiteAutocomplete
 from django.conf import settings
 schema_view = get_swagger_view(title='Pastebin API')
 
@@ -22,6 +22,7 @@ router.register(r'requests', views.RequestViewSet)
 router.register(r'schools', views.SchoolViewSet)
 router.register(r'subjects', views.SubjectViewSet)
 router.register(r'autoadds', views.AutoAddViewSet)
+router.register(r'canvassites', views.CanvasSiteViewSet)
 """
 The example above would generate the following URL patterns:
 
@@ -64,6 +65,14 @@ urlpatterns = [
         {'get': 'retrieve'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
          name='UI-course-detail'),
 
+    # --------------- Canvas Site list/detail view -------------------
+    path('canvassites/', views.CanvasSiteViewSet.as_view(
+        {'get': 'list'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
+         name='UI-canvas_site-list'),
+    path('canvassites/<canvas_id>/', views.CanvasSiteViewSet.as_view(
+        {'get': 'retrieve'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
+         name='UI-canvas_site-detail'),
+
     #path('courses/<int:pk>/request', views.CourseViewSet.as_view(
     #    {'get': 'retrieve'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
     #     name='UI-course-detail'),
@@ -104,10 +113,7 @@ urlpatterns = [
          name='UI-autoadd-list'), # adding 'delete': 'list' is hacky but saves me from writiing a detail page in UI
     #path('users/<?:pennkey>/', UserDetail.asview(),name='user-detail'),
 
-    # --------------- CANVAS SITE view -------------------
-    path('canvas_sites/', views.CanvasSiteViewSet.as_view(
-        {'get':'list','put':'update'},renderer_classes=[renderers.TemplateHTMLRenderer]),
-             name='UI-canvassite-list'),
+
     # --------------- HOMEPAGE view -------------------
     path('', views.HomePage.as_view(), name='home'),
     # --------------- CONTACT view -------------------
@@ -146,6 +152,11 @@ urlpatterns = [
         SubjectAutocomplete.as_view(),
         name='subject-autocomplete',
     ),
+    url(
+        r'^canvas_site-autocomplete/$',
+        CanvasSiteAutocomplete.as_view(),
+        name='canvas_site-autocomplete',
+        ),
 ]
 
 if settings.DEBUG:

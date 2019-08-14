@@ -36,8 +36,6 @@
   <input name="view_type" class="form-control" type="hidden" value="UI-request-detail">
   <input name='course_requested' value='{{course.course_code}}' type='hidden'>
 
-
-
    {% include "bits/request_form.html" with enrollments=request_instance.additional_enrollments.all %}
 
 
@@ -64,4 +62,24 @@
    {% include "bits/canvas_site_info.html" %}
   <!-- END Canvas Site info -->
 
+{% endblock %}
+
+
+
+
+{% block template_page_js %}
+<script>
+onclick="myFunction()"
+
+function formUpdateContentCopy() {
+  // #id_name > option:nth-child(2)
+  var hi = document.querySelector("#id_name > option:nth-child(2)").value;
+  //input name=copy_from_course
+  $('input[name="copy_from_course"]').val(hi);
+  console.log(hi);
+  $('#ContentCopy').modal('hide');
+  //document.getElementById("demo").innerHTML = "YOU CLICKED ME!";
+}
+
+</script>
 {% endblock %}

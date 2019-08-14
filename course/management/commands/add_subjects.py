@@ -3,6 +3,11 @@ from django.core.management.base import BaseCommand
 from django.utils.crypto import get_random_string
 from configparser import ConfigParser
 import json
+from OpenData.library import *
+import logging
+
+config = ConfigParser()
+config.read('config/config.ini')
 
 
 school_subj = {'AS': ['AAMW', 'AFRC', 'AFST', 'ALAN', 'AMCS', 'ANCH', 'ANEL', 'ANTH', 'APOP', 'ARAB', 'ARTH', 'ASAM', 'ASTR', 'BCHE', 'BDS', 'BENF', 'BENG', 'BIBB', 'BIOL', 'CHEM', 'CHIN', 'CIMS', 'CLCH', 'CLST', 'COGS', 'COML', 'CRIM', 'CRWR', 'DATA', 'DEMG', 'DTCH', 'DYNM', 'EALC', 'ECON', 'EEUR', 'ENGL', 'ENVS', 'FOLK', 'FREN', 'GAFL', 'GAS', 'GEOL', 'GLBS', 'GREK', 'GRMN', 'GSWS', 'GUJR', 'HEBR', 'HIND', 'HIST', 'HSOC', 'HSSC', 'ICOM', 'IMPA', 'INTR', 'ITAL', 'JPAN', 'JWST', 'KORN', 'LALS', 'LATN', 'LEAD', 'LGIC', 'LING', 'MATH', 'MCS', 'MLA', 'MLYM', 'MMP', 'MODM', 'MTHS', 'MUSC', 'NELC', 'NEUR', 'ORGC', 'PERS', 'PHIL', 'PHYS', 'PPE', 'PROW', 'PRTG', 'PSCI', 'PSYC', 'PUNJ', 'QUEC', 'RELC', 'RELS', 'ROML', 'RUSS', 'SAST', 'SCND', 'SKRT', 'SLAV', 'SOCI', 'SPAN', 'SPRO', 'STSC', 'TAML', 'TELU', 'THAR', 'TURK', 'URBS', 'URDU', 'VIPR', 'VLST', 'WRIT', 'YDSH'], 'WH': ['ACCT', 'BEPP', 'FNCE', 'HCMG', 'INTS', 'LGST', 'LSMP', 'MGEC', 'MGMT', 'MKTG', 'OIDD', 'REAL', 'STAT', 'WH', 'WHCP'], 'MD': ['ANAT', 'BIOE', 'BIOM', 'BMB', 'BMIN', 'BSTA', 'CAMB', 'EPID', 'GCB', 'HCIN', 'HPR', 'IMUN', 'MED', 'MPHY', 'MTR', 'NGG', 'PHRM', 'PUBH', 'REG'], 'FA': ['ARCH', 'CPLN', 'ENMG', 'FNAR', 'HSPV', 'LARP', 'MUSA'], 'EG': ['BE', 'BIOT', 'CBE', 'CIS', 'CIT', 'DATS', 'EAS', 'ENGR', 'ENM', 'ESE', 'IPD', 'MEAM', 'MSE', 'NANO', 'NETS'], 'AN': ['COMM'], 'DM': ['DADE', 'DCOH', 'DEND', 'DENT', 'DOMD', 'DORT', 'DOSP', 'DPED', 'DRST'], 'ED': ['EDUC'], 'PV': ['INTL', 'MSCI', 'NSCI'], 'LW': ['LAW', 'LAWM'], 'SW': ['MSSP', 'NPLD', 'SWRK'], 'NU': ['NURS'], 'VM': ['VBMS', 'VCSN', 'VCSP', 'VISR', 'VMED', 'VPTH']}
@@ -54,7 +59,38 @@ class Command(BaseCommand):
         opendata = kwargs['opendata']
 
         if opendata:
-            pass
+            fails = 0
+            domain = config.get('opendata', 'domain')
+            id = config.get('opendata', 'id')
+            key = config.get('opendata', 'key')
+            print(domain,id,key)
+            OData = OpenData(base_url=domain, id=id, key=key)
+            # saved for special lookups
+            OData_lookup = OpenData(base_url=domain, id=id, key=key)
+            # saved for special lookups
+            OData_lookup = OpenData(base_url=domain, id=id, key=key)
+            data = OData.get_available_subj()
+            total = len(data)
+            print(data)
+            #key is the abbr, #value is the name
+            for key, value in data.items():
+                #check if it exists!
+                try:
+                    subject = Subject.objects.get(abbreviation=key)
+                    print("found subject", subject)
+                except:#it doesnt exist
+                    # need to find school first !
+                    school_code = OData_lookup.find_school_by_subj(key)
+                    #check if the school exists
+                    try:
+                        school = School.object.get(opendata_abbr=school_code)
+                        #we have the school now we can add the subject
+                        subject = Subject.objects.create(abbreviation=key,name=value,visible=True,schools=school)
+                        print("subject",subject)
+                    except: #the school doesnt exist either
+                        logging.getLogger("error_logger").error("Couldn't add %s b/c couldn't find school %s", key, school_code)
+                        fails+=1
+            print("failed %s/%s" % (fails,total))
 
         else:
             with open('OpenData/OpenData.txt') as json_file:
@@ -74,6 +110,7 @@ class Command(BaseCommand):
                         this_school = School.objects.get(opendata_abbr=school)
                     except:
                         # make this a log
+                        logging.getLogger("error_logger").error("couldnt find school " + school )
                         print("couldnt find school " + school)
 
                     #
@@ -85,7 +122,7 @@ class Command(BaseCommand):
                                 subj_name = data["departments"][subj]
                                 Subject.objects.create(name=subj_name,abbreviation=subj,visible=True,schools=this_school)
                             except:
-
+                                logging.getLogger("error_logger").error("couldnt find subj in departments: " + subj )
                                 print("couldnt find subj in departments: " + subj )
                                 Subject.objects.create(name=subj+"-- FIX ME",abbreviation=subj,visible=True,schools=this_school)
                         else:

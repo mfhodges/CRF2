@@ -6,9 +6,8 @@ from configparser import ConfigParser
 import json
 from OpenData.library import *
 import logging
-
+import sys
 #https://realpython.com/python-logging/
-logging.basicConfig(filename='course_add.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 
 # validate_pennkey(pennkey)
@@ -45,13 +44,19 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-t', '--term', type=str, help='Define a term ( e.g. 2019A )')
         parser.add_argument('-d', '--opendata', action='store_true', help='pull from OpenData API')
-        parser.add_argument('-l', '--localstore', action='store_true', help='pull from Local Store')
+        parser.add_argument('-l', '--localstore', action='store_true', help='pull from Local Store')# not
 
         #parser.add_argument('-p', '--prefix', type=str, help='Define a username prefix')
         #parser.add_argument('-a', '--admin', action='store_true', help='Create an admin account')
         #parser.add_argument('-c', '--courseware', action='store_true', help='Quick add Courseware Support team as Admins')
 
+
+        # Need to check to see if updates need to be done
+        #
+
+
     def handle(self, *args, **kwargs):
+        #logging.basicConfig(filename='course_add.log', format='%(name)s - %(levelname)s - %(message)s')
         #courseware = kwargs['courseware']
         opendata = kwargs['opendata']
         year_term = kwargs['term']
@@ -63,21 +68,29 @@ class Command(BaseCommand):
             key = config.get('opendata', 'key')
             print(domain,id,key)
             OData = OpenData(base_url=domain, id=id, key=key)
+            # saved for special lookups
             OData_lookup = OpenData(base_url=domain, id=id, key=key)
+
             data = OData.get_courses_by_term(year_term)
-            #print(data)
+            print("data",data)
             page =1
 
             while data != None:
                 print("\n\tSTARTING PAGE : ", page,"\n")
-                for datum in data[:10]:
+                if data =='ERROR':
+                    print('ERROR')
+                    sys.exit()
+                if isinstance(data,dict): # sometimes the data passed back can be a single course and in that case it should be put in a list
+                    data=[data]
+                for datum in data:
+                    #print("datum",datum)
                     datum["section_id"]=datum["section_id"].replace(" ","")
                     datum["crosslist_primary"]=datum["section_id"].replace(" ","")
                     print("adding ", datum['section_id'])
                     try:
                         subject = Subject.objects.get(abbreviation=datum['course_department'])
                     except:
-                        logging.warning("couldnt find subject %s ", datum['course_department'])
+                        logging.getLogger("error_logger").error("couldnt find subject %s ", datum['course_department'])
                         print("trouble finding subject: ", datum['course_department'])
                         school_code = OData_lookup.find_school_by_subj(datum['course_department'])
                         school = School.objects.get(opendata_abbr=school_code)
@@ -88,7 +101,7 @@ class Command(BaseCommand):
                         try:
                             primary_subject = Subject.objects.get(abbreviation=p_subj)
                         except:
-                            logging.warning("couldnt find subject %s ", p_subj)
+                            logging.getLogger("error_logger").error("couldnt find subject %s ", p_subj)
                             print("trouble finding primary subject: ", p_subj)
                             school_code = OData_lookup.find_school_by_subj(p_subj)
                             school = School.objects.get(opendata_abbr=school_code)
@@ -100,7 +113,7 @@ class Command(BaseCommand):
                     try:
                         activity = Activity.objects.get(abbr=datum['activity'])
                     except:
-                        logging.warning("couldnt find activity %s ",datum["activity"])
+                        logging.getLogger("error_logger").error("couldnt find activity %s ",datum["activity"])
                         activity = Activity.objects.create(abbr=datum['activity'],name=datum['activity'])
                     try:
                         course = Course.objects.create(
@@ -116,36 +129,62 @@ class Command(BaseCommand):
                             course_name = datum['course_title'],
                             year = year
                         )
+
                         if datum['instructors']:
                             instructors = []
                             for instructor in datum['instructors']:
                                 print("instructor",instructor)
                                 try:
                                     found = find_or_create_user(instructor['penn_id'])
-                                    print("we are waiting!!!!")
-                                    print(found)
+                                    #print("we are waiting!!!!")
+                                    print("found",found)
                                     if found:
                                         instructors +=[found]
                                     else:
                                         print("we need to log here")
                                 except:
                                     print("sad")
+                                    logging.getLogger("error_logger").error("%s (%s) not found" ,instructor['name'],instructor['penn_id'])
                             print("list of instructors",instructors)
                             course.instructors.set(instructors)
-                    except:
-                        if Course.objects.filter(course_code = datum['section_id']+year_term).exists():
+                            print("course instructors:", course.instructors.all())
+                    except Exception as e:
+                        update_course = Course.objects.filter(course_code = datum['section_id']+year_term).first()
+                        if update_course:
                             print("already exists: ", datum['section_id']+year_term)
-                        else:
-                            logging.warning("couldnt find course %s ",datum["section_id"])
-                            #print("error ", datum['section_id'])
+                            # lets check for Updates
+                            if datum['is_cancelled']== True: #canceled course ? lets delete
+                                update_course.delete()
+                            else:
+                                update_course.name = datum['course_title']
+                                update_course.instructors.clear()
+                                if datum['instructors']:
+                                    instructors = []
+                                    for instructor in datum['instructors']:
+                                        print("instructor",instructor)
+                                        try:
+                                            found = find_or_create_user(instructor['penn_id'])
+                                            #print("we are waiting!!!!")
+                                            print("found",found)
+                                            if found:
+                                                instructors +=[found]
+                                            else:
+                                                print("we need to log here")
+                                        except:
+                                            print("sad")
+                                            logging.getLogger("error_logger").error("%s (%s) not found" ,instructor['name'],instructor['penn_id'])
+                                    print("list of instructors",instructors)
+                                    update_course.instructors.set(instructors)
+                                update_course.save()
 
+                        else: # course doesnt already exist
+                            print(type(e),e.__cause__)
+                            logging.getLogger("error_logger").error("couldnt add course %s ",datum["section_id"])
+
+                page+=1
                 #end of for loop
+                #data =None
                 data = OData.next_page()
-
-
-
-
-
 
 
 

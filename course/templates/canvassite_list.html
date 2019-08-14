@@ -13,7 +13,7 @@
 
 <h1>Canvas Sites</h1>
 <p> Here are all of your Canvas Sites that are recognized by the CRF. If you are not listed as an instructor the course may not be listed.</p>
-<p> Explain what to use this for</p>
+<!--<p> The results here are limited to yours or the person you are masquerading as.</p>-->
 <!--   <i class="fas fa-info-circle"></i> -->
 
 
@@ -32,36 +32,27 @@
   <table class="striped-table">
     <thead>
       <tr>
-        <th>Section</th>
-        <th>Title</th>
-        <th>Activity</th>
-        <th>Instructor</th>
-        <!--<th>Created Date</th> -->
-        <th style="white-space: nowrap;">Request Status</th>
+        <th>Canvas ID</th>
+        <th>Name</th>
+        <th>SIS ID</th>
+        <th>Workflow State</th>
+        <th>Request</th>
+        <th>Permissions</th>
+        <th>Added Permissions</th>
       </tr>
     </thead>
     <tbody>
-    {#  {% for course in results %} #}
+      {% for site in results %}
       <tr>
-
-        <td>
-        </td>
-        <td></td>
-        <td></td>
-
-        <td id="instructors">
-
-        </td>
-        <!-- some how the time is being stored as a string ... -->
-  <!--      <td>{{ course.created }} a {{ course.created|time:'h:i' }} b {{ course.created|date:"SHORT_DATE_FORMAT" }} </td> -->
-
-        <!--<td>{{course.created|date:'m/d/Y'}} {{course.created|time:'h:i' }}</td> -->
-        <td style="padding-left:4%;">
-
-
-        </td>
+        <td> <a href='{% url "UI-canvas_site-detail" canvas_id=site.canvas_id %}'>{{site.canvas_id}}</a></td>
+        <td> {{site.name}}</td>
+        <td> {{site.sis_course_id}}</td>
+        <td> {{site.workflow_state}}</td>
+        <td> {{site.request_instance}}</td>
+        <td> {{site.owners|join:", "}}</td> <!-- edit this to add the custom permissions-->
+        <td> {{site.added_permissions|join:", "}}</td>
       </tr>
-
+      {% endfor %}
     </tbody>
   </table>
 

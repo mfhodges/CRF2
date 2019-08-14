@@ -2,7 +2,7 @@
 from django import forms
 from course.models import AdditionalEnrollment
 from django.contrib.auth.models import User
-from course.models import Subject
+from course.models import Subject, CanvasSite
 from dal import autocomplete
 
 
@@ -38,6 +38,17 @@ class SubjectForm(forms.ModelForm):
         model = Subject
         fields = ('__all__')
 
+
+class CanvasSiteForm(forms.ModelForm):
+    # please only use this when you need to auto complete on the name field !
+    name = forms.ModelChoiceField(label='content_copy',
+        queryset=CanvasSite.objects.all(),
+        #required=False,
+        widget=autocomplete.ModelSelect2(url='canvas_site-autocomplete')
+    )
+    class Meta:
+        model = CanvasSite
+        fields = ('__all__')
 
 
 class EmailChangeForm(forms.Form):

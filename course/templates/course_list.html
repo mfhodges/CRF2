@@ -55,11 +55,12 @@
         <td style="padding-left:4%;">
 
           {% if course.requested == True %}
+              {% if course.multisection_request %}
+              <a  href='{% url "UI-request-detail" pk=course.multisection_request %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</a>
+              {% else %}
               <!-- this button should pull up the submitted request! -->
               <a  href='{% url "UI-request-detail" pk=course.course_code %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</a>
-
-          {% elif course.multisection_request %}
-          <a  href='{% url "UI-request-detail" pk=course.multisection_request %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</a>
+              {% endif %}
 
           {% else %}
             <!--  <input type="hidden" name="requested" value="true">

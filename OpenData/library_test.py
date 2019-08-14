@@ -24,9 +24,10 @@ headers = {
 OpenData = OpenData(domain,id,key)
 
 
-#print(">>  OpenData.get_available_terms()")
-#print(OpenData.get_available_terms())
-#input("Press Enter to continue...\n")
+
+print(">>  OpenData.get_available_terms()")
+print(OpenData.get_available_terms())
+input("Press Enter to continue...\n")
 
 print(">> OpenData.call_api(result_data=True)")
 OpenData.set_uri('course_section_search')
