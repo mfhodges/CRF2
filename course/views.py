@@ -137,7 +137,8 @@ class MyLogoutView(auth_views.LogoutView):
     var = "test"
 
 
-
+    #for sesskey in request.session.keys():
+    #    del request.session[sesskey]
 
 
 

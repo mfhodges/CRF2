@@ -50,7 +50,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")#'/Users/mfhodges/Desktop/CRF2/course/static'#os.path.join(BASE_DIR, "static")
 
 
-LOGOUT_REDIRECT_URL = 'https://idp.pennkey.upenn.edu/logout'
+LOGOUT_REDIRECT_URL = '/Shibboleth.sso/Logout?return=https://idp.pennkey.upenn.edu/logout'
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'

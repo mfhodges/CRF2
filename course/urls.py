@@ -134,7 +134,7 @@ urlpatterns = [
             template_name='login.html',
             extra_context={'next': '/',},
             ), name='login'),
-    path('accounts/logout/', views.MyLogoutView.as_view(next_page=settings.LOGOUT_REDIRECT_URL,
+    path('accounts/logout/', auth_views.LogoutView.as_view(next_page=settings.LOGOUT_REDIRECT_URL,
             template_name='logout.html',
             ), name='logout'),
 
