@@ -114,7 +114,7 @@ MIDDLEWARE = [
 #    'shibboleth.middleware.ShibbolethRemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-#    'django.contrib.auth.middleware.RemoteUserMiddleware',
+    'django.contrib.auth.middleware.RemoteUserMiddleware',
 ]
 
 ROOT_URLCONF = 'crf2.urls'
@@ -220,9 +220,9 @@ REST_FRAMEWORK = {
 
 }
 
-#AUTHENTICATION_BACKENDS = [
-#    'django.contrib.auth.backends.RemoteUserBackend',
-#]
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.RemoteUserBackend',
+]
 
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',
