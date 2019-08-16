@@ -50,6 +50,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")#'/Users/mfhodges/Desktop/CRF2/course/static'#os.path.join(BASE_DIR, "static")
 
 
+LOGOUT_REDIRECT_URL = 'https://idp.pennkey.upenn.edu/logout'
+
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = 'course/static/emails' # change this to a proper location
@@ -260,12 +262,13 @@ CELERY_BEAT_SCHEDULE = {
 CELERY_BEAT_SCHEDULER: 'django_celery_beat.schedulers:DatabaseScheduler'
 
 
-django_heroku.settings(locals())
+#django_heroku.settings(locals())
 
 
 # importing logger settings
 try:
     from .logger_settings import *
 except Exception as e:
+
     # in case of any error, pass silently.
     pass

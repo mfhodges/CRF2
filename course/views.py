@@ -44,7 +44,7 @@ from configparser import ConfigParser
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-
+from django.contrib.auth import views as auth_views
 """
 For more 'Detailed descriptions, with full methods and attributes, for each
 of Django REST Framework's class-based views and serializers'see: http://www.cdrf.co/
@@ -129,6 +129,13 @@ class MixedPermissionModelViewSet(viewsets.ModelViewSet): #LoginRequiredMixin, -
         if self.raise_exception or self.request.user.is_authenticated:
             raise PermissionDenied(self.get_permission_denied_message())
         return redirect_to_login(self.request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
+
+
+
+class MyLogoutView(auth_views.LogoutView):
+    # content
+    var = "test"
+
 
 
 

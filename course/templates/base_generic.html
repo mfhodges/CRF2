@@ -101,7 +101,7 @@
       <div class="flex-small text-right" id="sign_in">
         {% if user.is_authenticated %}
 
-        <a href="https://idp.pennkey.upenn.edu/logout" style="padding-right:15px;"><!-- "/accounts/logout" -->
+        <a href="/accounts/logout" style="padding-right:15px;"><!-- "" -->
           {{ user.username }},  logout
           <i class="fas fa-sign-out-alt"></i></a>
         {% else %}
@@ -184,7 +184,7 @@
               <li><a href="/userlookup" class="{% block userlookup %}{% endblock %}">User Lookup</a></li>
               <li><a href="/courselookup" class="{% block courselookup %}{% endblock %}">Course Lookup</a></li>
 
-               <li class="title">temporary</li>
+              <li class="title">temporary</li>
               <li><a href="/emails">Emails</a></li>
               {% endif %}
 
