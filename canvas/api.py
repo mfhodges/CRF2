@@ -29,7 +29,7 @@ API_KEY = key
 #--------------- RETREIVEING FROM CANVAS ------------------
 
 def get_user_by_sis(login_id):
-
+    # login_id == pennkey
     #https://canvas.instructure.com/doc/api/users.html
     # Initialize a new Canvas object
     print("got here")
@@ -40,6 +40,19 @@ def get_user_by_sis(login_id):
         #print(login_id_user, login_id_user.attributes)
         #print(login_id_user.get_courses()[0].attributes)
         return login_id_user
+    except CanvasException as e:
+        print("CanvasException: ", e)
+        return None
+
+
+# need to test this
+def create_user(pennkey,pennid,fullname):
+    # 1. create account with SIS_ID speciified
+    canvas = Canvas(API_URL, API_KEY)
+    pseudonym = {'sis_user_id': pennid,'unique_id':pennkey}
+    try:
+        user = canvas.create_user(pseudonym,name=fullname)
+        return user
     except CanvasException as e:
         print("CanvasException: ", e)
         return None
@@ -70,6 +83,31 @@ def find_in_canvas(sis_section_id):
     #if bad: while(1);{"errors":[{"message":"The specified resource does not exist."}]}
 
     return section
+
+
+def find_account(account_id):
+    canvas = Canvas(API_URL, API_KEY)
+    try:
+        account = canvas.get_account(account_id)
+        return account
+    except CanvasException as e:
+        print("CanvasException: ", e)
+        return None
+
+
+
+
+#create_course(self, **kwargs):
+# course[name]
+# course[sis_course_id]
+# course[term_id]
+# course[course_code]
+# try to create something https://canvas.upenn.edu/courses/1472986
+
+
+
+
+
 
 
 

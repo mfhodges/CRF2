@@ -52,3 +52,20 @@ def process_canvas():
     for user in users:
         print("adding for ", user.username)
         updateCanvasSites(user.username)
+
+
+
+
+
+
+
+
+#----------- CREATE COURSE IN CANVAS ---------------
+
+## CREATE LOGIN -- USERNAME: PENNKEY, SIS ID: PENN_ID
+
+
+@task():
+def create_canvas_site():
+    # get all approved sites
+    # check that instructors and additional enrollments have canvas accounts

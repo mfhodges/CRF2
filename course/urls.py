@@ -70,7 +70,7 @@ urlpatterns = [
         {'get': 'list'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
          name='UI-canvas_site-list'),
     path('canvassites/<canvas_id>/', views.CanvasSiteViewSet.as_view(
-        {'get': 'retrieve'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
+        {'get': 'retrieve','put':'update'}, renderer_classes=[renderers.TemplateHTMLRenderer]),
          name='UI-canvas_site-detail'),
 
     #path('courses/<int:pk>/request', views.CourseViewSet.as_view(

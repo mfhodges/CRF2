@@ -974,12 +974,43 @@ class CanvasSiteViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         response = super(CanvasSiteViewSet, self).retrieve(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
             ##print("bye george(UI-request-detail)!\n",response.data)
-            return Response({'data': response.data}, template_name='canvassite_detail.html')
+            return Response({'data': response.data,'autocompleteUser':UserForm()}, template_name='canvassite_detail.html')
         return response
 
 
-    def update():
-        return ''
+    def update(self, request, *args, **kwargs):
+        #print("update?")
+        #print("args",args)
+        #print("kwargs", kwargs)
+        #print("request.data", request.data)
+
+        instance = self.get_object()
+        # re-format data
+        data = {'added_permissions':[request.data['username']]}
+        print("mydata",data)
+        serializer = self.get_serializer(instance, data=data,partial=True)
+        print("ok")
+        serializer.is_valid(raise_exception=True)
+        print("ok2")
+        self.perform_update(serializer)
+        return Response({'data': serializer.data,'autocompleteUser':UserForm()}, template_name='canvassite_detail.html')
+
+        """
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+        if request.data.get('view_type',None) == 'UI':
+            pass
+            #print("its happening")
+
+        return Response(serializer.data)
+        """
 
 class HomePage(APIView):#,
     renderer_classes = [TemplateHTMLRenderer]

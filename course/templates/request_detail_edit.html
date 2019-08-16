@@ -66,6 +66,17 @@
 {% block template_page_js %}
 <script>
 
+
+
+function formUpdateContentCopy() {
+  // #id_name > option:nth-child(2)
+  var hi = document.querySelector("#id_name > option:nth-child(2)").value;
+  //input name=copy_from_course
+  $('input[name="copy_from_course"]').val(hi);
+  console.log(hi);
+  $('#ContentCopy').modal('hide');
+  //document.getElementById("demo").innerHTML = "YOU CLICKED ME!";
+}
 // before submit lets add all the additional_enrollments
 /*
 $('.form').onsubmit( function () {

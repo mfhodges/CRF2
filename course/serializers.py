@@ -255,10 +255,18 @@ class CanvasSiteSerializer(serializers.ModelSerializer):
         model = CanvasSite
         fields = '__all__'
 
+    def validate(self, data):
+        # should do more here but oh well
+        print("in here")
+        return data
 
 
     def update(self, instance, validated_data):
-        instance.name = validated_data.get('username', instance.username)
+        print("vd",validated_data)
+        name = validated_data.pop('added_permissions')#, instance.added_permissions)
+        print("name",name)
+        for n in name:
+            instance.added_permissions.add(n)
         instance.save()
         return instance
 

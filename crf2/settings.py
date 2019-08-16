@@ -32,7 +32,7 @@ print("basedir",BASE_DIR)
 SECRET_KEY = config.get('django','secret_key',raw=True)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 #
 ALLOWED_HOSTS = ['*','localhost']#'128.91.177.58'
@@ -112,7 +112,7 @@ MIDDLEWARE = [
 #    'shibboleth.middleware.ShibbolethRemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.contrib.auth.middleware.RemoteUserMiddleware',
+#    'django.contrib.auth.middleware.RemoteUserMiddleware',
 ]
 
 ROOT_URLCONF = 'crf2.urls'
@@ -218,9 +218,9 @@ REST_FRAMEWORK = {
 
 }
 
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.RemoteUserBackend',
-]
+#AUTHENTICATION_BACKENDS = [
+#    'django.contrib.auth.backends.RemoteUserBackend',
+#]
 
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',

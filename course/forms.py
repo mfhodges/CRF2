@@ -43,7 +43,7 @@ class CanvasSiteForm(forms.ModelForm):
     # please only use this when you need to auto complete on the name field !
     name = forms.ModelChoiceField(label='content_copy',
         queryset=CanvasSite.objects.all(),
-        #required=False,
+        required=False,
         widget=autocomplete.ModelSelect2(url='canvas_site-autocomplete')
     )
     class Meta:

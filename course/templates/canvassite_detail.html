@@ -30,6 +30,40 @@
 </dl>
 </fieldset>
 
+<style>
+.select2-container {
+  z-index:inherit !important;
+}
+</style>
+<fieldset>
+<legend>Add Additional Permissions</legend>
+<form enctype='application/json' action="{% url 'UI-canvas_site-detail' canvas_id=data.canvas_id %}" method="put">
+
+  <p>Start typing the Course Title to find the course.
+    <i class="fas fa-info-circle" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample"></i>
+  </p>
+  <div class="collapse" id="collapseExample">
+    <p style="font-size:0.9rem;">
+      If the user you are looking for doesnt auto-populate try to masquerade as them to see if the pennkey is valid and if they are a user in the CRF.
+    <p/>
+
+  </div>
+
+
+
+
+
+    <br>
+    <div style="width:75%;">
+      {{ autocompleteUser.username }}
+      {{ autocompleteUser.media }}
+    </div>
+  <br>
+  <input type="submit" value="Add User" />
+
+</form>
+</fieldset>
+
 
 
 
