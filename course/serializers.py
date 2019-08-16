@@ -126,10 +126,6 @@ class CourseSerializer(DynamicFieldsModelSerializer): #removed HyperlinkedModelS
             for cross_course in crosslist:
                 ##print("crosslist data", cross_course)
                 course.crosslisted.add(cross_course)
-
-
-
-
         return course
 
     # this allows the object to be updated!
@@ -281,8 +277,8 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
     course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='course_code' , style={'base_template': 'input.html'})
     title_override = serializers.CharField(allow_null=True,required=False , style={'base_template': 'input.html'})
     additional_enrollments = AdditionalEnrollmentSerializer(many=True,default=[], style={'base_template':'list_fieldset.html'})
-    created = serializers.DateTimeField(format="%I:%M%p %b,%d %Y")
-    updated = serializers.DateTimeField(format="%I:%M%p %b,%d %Y")
+    created = serializers.DateTimeField(format="%I:%M%p %b,%d %Y", required=False)
+    updated = serializers.DateTimeField(format="%I:%M%p %b,%d %Y", required=False)
     additional_sections = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(),slug_field='course_code')
 
     #sections_requested = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(),slug_field='course_code')

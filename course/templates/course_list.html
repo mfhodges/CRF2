@@ -66,7 +66,7 @@
             <!--  <input type="hidden" name="requested" value="true">
               <button type="submit" class="button" >Request</button>-->
               <!-- Button trigger modal -->
-              <button class="button" data-toggle="modal" data-target="#CourseModal" data-course="{{ course|asrepr }}">
+              <button class="button" data-toggle="modal" data-target="#CourseModal" data-course="{{ course.course_code }}">
                 Request
               </button>
           {% endif %}
