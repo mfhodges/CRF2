@@ -19,12 +19,9 @@
         <dd class="col-8 col-md-9"> </dd>
   </dl>
   {% else %}
-  <p> No Canvas Site on File.</p>
+  <center><p> No Canvas Site on File.</p></center>
   {% if staff %}
-  <!-- SRS_CIS-520-001 2013C
-'SRS_BIOL-101-601 2014C-->
-
-  <a target="_blank" href="https://canvas.upenn.edu/api/v1/sections/sis_section_id:SRS_{{course|asrepr}}"> CHECK FOR CANVAS SITE </a>
+  <a target="_blank" href="https://canvas.upenn.edu/api/v1/sections/sis_section_id:SRS_{{course.course_code}}"> CHECK FOR CANVAS SITE  </a>
   {% endif %}
   {% endif %}
 </fieldset>

@@ -75,7 +75,7 @@
                 <!-- check if already requested -> cannot be requested -->
                 <input  name="additional_sections[{{ forloop.counter0 }}][course_code]" value="{{section_code}}" class="form-control" type="checkbox" checked>
               </td>
-              <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}} a</td>
+              <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}}</td>
             </tr>
           {# must be in some other request! #}
           {% elif section_requested %}
@@ -86,7 +86,7 @@
                 <input  name="additional_sections[{{ forloop.counter0 }}][course_code]" value="{{section_code}}" class="form-control" type="checkbox" disabled>
               </span>
               </td>
-              <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}} b</td>
+              <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}}</td>
             </tr>
 
           {% else %}
@@ -95,7 +95,7 @@
               <!-- check if already requested -> cannot be requested -->
               <input  name="additional_sections[{{ forloop.counter0 }}][course_code]" value="{{section_code}}" class="form-control" type="checkbox">
             </td>
-            <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}} c</td>
+            <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}}</td>
           </tr>
           {% endif %}
 
@@ -121,9 +121,7 @@
 
   <fieldset>
     <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
-    <!--<b><p> ADD CONTENT HERE </p></b>
-     wowie -->
-    <p> This is for adding TA's, Instructors, Designers, Librarians ..NOT students</p>
+    <p> Batch Enrollment Processes will pull in any Instructors or TAs listed in the Registrar. To add other users to the Canvas site you can specify them below.</p>
 
     <fieldset id="additional_enrollments" style="border:none;padding-right:0px;padding-left:0px;">
       <p><mark> no validation on pennkey yet.</mark></p>
