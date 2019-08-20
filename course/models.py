@@ -49,6 +49,7 @@ class Activity(models.Model):
     class Meta:
         verbose_name = 'Activity Type'
         verbose_name_plural = 'Activity Types'
+        ordering= ('abbr',)
 
 #    def __str__(self):
 #        return self.username
@@ -219,12 +220,8 @@ class Course(models.Model):
     multisection_request = models.ForeignKey('course.Request',on_delete=models.CASCADE, related_name="additional_sections",default=None,blank=True,null=True)
 
 
-
     class Meta:
         ordering = ('course_code',)
-
-
-
 
     def find_requested(self):
         if self.requested_override ==True:
@@ -246,6 +243,17 @@ class Course(models.Model):
                 except:
                     return False
         print("we hit base case that i havent planned for")
+
+    def find_crosslisted(self):
+        # crosslisted courses hace the same <number><section>_<year><term> -- the difference should be the subject
+        # check that there is a primarycrosslisting
+        cross_courses = Course.objects.filter(Q(course_number=self.course_number)  & Q(course_section=self.course_section)& Q(course_term=self.course_term) & Q(year=self.year)).exclude(course_subject=self.course_subject)
+        print("found course", cross_courses)
+        for course in cross_courses:
+            self.crosslisted.add(course)
+            self.save()
+            # do the symmetrical
+
 
 
     def save(self, *args, **kwargs):
@@ -324,7 +332,8 @@ class Course(models.Model):
     def srs_format(self):
         term = self.year + self.course_term
         #print(course['course_section'])
-        return("%s-%s-%s %s" % (self.course_primary_subject, self.course_number,self.course_section, term ))
+        return("%s-%s-%s %s" % (self.course_primary_subject.abbreviation, self.course_number,self.course_section, term ))
+
 
 
     def __str__(self):

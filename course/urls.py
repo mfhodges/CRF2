@@ -159,6 +159,8 @@ urlpatterns = [
         ),
 ]
 
+#urlpatterns = [path(r'^siterequest/', include(urlpatterns))]
+
 if settings.DEBUG:
     import debug_toolbar
     urlpatterns = [

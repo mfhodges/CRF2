@@ -1,3 +1,6 @@
+logs/
+*.pyc
+course/static/emails/
 config/
 course/migrations/
 datawarehouse/

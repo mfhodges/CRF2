@@ -74,7 +74,7 @@
       <!-- REQUEST ON BEHALF OF // MASQUERADE -->
       {% if request.session.on_behalf_of %}
         <div class="flex-small" id="masquerade" style="background:#f7d6a2">
-          <form method="POST" action="/">
+          <form method="POST" action="/siterequest/">
             {% csrf_token %}
           <small> Requesting as '{{ request.session.on_behalf_of }}' </small>
           <input type="hidden" id="name" value='' name="on_behalf_of" >
@@ -101,11 +101,11 @@
       <div class="flex-small text-right" id="sign_in">
         {% if user.is_authenticated %}
 
-        <a href="/accounts/logout" style="padding-right:15px;"><!-- "" -->
+        <a href="/siterequest/accounts/logout" style="padding-right:15px;"><!-- "" -->
           {{ user.username }},  logout
           <i class="fas fa-sign-out-alt"></i></a>
         {% else %}
-        <a href="/accounts/login" style="padding-right:15px;">
+        <a href="/siterequest/accounts/login" style="padding-right:15px;">
           login
           <i class="fas fa-sign-in-alt"></i></a>
         {% endif %}
@@ -127,7 +127,7 @@
            </div>
            <div class="modal-body">
              {% if  user.is_authenticated %}
-             <form class="" method="POST" action="/" style="display:inherit;max-width:500px;margin-left:auto;margin-right:auto;">
+             <form class="" method="POST" action="/siterequest/" style="display:inherit;max-width:500px;margin-left:auto;margin-right:auto;">
                {% csrf_token %}
                <label for="name">User's Pennkey</label>
                <div class="input-group mb-3">
@@ -148,7 +148,7 @@
              </form>
              {% else %}
              <div>
-               <p> Invalid permission. Please <a href="accounts/login">login</a> </p>
+               <p> Invalid permission. Please <a href="/siterequest/accounts/login">login</a> </p>
              </div>
              {% endif %}
 
@@ -164,28 +164,28 @@
     <div class="flex-container">
       <aside class="fixed">
         <div class="toggle-nav"></div>
-        <h1> <a href="/"> CRF</a></h1>
+        <h1> <a href="/siterequest/"> CRF</a></h1>
         <nav style="display: none;" >
           <ul>
               <li class="title">Main</li>
-              <li><a class="{% block home %}{% endblock %}" href="/">Home</a></li>
-              <li><a class="{% block requests %}{% endblock %}" href="/requests">Requests</a></li>
+              <li><a class="{% block home %}{% endblock %}" href="/siterequest/">Home</a></li>
+              <li><a class="{% block requests %}{% endblock %}" href="/siterequest/requests">Requests</a></li>
               <li class="title">Browse</li>
-              <li><a class="{% block courses %}{% endblock %}" href="/courses">Courses</a></li>
-              <li><a class="{% block schools %}{% endblock %}" href="/schools">Schools</a></li>
-              <li><a class="{% block subjects %}{% endblock %}" href="/subjects">Subjects</a></li>
+              <li><a class="{% block courses %}{% endblock %}" href="/siterequest/courses">Courses</a></li>
+              <li><a class="{% block schools %}{% endblock %}" href="/siterequest/schools">Schools</a></li>
+              <li><a class="{% block subjects %}{% endblock %}" href="/siterequest/subjects">Subjects</a></li>
 
               {% if staff %} {# and user.is_authenticated #}
 
               <li class="title">Admin</li>
-              <li><a href="/admin">Admin Portal</a></li>
-              <li><a href="/autoadds" class="{% block autoadd %}{% endblock %}">Manage Auto-Adds</a></li>
-              <li><a href="/logs" class="{% block bulkupdates %}{% endblock %}">Manage Logs/Updates</a></li>
-              <li><a href="/userlookup" class="{% block userlookup %}{% endblock %}">User Lookup</a></li>
-              <li><a href="/courselookup" class="{% block courselookup %}{% endblock %}">Course Lookup</a></li>
+              <li><a href="/siterequest/admin">Admin Portal</a></li>
+              <li><a href="/siterequest/autoadds" class="{% block autoadd %}{% endblock %}">Manage Auto-Adds</a></li>
+              <li><a href="/siterequest/logs" class="{% block bulkupdates %}{% endblock %}">Manage Logs/Updates</a></li>
+              <li><a href="/siterequest/userlookup" class="{% block userlookup %}{% endblock %}">User Lookup</a></li>
+              <li><a href="/siterequest/courselookup" class="{% block courselookup %}{% endblock %}">Course Lookup</a></li>
 
               <li class="title">temporary</li>
-              <li><a href="/emails">Emails</a></li>
+              <li><a href="/siterequest/emails">Emails</a></li>
               {% endif %}
 
 
@@ -220,7 +220,7 @@
     -->
           <div id="references" class="medium-container vertical-center" style="padding-bottom:10px;">
               <center style="margin-bottom:20px;">
-                <b ><a href="/documentation" aria-label="temporary documentation">Docs</a></b> <span>|</span> <b><a href="/contact">Contact</a></b>
+                <b ><a href="/siterequest/documentation" aria-label="temporary documentation">Docs</a></b> <span>|</span> <b><a href="/siterequest/contact">Contact</a></b>
               </center>
               <a href='https://www.library.upenn.edu/vanpelt'> <img src="{% static 'images/penn_libraries_logo.png' %}" style="height:50px;margin:0px 10px;"></a>
               <!--&nbsp;//&nbsp; 'images/2016-shield-only-RGB-1k.png' -->

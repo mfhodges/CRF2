@@ -64,7 +64,11 @@ class CanvasSiteAutocomplete(autocomplete.Select2QuerySetView):
         if not self.request.user.is_authenticated:
             return CanvasSite.objects.none()
 
-        qs = CanvasSite.objects.filter(Q(owners=self.request.user)|Q(added_permissions=self.request.user))
+        masquerade = self.request.session['on_behalf_of']
+        if masquerade:
+            qs = CanvasSite.objects.filter(Q(owners=User.objects.get(username=masquerade))|Q(added_permissions=self.request.user))
+        else:
+            qs = CanvasSite.objects.filter(Q(owners=self.request.user)|Q(added_permissions=self.request.user))
         if self.q:
             # lets limit it to only the first 8 matches
             qs = qs.filter(name__istartswith=self.q)[:8]

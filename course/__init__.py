@@ -3,6 +3,7 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.dispatch import receiver
 from django.contrib import messages
 
+#default_app_config = '.apps.CourseAppConfig'
 
 @receiver(user_logged_in)
 def on_login(sender, user, request, **kwargs):

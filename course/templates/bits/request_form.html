@@ -113,7 +113,7 @@
 
   <fieldset>
     <legend><h6 style="margin:0;">Library Services</h6></legend>
-    <p> Course Reserve services are available to your course. See <a href="http://www.library.upenn.edu/using-libraries/reserves"> http://www.library.upenn.edu/using-libraries/reserves</a> for more information.</p>
+    <p> Course Reserve services are available to your course. See <a target="_blank" href="http://www.library.upenn.edu/using-libraries/reserves"> http://www.library.upenn.edu/using-libraries/reserves</a> for more information.</p>
 
     {% render_field request_form.reserves style=style %}
   </fieldset>
@@ -123,8 +123,8 @@
     <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
     <p> Batch Enrollment Processes will pull in any Instructors or TAs listed in the Registrar. To add other users to the Canvas site you can specify them below.</p>
 
-    <fieldset id="additional_enrollments" style="border:none;padding-right:0px;padding-left:0px;">
-      <p><mark> no validation on pennkey yet.</mark></p>
+    <fieldset id="additional_enrollments" style="border:none;padding-right:0px;padding-left:0px;margin-top:0px;">
+
       {% if request_instance.additional_enrollments %}
         {% for enrollment in request_instance.additional_enrollments %}
 

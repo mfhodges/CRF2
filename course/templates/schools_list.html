@@ -59,13 +59,13 @@
                 <button class="button" data-toggle="modal" data-target="#SchoolModal" data-school="{{school.name}}" data-abbr="{{school.abbreviation}}" data-id="{{ school.id }}" data-visible='false'>
                   <b>REMOVE ALL</b> <i class="fas fa-minus-square"></i>
                 </button>
-              TRUE (click button to remove)
+            <!--  TRUE (click button to remove)-->
                 {% else %}
                 <!-- data-school="{{school.name}}" data-abbr="{{school.abbreviation}}" data-id="{{ school.id }}" data-visible='true' -->
                 <button class="button" data-toggle="modal" data-target="#SchoolModal" data-school="{{school.name}}" data-abbr="{{school.abbreviation}}" data-id="{{ school.id }}" data-visible='true'>
                   <b>ADD ALL</b> <i class="fas fa-plus-square"></i>
                 </button>
-                FALSE (click button to add)
+                <!-- FALSE (click button to add)-->
               {% endif %}
             {% else %}
               {% if subject.visible == True %}

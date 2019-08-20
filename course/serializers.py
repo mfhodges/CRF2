@@ -424,6 +424,7 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
             for enroll_data in add_enrolls_data:
                 ##print("subject data", subject_data)
                 #print("instance",instance)
+                print('enroll_data',enroll_data)
                 AdditionalEnrollment.objects.update_or_create(course_request=instance,**enroll_data)
                 #request_object.additional_enrollments.add(enroll_data)
 

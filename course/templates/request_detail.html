@@ -58,10 +58,10 @@
     {% endif %}
     {% if 'create' in permissions %}
     <form action="{% url 'UI-request-detail' pk=request_instance.course_requested %}" method="put" >
-      <input type="hidden" name="status" value="IN_PROCESS">
+      <input type="hidden" name="status" value="APPROVED">
       <input type="hidden" name="course_requested" value="{{request_instance.course_requested}}">
       <input name="view_type" class="form-control" type="hidden" value="UI-request-detail">
-      <button type="submit"  style="margin-right:20px" class="create" >Create Site</button>
+      <button type="submit"  style="margin-right:20px" class="create" >Approve Site <i class="fas fa-check-circle"></i></button>
     </form>
     {% endif %}
 
@@ -70,6 +70,12 @@
   <!--<p> permissions should be: {{ permissions }} - this will be removed later </p> -->
 
 </fieldset>
+
+
+<!-- Course Info -->
+{% include "bits/course_info.html" with course=request_instance.course_info %}
+
+
 
 <!-- Canvas Site info -->
 {% include "bits/canvas_site_info.html" with course=request_instance.course_info %}

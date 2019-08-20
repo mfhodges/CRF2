@@ -132,15 +132,6 @@ class MixedPermissionModelViewSet(viewsets.ModelViewSet): #LoginRequiredMixin, -
 
 
 
-class MyLogoutView(auth_views.LogoutView):
-    # content
-    var = "test"
-
-
-    #for sesskey in request.session.keys():
-    #    del request.session[sesskey]
-
-
 
 class CourseFilter(filters.FilterSet):
     #activity =
@@ -537,15 +528,15 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         request_masquerade = response_data['masquerade'] #
         print("request_masquerade",request_masquerade)
             # owner is also considered masquerade
-        if request_status == "SUBMITTED": permissions = {'staff':['lock','cancel','edit'],'owner':['cancel','edit']}
-        elif request_status == "APPROVED": permissions = {'staff':['cancel','edit','lock','create'],'owner':['cancel']}
+        if request_status == "SUBMITTED": permissions = {'staff':['lock','cancel','edit','create'],'owner':['cancel','edit']}
+        elif request_status == "APPROVED": permissions = {'staff':['cancel','edit','lock'],'owner':['cancel']}
         elif request_status == "LOCKED": permissions = {'staff':['cancel','edit','unlock'],'owner':['']}
         elif request_status == "CANCELED": permissions = {'staff':['lock'],'owner':['']}
         elif request_status == "IN_PROCESS": permissions = {'staff':['lock'],'owner':['']}
         elif request_status == "COMPLETED": permissions = {'staff':[''],'owner':['']}
         else: permissions = {'staff':[''],'owner':['']} # throw error!???
 
-        # permission - 'create' pushes the request into the in_process queue
+        # permission - 'create' pushes the request into the approved queue to soon be IN_PROCESS
         # permission - 'unlock' sets it as submitted again
 
         if request.session['on_behalf_of']:
@@ -670,7 +661,8 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         print("about to check if serializer is valid")
         serializer.is_valid()#raise_exception=True)
         if not serializer.is_valid():
-            messages.add_message(request, messages.ERROR, "An error occurred: Please add the Content Copy information to the additional instructions field and a Courseware Support team memeber will assist you.")
+            print("serializer.errors",serializer.errors)
+            messages.add_message(request, messages.ERROR, serializer.errors)#"An error occurred: Please add the information to the additional instructions field and a Courseware Support team memeber will assist you.")
             raise serializers.ValidationError(serializer.errors)
         else:
             serializer.save(owner=self.request.user)

@@ -8,8 +8,8 @@ from configparser import ConfigParser
 
 config = ConfigParser()
 config.read('config/config.ini')
-domain = config.get('canvas', 'prod_env')
-key = config.get('canvas', 'prod_key')
+domain = config.get('canvas','test_env') #'prod_env')
+key = config.get('canvas', 'test_key')#'prod_key')
 headers = {
     'Authorization': 'Bearer %s' % (key)
 }
@@ -17,6 +17,7 @@ headers = {
 
 # Import the Canvas class
 from canvasapi import Canvas
+from canvasapi.enrollment_term import EnrollmentTerm
 from canvasapi.exceptions import CanvasException
 
 # Canvas API URL
@@ -94,6 +95,21 @@ def find_account(account_id):
         print("CanvasException: ", e)
         return None
 
+
+def find_term_id(account_id,sis_term_id):
+    # term= 2019C
+    # https://canvas.upenn.edu/api/v1/accounts/96678/terms/sis_term_id:2019C -- works
+    canvas = Canvas(API_URL, API_KEY)
+    account = canvas.get_account(account_id)
+    if account:
+        response = account._requester.request(
+            "GET", "accounts/{}/terms/sis_term_id:{}".format(account_id, sis_term_id))
+        if response.status_code == 200:
+            return(response.json()['id'])
+        else:
+            return None
+    else:
+        return None
 
 
 

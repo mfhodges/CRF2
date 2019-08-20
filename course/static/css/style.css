@@ -174,7 +174,7 @@ hr {
 pre {
   overflow: auto; }
 
-i {
+i:empty {
   cursor: pointer;
 }
 /**
@@ -645,6 +645,9 @@ button.cancel:hover,button.cancel:active {
 
 }
 
+
+
+
 button.create {
   background-color: #428365;
   border-color: #428365;
@@ -768,7 +771,7 @@ textarea.has-error:active {
 }
  #additional_enrollments select {
    padding:6px;
-   width:120px;
+   width:125px;
  }
 #additional_enrollments label{
   margin:0px;
