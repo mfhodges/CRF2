@@ -32,7 +32,7 @@ print("basedir",BASE_DIR)
 SECRET_KEY = config.get('django','secret_key',raw=True)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 CANVAS_ENVIRONMENT = 'TEST' # Could be 'BETA', or 'PRODUCTION'
 #
@@ -46,8 +46,8 @@ INTERNAL_IPS = [
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
-
-STATIC_URL = '/static/'
+URL_PREFIX = '/siterequest'
+STATIC_URL = URL_PREFIX+'/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")#'/Users/mfhodges/Desktop/CRF2/course/static'#os.path.join(BASE_DIR, "static")
 
 
@@ -267,6 +267,7 @@ CELERY_BEAT_SCHEDULER: 'django_celery_beat.schedulers:DatabaseScheduler'
 
 
 #django_heroku.settings(locals())
+
 
 
 # importing logger settings

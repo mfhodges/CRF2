@@ -3,11 +3,13 @@ from . models import *
 from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
-
+from django.conf import settings
 """
 can implement EXACT search by instructor username, course code, or course title
 
 """
+
+admin.site.site_url = settings.URL_PREFIX
 
 class AdditionalEnrollmentInline(admin.StackedInline):
     model = AdditionalEnrollment
