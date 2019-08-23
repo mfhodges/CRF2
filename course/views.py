@@ -69,13 +69,17 @@ of Django REST Framework's class-based views and serializers'see: http://www.cdr
 
 from rest_framework.views import exception_handler
 from rest_framework import status
+from django.shortcuts import redirect, render
 
 
+def emergency_redirect(request):
+	response = redirect('/')
+	return response
 
 def custom_exception_handler(exc, context):
     # Call REST framework's default exception handler first,
     # to get the standard error response.
-    ##print("helloooo","\n",exc,"\n",context)
+    ##prsnt("helloooo","\n",exc,"\n",context)
     response = exception_handler(exc, context)
     #response = render({},'errors/403.html')
 
@@ -236,7 +240,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             ##print("...1",backend.filterset_base.filters)
 
         if page is not None:
-            serializer = self.get_serializer(page, many=True,fields=['course_code','requested','instructors','course_activity','year','course_term','course_primary_subject','course_number','course_section','course_name','multisection_request','request','crosslisted','requested_override','associated_request'])
+            serializer = self.get_serializer(page, many=True,fields=['course_subject','course_code','requested','instructors','course_activity','year','course_term','course_primary_subject','course_number','course_section','course_name','multisection_request','request','crosslisted','requested_override','associated_request'])
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
             #print("template_name",response.template_name)
             if request.accepted_renderer.format == 'html':

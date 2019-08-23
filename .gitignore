@@ -2,6 +2,8 @@ logs/
 *.pyc
 course/static/emails/
 config/
+venv/
+staticfiles/
 course/migrations/
 datawarehouse/
 db.sqlite3

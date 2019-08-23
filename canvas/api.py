@@ -8,8 +8,8 @@ from configparser import ConfigParser
 
 config = ConfigParser()
 config.read('config/config.ini')
-domain = config.get('canvas','test_env') #'prod_env')
-key = config.get('canvas', 'test_key')#'prod_key')
+domain = config.get('canvas','prod_env') #'prod_env')
+key = config.get('canvas', 'prod_key')#'prod_key')
 headers = {
     'Authorization': 'Bearer %s' % (key)
 }
