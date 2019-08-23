@@ -53,13 +53,16 @@
 
 
         <td style="padding-left:4%;">
-
+          {{course.crosslisted}}
           {% if course.requested == True %}
               {% if course.multisection_request %}
-              <a  href='{% url "UI-request-detail" pk=course.multisection_request %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</a>
+              <a  href='{% url "UI-request-detail" pk=course.multisection_request %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">a Requested</a>
+              {% elif course.crosslisted %}
+              <a  href='{% url "UI-request-detail" pk=course.course_code %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">b Requested</a>
               {% else %}
+
               <!-- this button should pull up the submitted request! -->
-              <a  href='{% url "UI-request-detail" pk=course.course_code %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</a>
+              <a  href='{% url "UI-request-detail" pk=course.course_code %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">c Requested</a>
               {% endif %}
 
           {% else %}

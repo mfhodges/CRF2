@@ -45,6 +45,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.mixins import UserPassesTestMixin
+
 """
 For more 'Detailed descriptions, with full methods and attributes, for each
 of Django REST Framework's class-based views and serializers'see: http://www.cdrf.co/
@@ -88,6 +90,31 @@ def custom_exception_handler(exc, context):
     #print("we r barely ali", response.data['status_code'])
     return response
     #return render(response, 'errors/'+str(response.status_code) +'.html')
+
+
+class TestUserProfileCreated(UserPassesTestMixin):
+    def test_func(self):
+        # this is to test that for each new user a profile exists for them
+        # the User object is automatically created with the shib login
+        # for more info please refer to https://ccbv.co.uk/projects/Django/1.9/django.contrib.auth.mixins/UserPassesTestMixin/
+
+        print("testing user")
+        user = User.objects.get(username=self.request.user.username)
+        try:
+            profile = user.profile
+            return True
+        except:# profile doesnt exist -- first time logging in and was never a masquerade so all of their info must be filled out
+            userdata = datawarehouse_lookup(PPENN_KEY=user.username)
+            if userdata: # if no result userdata== False
+                first_name = userdata['firstname'].title()
+                last_name = userdata['lastname'].title()
+                user.update(first_name=first_name,last_name=last_name,email=userdata['email'])
+                Profile.objects.create(user=user,penn_id=userdata['penn_id'])
+                return True
+            else:
+                return False
+        return False
+        #return self.request.user == self.post.owner
 
 
 
@@ -209,7 +236,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             ##print("...1",backend.filterset_base.filters)
 
         if page is not None:
-            serializer = self.get_serializer(page, many=True,fields=['course_code','requested','instructors','course_activity','year','course_term','course_primary_subject','course_number','course_section','course_name','multisection_request'])
+            serializer = self.get_serializer(page, many=True,fields=['course_code','requested','instructors','course_activity','year','course_term','course_primary_subject','course_number','course_section','course_name','multisection_request','request','crosslisted'])
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
             #print("template_name",response.template_name)
             if request.accepted_renderer.format == 'html':
@@ -1012,7 +1039,7 @@ class CanvasSiteViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         return Response(serializer.data)
         """
 
-class HomePage(APIView):#,
+class HomePage(APIView,UserPassesTestMixin):#,
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'home_content.html'
     login_url = '/accounts/login/'
@@ -1025,12 +1052,42 @@ class HomePage(APIView):#,
 
     permission_classes = (permissions.IsAuthenticated,)
 
+
+
+    def test_func(self):
+        # this is to test that for each new user a profile exists for them
+        # the User object is automatically created with the shib login
+        # for more info please refer to https://ccbv.co.uk/projects/Django/1.9/django.contrib.auth.mixins/UserPassesTestMixin/
+
+        print("testing user")
+        user = User.objects.get(username=self.request.user.username)
+        try:
+            profile = user.profile
+            return True
+        except:# profile doesnt exist -- first time logging in and was never a masquerade so all of their info must be filled out
+            userdata = datawarehouse_lookup(PPENN_KEY=user.username)
+            if userdata: # if no result userdata== False
+                first_name = userdata['firstname'].title()
+                last_name = userdata['lastname'].title()
+                user.first_name=first_name
+                user.last_name=last_name
+                user.email=userdata['email']
+                Profile.objects.create(user=user,penn_id=userdata['penn_id'])
+                return True
+            else:
+                return False
+        return False
+
+
     def get(self, request, *args, **kwargs):
         # # TODO:
-        # [ ] Check that valid pennkey
-        # [ ] handles if there are no notice instances in the db
+        # [x] Check that valid pennkey
+        # [x] handles if there are no notice instances in the db
         #print("request.user",request.user)
         #print("in home")
+
+        self.test_func()
+
         try:
             notice = Notice.objects.latest()
             #print(Notice.notice_text)
@@ -1261,8 +1318,8 @@ def openDataProxy(request):
         config = ConfigParser()
         config.read('config/config.ini')
         domain = config.get('opendata', 'domain')
-        id = config.get('opendata', 'id')
-        key = config.get('opendata', 'key')
+        id = config.get('opendata', 'id2')
+        key = config.get('opendata', 'key2')
         OD = library.OpenData(domain,id,key)
         OD.set_uri('course_section_search')
         OD.add_param('course_id',course_id)
@@ -1316,11 +1373,8 @@ def autocompleteSubjectModel(request):
     return HttpResponse(data, mimetype)
 
 def autocompleteCanvasSiteModel(request):
-    print("noop")
     if request.is_ajax():
-
         q = request.GET.get('term', '').capitalize()
-        print("q",q)
         search_qs = CanvasSite.objects.filter(Q(owners=q)|Q(added_permissions=q))
         results = []
         for r in search_qs:

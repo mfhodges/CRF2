@@ -50,7 +50,7 @@ URL_PREFIX = '/siterequest'
 STATIC_URL = URL_PREFIX+'/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")#'/Users/mfhodges/Desktop/CRF2/course/static'#os.path.join(BASE_DIR, "static")
 
-
+LOGIN_REDIRECT_URL = URL_PREFIX
 LOGOUT_REDIRECT_URL = '/Shibboleth.sso/Logout?return=https://idp.pennkey.upenn.edu/logout'
 
 

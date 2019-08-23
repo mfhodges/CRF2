@@ -9,7 +9,8 @@ can implement EXACT search by instructor username, course code, or course title
 
 """
 
-admin.site.site_url = settings.URL_PREFIX
+
+#admin.site.site_url = settings.URL_PREFIX
 
 class AdditionalEnrollmentInline(admin.StackedInline):
     model = AdditionalEnrollment

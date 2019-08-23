@@ -74,7 +74,7 @@ function submitForm() {
         var pennkey = $("#pennkey").val();
         console.log(pennkey);
         $.ajax({
-                 url : `/siterequest/api/users/${pennkey}`,
+                 url : `/api/users/${pennkey}`,
                  dataType: "json",
                  success : function (data) {
                         console.log(data);
@@ -106,7 +106,7 @@ function submitForm() {
 
 
        $.ajax({
-                url : `/siterequest/canvasuser/${pennkey}`,
+                url : `/canvasuser/${pennkey}`,
                 dataType: "json",
 
                 success : function (data) {

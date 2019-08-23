@@ -177,6 +177,15 @@ def updateCanvasSites(pennkey):
                 print("couldnt add course",canvas_course.id)
 
 
+def fix_crosslistings():
+    courses = Course.objects.all()
+    for c in courses:
+        #c.find_crosslisted()
+        x = c.crosslisted.all()
+        for cx in x:
+            print(cx)
+            cx.find_crosslisted()
+
 def process_canvas():
     users = User.objects.all()
     for user in users:

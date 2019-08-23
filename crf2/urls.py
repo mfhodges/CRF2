@@ -40,9 +40,9 @@ admin.site.site_title = 'ADMIN: Site Request'
 
 urlpatterns = [
 #    url(r'^shib/', include('shibboleth.urls', namespace='shibboleth')),
-    path('siterequest/admin/doc/', include('django.contrib.admindocs.urls')),
-    path('siterequest/admin/', admin.site.urls),
-    path('siterequest/', include('course.urls')),
+    path('admin/doc/', include('django.contrib.admindocs.urls')),
+    path('admin/', admin.site.urls),
+    path('', include('course.urls')),
 ]
 #urlpatterns = [path('siterequest/', include(urlpatterns))]
 

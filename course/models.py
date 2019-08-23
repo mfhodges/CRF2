@@ -218,7 +218,7 @@ class Course(models.Model):
     #section_request = models.ForeignKey('course.Request',on_delete=models.CASCADE, related_name="additional_sections",default=None,null=True)
     requested_override = models.BooleanField(default=False) # this field is just for certain cases !
     multisection_request = models.ForeignKey('course.Request',on_delete=models.CASCADE, related_name="additional_sections",default=None,blank=True,null=True)
-
+    tied_request = models.ForeignKey('course.Request',on_delete=models.CASCADE, related_name="tied_course",default=None,blank=True,null=True)
 
     class Meta:
         ordering = ('course_code',)
@@ -252,7 +252,6 @@ class Course(models.Model):
         for course in cross_courses:
             self.crosslisted.add(course)
             self.save()
-            # do the symmetrical
 
 
 
@@ -268,6 +267,7 @@ class Course(models.Model):
             self.requested = self.find_requested()
             super().save(*args,**kwargs) #super(Course, self)
             self.sections.set(self.find_sections())
+            self.find_crosslisted()
             super().save(*args,**kwargs)
             # here is where you do the updating of cross listed instances
         else: #updating
