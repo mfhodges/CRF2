@@ -218,7 +218,7 @@ class Course(models.Model):
     #section_request = models.ForeignKey('course.Request',on_delete=models.CASCADE, related_name="additional_sections",default=None,null=True)
     requested_override = models.BooleanField(default=False) # this field is just for certain cases !
     multisection_request = models.ForeignKey('course.Request',on_delete=models.CASCADE, related_name="additional_sections",default=None,blank=True,null=True)
-    tied_request = models.ForeignKey('course.Request',on_delete=models.CASCADE, related_name="tied_course",default=None,blank=True,null=True)
+    crosslisted_request = models.ForeignKey('course.Request',on_delete=models.CASCADE, related_name="tied_course",default=None,blank=True,null=True)
 
     class Meta:
         ordering = ('course_code',)
@@ -245,13 +245,29 @@ class Course(models.Model):
         print("we hit base case that i havent planned for")
 
     def find_crosslisted(self):
-        # crosslisted courses hace the same <number><section>_<year><term> -- the difference should be the subject
+        # crosslisted courses hace the same <number><section>_<year><term> -- the difference should be the subject but they should also each have the same primary subject!
         # check that there is a primarycrosslisting
-        cross_courses = Course.objects.filter(Q(course_number=self.course_number)  & Q(course_section=self.course_section)& Q(course_term=self.course_term) & Q(year=self.year)).exclude(course_subject=self.course_subject)
+        cross_courses = Course.objects.filter(Q(course_primary_subject=self.course_primary_subject)&Q(course_number=self.course_number)  & Q(course_section=self.course_section)& Q(course_term=self.course_term) & Q(year=self.year))
         print("found course", cross_courses)
         for course in cross_courses:
             self.crosslisted.add(course)
             self.save()
+
+
+    ## doesnt work ##
+    def update_crosslists(self):
+        # makes sure that request override is common
+        # makes sure that request object is common ( by setting crosslisted_request)
+        cross_courses = Course.objects.filter( Q(course_primary_subject=self.course_primary_subject)&Q(course_number=self.course_number)  & Q(course_section=self.course_section)& Q(course_term=self.course_term) & Q(year=self.year))
+        for course in cross_courses:
+
+            course.requested_override = self.requested_override
+        try:
+            r= self.request
+            for course in cross_courses:
+                course.crosslisted_request = r
+        except:
+            pass # no request
 
 
 
@@ -271,8 +287,10 @@ class Course(models.Model):
             super().save(*args,**kwargs)
             # here is where you do the updating of cross listed instances
         else: #updating
+
             self.sections.set(self.find_sections())
             self.requested = self.find_requested()
+            self.update_crosslists()
             super().save(*args,**kwargs) #super(Course, self)
 
     #def set_crosslistings(self):
@@ -332,15 +350,19 @@ class Course(models.Model):
     def srs_format(self):
         term = self.year + self.course_term
         #print(course['course_section'])
+        return("%s-%s-%s %s" % (self.course_subject.abbreviation, self.course_number,self.course_section, term ))
+
+    def srs_format_primary(self):
+        term = self.year + self.course_term
+        #print(course['course_section'])
         return("%s-%s-%s %s" % (self.course_primary_subject.abbreviation, self.course_number,self.course_section, term ))
 
 
-
     def __str__(self):
-        return "_".join([self.course_primary_subject.abbreviation, self.course_number, self.course_section, self.year+self.course_term])
+        return "_".join([self.course_subject.abbreviation, self.course_number, self.course_section, self.year+self.course_term])
 
     def __unicode__(self):
-        return "_".join([self.course_primary_subject.abbreviation, self.course_number, self.course_section, self.year, self.course_term])
+        return "_".join([self.course_subject.abbreviation, self.course_number, self.course_section, self.year, self.course_term])
 
         #return self.course_code
 
@@ -415,6 +437,7 @@ class Request(models.Model):
     title_override = models.CharField(max_length=100,null=True,default=None,blank=True) # previously SRS title override
     additional_instructions = models.TextField(blank=True,default=None, null=True)
     reserves = models.BooleanField(default=False)
+    # this field is redundant
     canvas_instance = models.ForeignKey(CanvasSite,related_name='canvas', on_delete=models.CASCADE,null=True, blank=True )
 
     # NOTE! needs something for multisection course sites!

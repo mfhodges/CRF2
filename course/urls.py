@@ -132,7 +132,7 @@ urlpatterns = [
     # --------------- login url/view -------------------
     path('accounts/login/', auth_views.LoginView.as_view(
             template_name='login.html',
-            extra_context={'next': '/siterequest/',},
+            extra_context={'next': '/',},
             ), name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(next_page=settings.LOGOUT_REDIRECT_URL,
             template_name='logout.html',

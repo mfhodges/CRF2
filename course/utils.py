@@ -182,9 +182,18 @@ def fix_crosslistings():
     for c in courses:
         #c.find_crosslisted()
         x = c.crosslisted.all()
+        #x.delete()
         for cx in x:
             print(cx)
             cx.find_crosslisted()
+
+
+
+def my_test():
+    courses = Course.objects.all()
+    for c in courses:
+        if c.course_primary_subject != c.course_subject:
+            print(c)
 
 def process_canvas():
     users = User.objects.all()

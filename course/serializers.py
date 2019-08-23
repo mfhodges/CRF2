@@ -63,7 +63,8 @@ class CourseSerializer(DynamicFieldsModelSerializer): #removed HyperlinkedModelS
     course_subject = serializers.SlugRelatedField(many=False,queryset=Subject.objects.all(), slug_field='abbreviation')
     course_activity = serializers.SlugRelatedField(many=False,queryset=Activity.objects.all(), slug_field='abbr')
     id = serializers.ReadOnlyField()
-    #request = serializers.SerializerMethodField()
+    requested_override = serializers.ReadOnlyField()
+    associated_request = serializers.SerializerMethodField()
     #course_requested = serializers.HyperlinkedRelatedField(many=True, view_name='request-detail',read_only=True)
     #request_details = RequestSerializer(many=True,read_only=True)
 
@@ -72,9 +73,12 @@ class CourseSerializer(DynamicFieldsModelSerializer): #removed HyperlinkedModelS
         fields = '__all__' # or a list of field from model like ('','')
         read_only_fields = ('sections',)
 
-    def get_request(self, obj):
+    def get_associated_request(self, obj):
         request = obj.get_request()
-        return request.course_info.course_code
+        if request:
+            return request.course_requested.course_code
+        else:
+            return None
     """
     def get_requested(self, obj):
         # if the object has a request or if it is added as an additional_section in a request

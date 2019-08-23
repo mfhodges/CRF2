@@ -236,7 +236,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             ##print("...1",backend.filterset_base.filters)
 
         if page is not None:
-            serializer = self.get_serializer(page, many=True,fields=['course_code','requested','instructors','course_activity','year','course_term','course_primary_subject','course_number','course_section','course_name','multisection_request','request','crosslisted'])
+            serializer = self.get_serializer(page, many=True,fields=['course_code','requested','instructors','course_activity','year','course_term','course_primary_subject','course_number','course_section','course_name','multisection_request','request','crosslisted','requested_override','associated_request'])
             response = self.get_paginated_response(serializer.data) #http://www.cdrf.co/3.9/rest_framework.viewsets/ModelViewSet.html#paginate_queryset
             #print("template_name",response.template_name)
             if request.accepted_renderer.format == 'html':
@@ -1073,6 +1073,7 @@ class HomePage(APIView,UserPassesTestMixin):#,
                 user.last_name=last_name
                 user.email=userdata['email']
                 Profile.objects.create(user=user,penn_id=userdata['penn_id'])
+                utils.updateCanvasSites(user.username)
                 return True
             else:
                 return False

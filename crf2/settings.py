@@ -46,11 +46,11 @@ INTERNAL_IPS = [
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
-URL_PREFIX = '/siterequest'
-STATIC_URL = URL_PREFIX+'/static/'
+#URL_PREFIX = '/siterequest'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")#'/Users/mfhodges/Desktop/CRF2/course/static'#os.path.join(BASE_DIR, "static")
-
-LOGIN_REDIRECT_URL = URL_PREFIX
+#FORCE_SCRIPT_NAME = '/mysite'
+#LOGIN_REDIRECT_URL = URL_PREFIX
 LOGOUT_REDIRECT_URL = '/Shibboleth.sso/Logout?return=https://idp.pennkey.upenn.edu/logout'
 
 
@@ -256,12 +256,26 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 # Other Celery settings
 
+#https://docs.celeryproject.org/en/latest/userguide/periodic-tasks.html
+
 CELERY_BEAT_SCHEDULE = {
-    'task-number-one': {
-        'task': 'course.tasks.task_process_approved',
-        'schedule': crontab(minute='*/1')#,
+    'read_canvas_sites': {
+        'task': 'course.tasks.process_canvas',
+        'schedule': crontab(minute='0',hour='0')#, # Execute daily at midnight.
         #'args': (*args)
-    }
+    },
+    'clear_canceled_requests': {
+        'task': 'course.tasks.remove_canceled',
+        'schedule': crontab(minute='*/60')#, # every hour
+        #'args': (*args)
+    },
+    'process_approved_requests': {
+        'task': 'course.tasks.create_canvas_site',
+        'schedule': crontab(minute='*/20')#, # every hour
+        #'args': (*args)
+    },
+
+
 }
 CELERY_BEAT_SCHEDULER: 'django_celery_beat.schedulers:DatabaseScheduler'
 

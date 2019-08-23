@@ -67,7 +67,7 @@ def asrepr(course):
     term = course['year'] + course['course_term']
     #print(course['course_section'])
 
-    return("%s-%s-%s %s" % (course['course_primary_subject'], course['course_number'],course['course_section'], term ))
+    return("%s-%s-%s %s" % (course['course_subject'], course['course_number'],course['course_section'], term ))
     #-".join([])
 
 @register.simple_tag

@@ -76,16 +76,18 @@ class Command(BaseCommand):
             page =1
 
             while data != None:
+
                 print("\n\tSTARTING PAGE : ", page,"\n")
                 if data =='ERROR':
                     print('ERROR')
                     sys.exit()
                 if isinstance(data,dict): # sometimes the data passed back can be a single course and in that case it should be put in a list
                     data=[data]
+
                 for datum in data:
                     #print("datum",datum)
                     datum["section_id"]=datum["section_id"].replace(" ","")
-                    datum["crosslist_primary"]=datum["section_id"].replace(" ","")
+                    datum["crosslist_primary"]=datum["crosslist_primary"].replace(" ","")
                     print("adding ", datum['section_id'])
                     try:
                         subject = Subject.objects.get(abbreviation=datum['course_department'])
@@ -107,6 +109,7 @@ class Command(BaseCommand):
                             school = School.objects.get(opendata_abbr=school_code)
                             primary_subject = Subject.objects.create(abbreviation=p_subj,name=datum["department_description"],schools=school)
                     else:
+                        print(datum['crosslist_primary'], 'not found')
                         primary_subject = subject
 
                     school = primary_subject.schools
@@ -157,6 +160,15 @@ class Command(BaseCommand):
                                 update_course.delete()
                             else:
                                 update_course.name = datum['course_title']
+                                #
+                                # SHOULD HANDLE OTHER UPDATES
+                                #
+                                if update_course.course_primary_subject != datum['crosslist_primary'][:-6]:
+                                    try:
+                                        update_course.course_primary_subject = Subject.objects.get(abbreviation=datum['crosslist_primary'][:-6])
+                                    except:
+                                        # subject doesnt exist
+                                        pass
                                 update_course.instructors.clear()
                                 if datum['instructors']:
                                     instructors = []
