@@ -161,7 +161,7 @@ def create_canvas_site():
             section_course = Course.objects.get(course_code=section)
             sis_section = 'SRS_'+section_course.srs_format_primary()
             #sis_sections += [sis_section]
-            canvas_course.create_course_section(course_section={'name':section_course +' '+namebit,'sis_section_id':sis_section},enable_sis_reactivation=True)
+            canvas_course.create_course_section(course_section={'name':section_course.srs_format() +' '+ namebit,'sis_section_id':sis_section},enable_sis_reactivation=True)
 
 
         #check for crosslist
