@@ -152,10 +152,11 @@ def create_canvas_site():
         else:
             #error log and stop for loop
             pass
-
         # add sections
-	if request_obj.title_override:namebit = request_obj.title_override
-        else:namebit = course_requested.course_name
+        if request_obj.title_override:
+            namebit = request_obj.title_override
+        else:
+            namebit = course_requested.course_name
         for section in serialized.data['additional_sections']:
             section_course = Course.objects.get(course_code=section)
             sis_section = 'SRS_'+section_course.srs_format_primary()
@@ -177,7 +178,7 @@ def create_canvas_site():
             if user == None: # user doesnt exist
                 user = canvas_api.create_user(instructor.username, instructor.profile.penn_id, instructor.full_name())
             else:
-		canvas_course.enroll_user(user.id, 'TeacherEnrollment' ,enrollment={'enrollment_state':'active'} )
+                canvas_course.enroll_user(user.id, 'TeacherEnrollment' ,enrollment={'enrollment_state':'active'} )
             	#for sect in canvas_course.get_sections():canvas_course.enroll_user(user.id, 'TeacherEnrollment' ,enrollment={'course_section_id':sect.id,'enrollment_state':'active'} )
         additional_enrollments = serialized.data['additional_enrollments']
         for enrollment in additional_enrollments:
