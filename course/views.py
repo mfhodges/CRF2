@@ -1305,6 +1305,23 @@ def myproxy(request,username):
     return django.http.JsonResponse(final)
 
 
+# ------------- TEMPORARY PROCESS REQUESTS --------
+from django.contrib.admin.views.decorators import staff_member_required
+
+@staff_member_required
+def process_requests(request):
+	from course.tasks import create_canvas_site
+
+	done = {'response':'response','processed':[]}
+	_to_process = Request.objects.filter(status='APPROVED')
+	for obj in _to_process:
+		item = {'request':obj.course_requested.course_code}
+		done['processed'] += [obj.course_requested.course_code]
+	running = create_canvas_site()
+
+	return django.http.JsonResponse(done)
+
+
 
 # -------------- OpenData Proxy ----------------
 def openDataProxy(request):
