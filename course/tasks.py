@@ -151,6 +151,8 @@ def create_canvas_site():
             print("created",canvas_course)
             # add sections
             # add main one
+
+
             try:
                 canvas_course.create_course_section(course_section={'name':name,'sis_section_id':sis_course_id},enable_sis_reactivation=True)#first_section = canvas_course.get_sections()[0]
             except:
@@ -194,8 +196,12 @@ def create_canvas_site():
                 except:
                     pass # fail silently
             else:
-                canvas_course.enroll_user(user.id, 'TeacherEnrollment' ,enrollment={'enrollment_state':'active', 'sis_section_id':sis_section'} )
-            	#for sect in canvas_course.get_sections():canvas_course.enroll_user(user.id, 'TeacherEnrollment' ,enrollment={'course_section_id':sect.id,'enrollment_state':'active'} )
+                try:
+                    for sect in canvas_course.get_sections():
+                        canvas_course.enroll_user(user.id, 'TeacherEnrollment' ,enrollment={'enrollment_state':'active', 'course_section_id':sect.id})
+                except:
+                    pass #fail silently
+                #for sect in canvas_course.get_sections():canvas_course.enroll_user(user.id, 'TeacherEnrollment' ,enrollment={'course_section_id':sect.id,'enrollment_state':'active'} )
         additional_enrollments = serialized.data['additional_enrollments']
         for enrollment in additional_enrollments:
             user = enrollment['user']
