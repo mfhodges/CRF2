@@ -142,11 +142,20 @@ def create_canvas_site():
             term_id = canvas_api.find_term_id(96678, course_requested.year+course_requested.course_term)
             print("going to create",name,',',sis_course_id)
             course = {'name':name,'sis_course_id':sis_course_id,'course_code':sis_course_id,'term_id':term_id}
-            canvas_course = account.create_course(course=course)
+            try:
+                canvas_course = account.create_course(course=course)
+            except:
+                # dont continue with the creation
+                return
+
             print("created",canvas_course)
             # add sections
             # add main one
-            canvas_course.create_course_section(course_section={'name':name,'sis_section_id':sis_course_id},enable_sis_reactivation=True)#first_section = canvas_course.get_sections()[0]
+            try:
+                canvas_course.create_course_section(course_section={'name':name,'sis_section_id':sis_course_id},enable_sis_reactivation=True)#first_section = canvas_course.get_sections()[0]
+            except:
+                # dont continue with the loop so just stop for now.
+                return
             #first_section.edit(course_section={'sis_section_id':sis_course_id},enable_sis_reactivation=True)
 
         else:
@@ -157,12 +166,16 @@ def create_canvas_site():
             namebit = request_obj.title_override
         else:
             namebit = course_requested.course_name
+
         for section in serialized.data['additional_sections']:
             section_course = Course.objects.get(course_code=section)
             sis_section = 'SRS_'+section_course.srs_format_primary()
             #sis_sections += [sis_section]
-            canvas_course.create_course_section(course_section={'name':section_course.srs_format() +' '+ namebit,'sis_section_id':sis_section},enable_sis_reactivation=True)
-
+            try:
+                canvas_course.create_course_section(course_section={'name':section_course.srs_format_primary() +' '+ namebit,'sis_section_id':sis_section},enable_sis_reactivation=True)
+            except:
+                # dont continue with the loop so just stop for now.
+                return
 
         #check for crosslist
         if course_requested.crosslisted:
@@ -176,9 +189,12 @@ def create_canvas_site():
             # check that they have an account
             user = canvas_api.get_user_by_sis(instructor.username)
             if user == None: # user doesnt exist
-                user = canvas_api.create_user(instructor.username, instructor.profile.penn_id, instructor.full_name())
+                try:
+                    user = canvas_api.create_user(instructor.username, instructor.profile.penn_id, instructor.first_name+ ' '+ instructor.last_name)
+                except:
+                    pass # fail silently
             else:
-                canvas_course.enroll_user(user.id, 'TeacherEnrollment' ,enrollment={'enrollment_state':'active'} )
+                canvas_course.enroll_user(user.id, 'TeacherEnrollment' ,enrollment={'enrollment_state':'active', 'sis_section_id':sis_section'} )
             	#for sect in canvas_course.get_sections():canvas_course.enroll_user(user.id, 'TeacherEnrollment' ,enrollment={'course_section_id':sect.id,'enrollment_state':'active'} )
         additional_enrollments = serialized.data['additional_enrollments']
         for enrollment in additional_enrollments:
@@ -191,11 +207,16 @@ def create_canvas_site():
                 user_canvas = canvas_api.create_user(user, user_crf.profile.penn_id, user_crf.full_name())
             if role =='LIB' or role=='librarian':
                 for sect in canvas_course.get_sections():
-                    canvas_course.enroll_user( user_canvas.id , enrollment_types[role] ,enrollment={'course_section_id':sect.id,'role_id':librarian_role_id,'enrollment_state':'active'} )
+                    try:
+                        canvas_course.enroll_user( user_canvas.id , enrollment_types[role] ,enrollment={'course_section_id':sect.id,'role_id':librarian_role_id,'enrollment_state':'active'} )
+                    except:
+                        pass
             else:
                 for sect in canvas_course.get_sections():
-                    canvas_course.enroll_user(user_canvas.id ,enrollment_types[role] ,enrollment={'course_section_id':sect.id,'enrollment_state':'active'} )
-
+                    try:
+                        canvas_course.enroll_user(user_canvas.id ,enrollment_types[role] ,enrollment={'course_section_id':sect.id,'enrollment_state':'active'} )
+                    except:
+                        pass
         #enroll_user(user.id ,'DesignerEnrollment' ,enrollment={'role_id':1383,'enrollment_state':'active'})
         input("STEP 3 DONE...\n")
         ######## Step 4. Configure reserves ########
