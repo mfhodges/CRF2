@@ -170,7 +170,7 @@ def create_canvas_site():
 
         input("STEP 2 DONE...\n")
         ######## Step 3. enroll faculty and additional enrollments  ########
-        enrollment_types = {'INST':'TeacherEnrollment', 'TA':'TaEnrollment', 'DES':'DesignerEnrollment', 'LIB':'DesignerEnrollment'}
+        enrollment_types = {'INST':'TeacherEnrollment', 'instructor':'TeacherEnrollment','TA':'TaEnrollment','ta':'TaEnrollment', 'DES':'DesignerEnrollment', 'designer':'DesignerEnrollment', 'LIB':'DesignerEnrollment','librarian':'DesignerEnrollment'}
         librarian_role_id = '1383'
         for instructor in course_requested.instructors.all():
             # check that they have an account
@@ -189,12 +189,14 @@ def create_canvas_site():
             if user_canvas == None: # user doesnt exist
                 user_crf = User.objects.get(username=user)
                 user_canvas = canvas_api.create_user(user, user_crf.profile.penn_id, user_crf.full_name())
-            if role =='LIB':
+            if role =='LIB' or role=='librarian':
                 for sect in canvas_course.get_sections():
                     canvas_course.enroll_user( user_canvas.id , enrollment_types[role] ,enrollment={'course_section_id':sect.id,'role_id':librarian_role_id,'enrollment_state':'active'} )
             else:
                 for sect in canvas_course.get_sections():
                     canvas_course.enroll_user(user_canvas.id ,enrollment_types[role] ,enrollment={'course_section_id':sect.id,'enrollment_state':'active'} )
+
+        #enroll_user(user.id ,'DesignerEnrollment' ,enrollment={'role_id':1383,'enrollment_state':'active'})
         input("STEP 3 DONE...\n")
         ######## Step 4. Configure reserves ########
         if serialized.data['reserves']:
@@ -205,6 +207,8 @@ def create_canvas_site():
                 else:
                     pass
         input("STEP 4 DONE...\n")
+
+
         ######## Step 5. Content Migration ########
         if serialized.data['copy_from_course']:
             contentmigration = canvas_course.create_content_migration(migration_type='course_copy_importer',settings={'[source_course_id':serialized.data['copy_from_course']})
@@ -239,7 +243,7 @@ def create_canvas_site():
                 pass
         input("STEP 6 DONE...\n")
         ######## Step 7. Set request to Complete ########
-        request_obj.status = 'COMPLETE'
+        request_obj.status = 'COMPLETED'
         request_obj.save()
 
         input("STEP 7 DONE...\n")

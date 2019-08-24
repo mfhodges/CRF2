@@ -4,6 +4,7 @@
   <legend>Canvas Site</legend>
  {% if request_instance.canvas_instance %}
   <dl class="row" style="line-height:1.1;">
+
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Name</dt>
         <dd class="col-8 col-md-9"> </dd>
 
@@ -17,11 +18,14 @@
         <dd class="col-8 col-md-9"> </dd>
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">additional enrollments</dt>
         <dd class="col-8 col-md-9"> </dd>
+
+        <a target="_blank" href="https://canvas.upenn.edu/courses/{{course.canvas_instance}}">OPEN CANVAS SITE </a>
+
   </dl>
   {% else %}
   <center><p> No Canvas Site on File.</p></center>
   {% if staff %}
-  <a target="_blank" href="https://canvas.upenn.edu/api/v1/sections/sis_section_id:SRS_{{course.course_code}}"> CHECK FOR CANVAS SITE  </a>
+  <a target="_blank" href="https://canvas.upenn.edu/api/v1/sections/sis_section_id:SRS_{{course|asrepr}}"> CHECK FOR CANVAS SITE  </a>
   {% endif %}
   {% endif %}
 </fieldset>
