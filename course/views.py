@@ -1322,6 +1322,19 @@ def process_requests(request):
 	return django.http.JsonResponse(done)
 
 
+@staff_member_required
+def remove_canceled_requests(request):
+	from course.tasks import remove_canceled
+
+	done = {'response':'response','processed':[]}
+	_to_process = Request.objects.filter(status='CANCELED')
+	for obj in _to_process:
+		item = {'canceled/deleted':obj.course_requested.course_code}
+		done['processed'] += [obj.course_requested.course_code]
+	running = remove_canceled()
+
+	return django.http.JsonResponse(done)
+
 
 # -------------- OpenData Proxy ----------------
 def openDataProxy(request):
