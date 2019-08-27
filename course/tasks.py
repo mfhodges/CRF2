@@ -133,8 +133,9 @@ def create_canvas_site():
         ######## Step 2. Create course in canvas ########
         account = canvas_api.find_account(course_requested.course_schools.canvas_subaccount)
         if account: # account exists
-            name_code = "%s %s %s " % (course_requested.course_primary_subject.abbreviation, course_requested.course_number, course_requested.year+course_requested.course_term)
+
             section_name_code ="%s %s-%s %s " % (course_requested.course_primary_subject.abbreviation, course_requested.course_number,course_requested.course_section, course_requested.year+course_requested.course_term)
+            name_code = section_name_code
             # check if there is a title override
             if request_obj.title_override:
                 name = name_code + request_obj.title_override
@@ -158,7 +159,7 @@ def create_canvas_site():
             # add sections
             # add main one
 
-            
+
             try:
                 canvas_course.create_course_section(course_section={'name':section_name,'sis_section_id':sis_course_id},enable_sis_reactivation=True)#first_section = canvas_course.get_sections()[0]
             except:
