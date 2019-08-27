@@ -134,11 +134,17 @@ def create_canvas_site():
         account = canvas_api.find_account(course_requested.course_schools.canvas_subaccount)
         if account: # account exists
             name_code = "%s %s %s " % (course_requested.course_primary_subject.abbreviation, course_requested.course_number, course_requested.year+course_requested.course_term)
+            section_name_code ="%s %s-%s %s " % (course_requested.course_primary_subject.abbreviation, course_requested.course_number,course_requested.course_section, course_requested.year+course_requested.course_term)
             # check if there is a title override
-            if request_obj.title_override: name = name_code + request_obj.title_override
-            else: name = name_code + course_requested.course_name
+            if request_obj.title_override:
+                name = name_code + request_obj.title_override
+                section_name = section_name_code + request_obj.title_override
+            else:
+                name = name_code + course_requested.course_name
+                section_name = section_name_code + course_requested.course_name
             sis_course_id = 'SRS_'+ course_requested.srs_format_primary()
             print("sis_course_id",sis_course_id)
+            print("section_name",section_name)
             term_id = canvas_api.find_term_id(96678, course_requested.year+course_requested.course_term)
             print("going to create",name,',',sis_course_id)
             course = {'name':name,'sis_course_id':sis_course_id,'course_code':sis_course_id,'term_id':term_id}
@@ -152,9 +158,9 @@ def create_canvas_site():
             # add sections
             # add main one
 
-
+            
             try:
-                canvas_course.create_course_section(course_section={'name':name,'sis_section_id':sis_course_id},enable_sis_reactivation=True)#first_section = canvas_course.get_sections()[0]
+                canvas_course.create_course_section(course_section={'name':section_name,'sis_section_id':sis_course_id},enable_sis_reactivation=True)#first_section = canvas_course.get_sections()[0]
             except:
                 # dont continue with the loop so just stop for now.
                 return
