@@ -129,7 +129,7 @@ def create_canvas_site():
         request_obj.status = 'IN_PROCESS'
         request_obj.save()
         course_requested = request_obj.course_requested
-        input("STEP 1 DONE...\n")
+        #input("STEP 1 DONE...\n")
         ######## Step 2. Create course in canvas ########
         account = canvas_api.find_account(course_requested.course_schools.canvas_subaccount)
         if account: # account exists
@@ -189,7 +189,7 @@ def create_canvas_site():
         if course_requested.crosslisted:
             pass
 
-        input("STEP 2 DONE...\n")
+        #input("STEP 2 DONE...\n")
         ######## Step 3. enroll faculty and additional enrollments  ########
         enrollment_types = {'INST':'TeacherEnrollment', 'instructor':'TeacherEnrollment','TA':'TaEnrollment','ta':'TaEnrollment', 'DES':'DesignerEnrollment', 'designer':'DesignerEnrollment', 'LIB':'DesignerEnrollment','librarian':'DesignerEnrollment'}
         librarian_role_id = '1383'
@@ -230,7 +230,7 @@ def create_canvas_site():
                     except:
                         pass
         #enroll_user(user.id ,'DesignerEnrollment' ,enrollment={'role_id':1383,'enrollment_state':'active'})
-        input("STEP 3 DONE...\n")
+        #input("STEP 3 DONE...\n")
         ######## Step 4. Configure reserves ########
         if serialized.data['reserves']:
             tabs = canvas_course.get_tabs()
@@ -239,7 +239,7 @@ def create_canvas_site():
                     tab.update(hidden=False)
                 else:
                     pass
-        input("STEP 4 DONE...\n")
+        #input("STEP 4 DONE...\n")
 
 
         ######## Step 5. Content Migration ########
@@ -252,7 +252,7 @@ def create_canvas_site():
                 print("still running")
                 time.sleep(8)
             # if the progress is 'failed' --> report this
-        input("STEP 5 DONE...\n")
+        #input("STEP 5 DONE...\n")
         ######## Step 6. Create CanvasSite Object and link to Request ########
 
 
@@ -274,12 +274,12 @@ def create_canvas_site():
                 site.owners.add(u)
             except:
                 pass
-        input("STEP 6 DONE...\n")
+        #input("STEP 6 DONE...\n")
         ######## Step 7. Set request to Complete ########
         request_obj.status = 'COMPLETED'
         request_obj.save()
 
-        input("STEP 7 DONE...\n")
+        #input("STEP 7 DONE...\n")
         ######## Step 8. Notify with email ########
 
 
