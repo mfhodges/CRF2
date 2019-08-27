@@ -199,7 +199,7 @@ def create_canvas_site():
             user = canvas_api.get_user_by_sis(instructor.username)
             if user == None: # user doesnt exist
                 try:
-                    user = canvas_api.create_user(instructor.username, instructor.profile.penn_id, instructor.first_name+ ' '+ instructor.last_name)
+                    user = canvas_api.mycreate_user(instructor.username, instructor.profile.penn_id, instructor.email,instructor.first_name+ ' '+ instructor.last_name)
                 except:
                     pass # fail silently
             else:
@@ -217,7 +217,7 @@ def create_canvas_site():
             user_canvas = canvas_api.get_user_by_sis(user)
             if user_canvas == None: # user doesnt exist
                 user_crf = User.objects.get(username=user)
-                user_canvas = canvas_api.create_user(user, user_crf.profile.penn_id, user_crf.full_name())
+                user_canvas = canvas_api.mycreate_user(user, user_crf.profile.penn_id, user_crf.email ,user_crf.first_name+user_crf.last_name)
             if role =='LIB' or role=='librarian':
                 for sect in canvas_course.get_sections():
                     try:

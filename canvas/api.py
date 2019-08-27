@@ -47,12 +47,14 @@ def get_user_by_sis(login_id):
 
 
 # need to test this
-def create_user(pennkey,pennid,fullname):
+def mycreate_user(pennkey,pennid,email,fullname):
     # 1. create account with SIS_ID speciified
     canvas = Canvas(API_URL, API_KEY)
     pseudonym = {'sis_user_id': pennid,'unique_id':pennkey}
     try:
-        user = canvas.create_user(pseudonym,name=fullname)
+        account = find_account(96678)
+        user = account.create_user(pseudonym,name=fullname)
+        user.edit(user={'email':email})
         return user
     except CanvasException as e:
         print("CanvasException: ", e)

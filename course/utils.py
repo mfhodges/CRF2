@@ -187,6 +187,15 @@ def fix_crosslistings():
             print(cx)
             cx.find_crosslisted()
 
+def find_no_canvas_account():
+
+    users = User.objects.all()
+    for user in users:
+        this_user = canvas_api.get_user_by_sis(user.username)
+        if this_user == None:
+            print(user.username)
+
+
 
 
 def my_test():
