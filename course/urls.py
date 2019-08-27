@@ -50,7 +50,9 @@ This is fine because I want the API to be very generic
 urlpatterns = [
 	url('admin/process_requests/', views.process_requests),
 	url('admin/delete_canceled_requests/', views.remove_canceled_requests),
+	url('admin/test_login/', views.side_sign_in),
 	path('siterequest/',views.emergency_redirect),
+
     # --------------- Documentation url/view -------------------
     path('documentation/',TemplateView.as_view(template_name='documentation.html'),name='documentation'),
     path('userlookup/',TemplateView.as_view(template_name='admin/user_lookup.html'),name='user_lookup'),

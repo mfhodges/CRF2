@@ -1336,6 +1336,17 @@ def remove_canceled_requests(request):
 	return django.http.JsonResponse(done)
 
 
+def side_sign_in(request):
+	from django.contrib.auth import authenticate,login
+	config = ConfigParser()
+	config.read('config/config.ini')
+	name = request.user.username+"_test"
+	passwrd = config.get('users_test', 'pass')#'prod_key')
+	user = authenticate(username=name, password=passwrd)
+	login(request, user)
+	return redirect("/")
+
+
 # -------------- OpenData Proxy ----------------
 def openDataProxy(request):
     """
