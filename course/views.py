@@ -396,7 +396,8 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
         course = Course.objects.get(course_code=request.data['course_requested'])# get Course instance
         instructors = course.get_instructors()
-        #print("course instructors", instructors)
+        if instructors == 'STAFF': instructors = None
+        print("course instructors", instructors)
 
         # CHECK PERMISSIONS custom_permissions(request,request_obj,masquerade,instructors)
         permission = self.custom_permissions(None,masquerade,instructors)
@@ -532,9 +533,10 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 return False
 
         if self.request.method =="POST":
+            print("in post perm check")
             # scenario - we are asking to create a request from a course, request_obj=None
             if instructors: # there are instructors
-                #print("we have intsructors")
+                print("we have intsructors")
                 if self.request.user.username in instructors:
                     #print("self.request.user.username in instructors: ", self.request.user.username, "in ", instructors, "==",self.request.user.username in instructors)
                     #("masquerade in instructors: ", masquerade," in ", instructors, "== ", masquerade in instructors)
