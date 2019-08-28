@@ -53,7 +53,7 @@ def mycreate_user(pennkey,pennid,email,fullname):
     pseudonym = {'sis_user_id': pennid,'unique_id':pennkey}
     try:
         account = find_account(96678)
-        user = account.create_user(pseudonym,name=fullname)
+        user = account.create_user(pseudonym,user={'name':fullname})
         user.edit(user={'email':email})
         return user
     except CanvasException as e:

@@ -195,7 +195,7 @@ def find_no_canvas_account():
         if this_user == None:
             print(user.username)
             canvas_api.mycreate_user(user.username,user.profile.penn_id,user.email,user.first_name+' '+user.last_name)
-
+            input("enter to continue")
 
 
 
