@@ -33,7 +33,6 @@ def get_user_by_sis(login_id):
     # login_id == pennkey
     #https://canvas.instructure.com/doc/api/users.html
     # Initialize a new Canvas object
-    print("got here")
     canvas = Canvas(API_URL, API_KEY)
     #canvas.get_user(123)
     try:
