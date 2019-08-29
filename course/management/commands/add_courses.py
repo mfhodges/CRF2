@@ -126,6 +126,7 @@ class Command(BaseCommand):
                             course_code = datum['section_id']+year_term,
                             course_subject = subject,
                             course_primary_subject = primary_subject,
+                            primary_crosslist = datum["crosslist_primary"],
                             course_schools = school,
                             course_number = datum['course_number'],
                             course_section = datum['section_number'],

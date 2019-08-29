@@ -36,7 +36,7 @@ class CourseAdmin(admin.ModelAdmin):
             'instructors', 'course_schools', 'course_activity')
         }),
         ('Crosslist info', {
-            'fields': ('crosslisted','course_primary_subject'),
+            'fields': ('crosslisted','primary_crosslist','course_primary_subject'),
         }),
         ('Request Info', {
             'fields': ('requested_override', 'multisection_request'),

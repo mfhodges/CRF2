@@ -27,6 +27,9 @@
 
       <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Cross Listing</dt>
       <dd class="col-8 col-md-9">
+        {% if course.primary_crosslist %}
+        (primary: {{course.primary_crosslist}})
+        {% endif %}
         {% if course.crosslisted %}
           {% for crosscourse in course.crosslisted %}
             {% if forloop.last %}<a href='{% url "UI-course-detail" course_code=crosscourse %}'>{{ crosscourse }}</a>{% else %}
