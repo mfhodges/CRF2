@@ -282,12 +282,13 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
     masquerade = serializers.ReadOnlyField()
     #additional_sections = CourseSerializer()
     #sections = serializers.SerializerMethodField()
+
     course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='course_code' , style={'base_template': 'input.html'})
     title_override = serializers.CharField(allow_null=True,required=False , style={'base_template': 'input.html'})
-    additional_enrollments = AdditionalEnrollmentSerializer(many=True,default=[], style={'base_template':'list_fieldset.html'})
+    additional_enrollments = AdditionalEnrollmentSerializer(many=True,default=[], style={'base_template':'list_fieldset.html'},required=False)
     created = serializers.DateTimeField(format="%I:%M%p %b,%d %Y", required=False)
     updated = serializers.DateTimeField(format="%I:%M%p %b,%d %Y", required=False)
-    additional_sections = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(),slug_field='course_code')
+    additional_sections = serializers.SlugRelatedField(many=True,default=[],queryset=Course.objects.all(),slug_field='course_code',required=False)
 
     #sections_requested = serializers.SlugRelatedField(many=True,queryset=Course.objects.all(),slug_field='course_code')
     # IF REQUEST STATUS IS CHANGED TO CANCELED IT SHOULD BE DISASSOCIATED FROM COURSE INSTANCE
@@ -440,31 +441,29 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
         c_data = instance.additional_sections.all()#.update()
         print("c_data",c_data)
         c_copy = deepcopy(c_data)
-        if add_sections_data or instance.additional_sections.all():
-            print('instance.',instance)
-
-
-
-            # now that the relationship has been removed - there is still some other params to fix
-            print("c_data2",c_data)
-            for course in c_data:
-                course.multisection_request=None
-                course.requested=False
-                course.save()
-                print("course.requested",course.requested)
-            print('instance..',instance)
-            instance.additional_sections.clear()
-
-            #instance.additional_sections.set()
-            print("2instance.additional_sections",instance.additional_sections.all())
-            print("add_sections_data",add_sections_data)
-            for section_data in add_sections_data:
-                # we need to add point the multisection_request to this request
-                print("section_data",section_data.course_code)
-                section = Course.objects.get(course_code=section_data.course_code)
-                section.multisection_request = instance
-                section.save()
-                print("section.requested",section.requested)
+        if instance.status=="SUBMITTED":
+            print(instance.status,"STATUS")
+            if add_sections_data or instance.additional_sections.all():
+                print('instance.',instance)
+                # now that the relationship has been removed - there is still some other params to fix
+                print("c_data2",c_data)
+                for course in c_data:
+                    course.multisection_request=None
+                    course.requested=False
+                    course.save()
+                    print("course.requested",course.requested)
+                print('instance..',instance)
+                instance.additional_sections.clear()
+                #instance.additional_sections.set()
+                print("2instance.additional_sections",instance.additional_sections.all())
+                print("add_sections_data",add_sections_data)
+                for section_data in add_sections_data:
+                    # we need to add point the multisection_request to this request
+                    print("section_data",section_data.course_code)
+                    section = Course.objects.get(course_code=section_data.course_code)
+                    section.multisection_request = instance
+                    section.save()
+                    print("section.requested",section.requested)
 
 
         #instance.additional_enrollments = validated_data.set('additional_enrollments',instance.additional_enrollments)
