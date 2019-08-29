@@ -1357,12 +1357,15 @@ def openDataProxy(request):
     """
     data = {'data':'none'}
     size=0
+    print("failed here..")
     if request.GET:
+        print("failed here1")
         course_id = request.GET.get('course_id',None)
         term = request.GET.get('term',None)
         instructor = request.GET.get('instructor',None)
         config = ConfigParser()
         config.read('config/config.ini')
+        print("failed here2")
         domain = config.get('opendata', 'domain')
         id = config.get('opendata', 'id2')
         key = config.get('opendata', 'key2')
@@ -1372,12 +1375,12 @@ def openDataProxy(request):
         if term: OD.add_param('term',term)
         OD.add_param('number_of_results_per_page',5)
         if instructor: OD.add_param('instructor',instructor)
+        print("failed here3")
         data['data']= OD.call_api()#only_data=False)
         if isinstance(data['data'], list):
             size = len(data['data'])
         else:
             size =1
-        print(data)
 
 
     return render(request, "admin/course_lookup.html",{'data':data,'size':size})
