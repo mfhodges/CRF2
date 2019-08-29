@@ -27,7 +27,7 @@ class CourseAdmin(admin.ModelAdmin):
     )
     search_fields = ('instructors__username','course_code','course_name')
     #readonly_fields = ['created','updated','owner','course_code','course_section','course_term','year','course_number','course_subject'] # maybe add requested to here.
-    autocomplete_fields = ['crosslisted','instructors']
+    autocomplete_fields = ['crosslisted','instructors','multisection_request','crosslisted_request']
 
     fieldsets = (
         (None, {
@@ -39,7 +39,7 @@ class CourseAdmin(admin.ModelAdmin):
             'fields': ('crosslisted','primary_crosslist','course_primary_subject'),
         }),
         ('Request Info', {
-            'fields': ('requested_override', 'multisection_request'),
+            'fields': ('requested_override', 'multisection_request','crosslisted_request'),
         }),
         ('Metadata', {
             'fields': ('created','updated','owner'),
