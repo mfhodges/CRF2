@@ -55,13 +55,11 @@
         <td style="padding-left:4%;">
 
           {% if course.requested_override == True %}
-          <a class="button muted-button" data-toggle="tooltip" data-placement="top" title="Request not in CRF">Requested</a>
+            <a class="button muted-button" data-toggle="tooltip" data-placement="top" title="Request not in CRF">Requested</a>
 
           {% elif course.requested == True %}
 
-              {% if course.multisection_request %}
-              <a  href='{% url "UI-request-detail" pk=course.multisection_request %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">a Requested</a>
-              {% elif course.crosslisted %}
+              {% if course.associated_request %}
               <a  href='{% url "UI-request-detail" pk=course.associated_request %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</a>
               {% else %}
 

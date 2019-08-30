@@ -235,16 +235,18 @@ class Course(models.Model):
                 return True
             except:
                 # check if the course has been tied into other requests
-                try:
-                    exists = self.multisection_request
-                    print(" multi section request obj",exists)
-                    if exists: # check that its not none
-                        return True
-                    else: return False
-                except:
+
+                exists = self.multisection_request
+                exists_cross = self.crosslisted_request
+                print(" multi section request obj",exists)
+                if exists or exists_cross: # check that its not none
+                    return True
+                else:
                     return False
+                return False
         print("we hit base case that i havent planned for")
 
+    ### wrong logic -- can have diff numbers ###
     def find_crosslisted(self):
         # crosslisted courses hace the same <number><section>_<year><term> -- the difference should be the subject but they should also each have the same primary subject!
         # check that there is a primarycrosslisting
@@ -297,23 +299,20 @@ class Course(models.Model):
     #def set_crosslistings(self):
 
     def get_request(self):
-        possibilities = self.crosslisted.all()
-        #print("possibilities",possibilities)
         try:
-            #print("course",self)
             requestinfo = self.request
             print("found request info",requestinfo)
             return requestinfo
         except Request.DoesNotExist:
             print("Request.DoesNotExist!")
 
-        for course in possibilities:
-            try:
-                #print("course",course)
-                requestinfo = course.request
-                return requestinfo
-            except Request.DoesNotExist:
-                print("Request.DoesNotExist!")
+        if self.multisection_request:
+            return self.multisection_request
+        elif self.crosslisted_request:
+            return self.crosslisted_request
+        else:
+            return None
+
 
         #return error
 

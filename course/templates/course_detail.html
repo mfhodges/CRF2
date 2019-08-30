@@ -18,25 +18,25 @@
 
 
 <!-- THE COURSE IS TIED TO ANOTHER REQUEST -->
-{% if course.multisection_request %}
-<fieldset >
-  <legend>Submitted Request</legend>
-  <p> This course has been added as a section of another request for {{course.multisection_request}}.</p>
-
-  <a href="{% url 'UI-request-detail' pk=course.multisection_request %}"> See {{course.multisection_request}} Request</a>
-</fieldset>
-
-
-{% elif course.associated_request %}
 {% if course.associated_request != course.course_code %}
-<fieldset >
-  <legend>Submitted Request</legend>
-  <p> This course has been requested as its crosslisting  for {{course.associated_request}}.</p>
+  {% if course.multisection_request %}
+  <fieldset >
+    <legend>Submitted Request</legend>
+    <p> This course has been added as a section of another request for {{course.multisection_request}}.</p>
 
-  <a href="{% url 'UI-request-detail' pk=course.associated_request %}"> See {{course.associated_request}} Request</a>
-</fieldset>
-{% endif %}
-  {% elif not course.requested %}
+    <a href="{% url 'UI-request-detail' pk=course.multisection_request %}"> See {{course.multisection_request}} Request</a>
+  </fieldset>
+
+
+  {% elif course.crosslisted_request %}
+  <fieldset >
+    <legend>Submitted Request</legend>
+    <p> This course has been requested as its crosslisting  for {{course.crosslisted_request}}.</p>
+
+    <a href="{% url 'UI-request-detail' pk=course.associated_request %}"> See {{course.crosslisted_request}} Request</a>
+  </fieldset>
+  {% endif %}
+{% elif not course.requested %}
 
   <fieldset >
   <legend>Canvas Site Options</legend>
