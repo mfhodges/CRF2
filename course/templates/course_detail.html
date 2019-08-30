@@ -18,7 +18,7 @@
 
 
 <!-- THE COURSE IS TIED TO ANOTHER REQUEST -->
-{% if course.associated_request != course.course_code %}
+{% if course.associated_request != course.course_code and course.requested != False %}
   {% if course.multisection_request %}
   <fieldset >
     <legend>Submitted Request</legend>
@@ -36,7 +36,7 @@
     <a href="{% url 'UI-request-detail' pk=course.associated_request %}"> See {{course.crosslisted_request}} Request</a>
   </fieldset>
   {% endif %}
-{% elif not course.requested %}
+{% elif course.requested == False %}
 
   <fieldset >
   <legend>Canvas Site Options</legend>
