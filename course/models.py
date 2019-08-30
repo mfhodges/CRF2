@@ -212,7 +212,7 @@ class Course(models.Model):
     course_section = models.CharField(max_length=4,blank=False)# can courses not have associated sections?
     course_name = models.CharField(max_length=250) # Human Readable Name i.e. Late Antique Arts
     year = models.CharField(max_length=4,blank=False)
-    primary_crosslist = models.CharField(max_length=12,default='',blank=True)
+    primary_crosslist = models.CharField(max_length=20,default='',blank=True)
     crosslisted = models.ManyToManyField("self", blank=True, symmetrical=True, default=None)
     sections = models.ManyToManyField("self",blank=True,symmetrical=True,default=None)
     requested =  models.BooleanField(default=False)# False -> not requested
