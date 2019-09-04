@@ -52,6 +52,7 @@ urlpatterns = [
 	url('admin/delete_canceled_requests/', views.remove_canceled_requests),
 	url('admin/test_login/', views.side_sign_in),
 	path('siterequest/',views.emergency_redirect),
+	path('contact/googleform/',views.googleform),
 
     # --------------- Documentation url/view -------------------
     path('documentation/',TemplateView.as_view(template_name='documentation.html'),name='documentation'),

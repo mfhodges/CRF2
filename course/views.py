@@ -1272,6 +1272,12 @@ class UpdateLogViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         return Response({'data': periodic_tasks}, template_name='admin/log_list.html')
 
 
+# --------------- Redirect to Google Form -------------------
+def googleform(request):
+	return redirect('https://docs.google.com/forms/d/e/1FAIpQLSeyF8mcCvvA4J4jQEmeNXCgjbHd4bG_2GfXEPgtezvljLV-pw/viewform')
+
+
+
 # --------------- USERINFO view -------------------
 
 #@login_required(login_url='/accounts/login/')
@@ -1367,6 +1373,7 @@ def openDataProxy(request):
         config.read('config/config.ini')
         print("failed here2")
         domain = config.get('opendata', 'domain')
+        print("failed here2.5")
         id = config.get('opendata', 'id2')
         key = config.get('opendata', 'key2')
         OD = library.OpenData(domain,id,key)
