@@ -139,9 +139,9 @@
           <select id="choose" name="additional_enrollments[{{ forloop.counter0 }}][role]" >
             <option disabled>Please select</option>
             <option value="TA" {% if enrollment.role == "TA" %} selected {% endif %}>TA</option>
-            <option value="DES" {% if enrollment.role == "DES" %} selected {% endif %}>Designer</option>
-            <option value="LIB" {% if enrollment.role == "LIB" %} selected {% endif %}>Librarian</option>
-            <option value="INST" {% if enrollment.role == "INST" %} selected {% endif %}>Librarian</option>
+            <option value="DES" {% if enrollment.role == "DES" or enrollment.role == "designer" %} selected {% endif %}>Designer</option>
+            <option value="LIB" {% if enrollment.role == "LIB" or enrollment.role == "librarian"  %} selected {% endif %}>Librarian</option>
+            <option value="INST" {% if enrollment.role == "INST" or enrollment.role == "instructor" %} selected {% endif %}>Instructor</option>
           </select>
             </label>
           <a onClick="removeElement('additional_enrollments', 'addEnroll-{{ forloop.counter0 }}');" style="padding-left:5px;"> Delete <i class="fas fa-times"></i></a>
