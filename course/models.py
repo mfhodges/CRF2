@@ -453,7 +453,7 @@ class Request(models.Model):
 
 
     class Meta:
-        ordering = ('created',)
+        ordering = ['-status','-created']# ('created',)
         #verbose_name = 'Site Request'
         #verbose_name_plural = 'Site Requests'
 
