@@ -202,10 +202,11 @@ def fix_titles(roman_numeral):
         title = c.course_name
         words = titles.split(" ")
         last_word = words[-1]
-        new = last_word.upper()
-        title = title.replace(last_word,new)
-        c.course_name = title
-        c.save()
+        if last_word == roman_numeral:
+            new = last_word.upper()
+            title = title.replace(last_word,new)
+            c.course_name = title
+            c.save()
 
 
 def my_test():
