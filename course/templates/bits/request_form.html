@@ -182,7 +182,13 @@
 
 {% render_field request_form.additional_instructions style=style %}
 
-
+  {% if staff %}
+  <fieldset>
+    <legend><h6 style="margin:0;">Admin</h6></legend>
+    <label> Admin Notes</label>
+    <textarea name="admin_additional_instructions" class="form-control"> {{ request_instance.admin_additional_instructions }}</textarea>
+  </fieldset>
+  {% endif %}
 
 
 <!-- here is the field to edit the subaccount that is associated with the course.

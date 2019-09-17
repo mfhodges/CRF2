@@ -77,9 +77,23 @@
       </thead>
       <tbody>
         {% for section_code,section_activity,section_requested in course.sections %}
-          <tr>
+        {% if section_code in request_instance.additional_sections %}
+        <tr >
+
+            <td > {{section_code}}</td> <td> {{section_activity}} </td> <td> In Request </td>
+
+        </tr>
+        {% elif section_requested %}
+        <tr style="background:#e9ecef;">
+          <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> Already Exists </td>
+        </tr>
+
+        {% else %}
+        <tr>
           <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}} </td>
         </tr>
+        {% endif %}
+
         {% endfor %}
       </tbody>
     </table>

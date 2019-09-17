@@ -436,6 +436,7 @@ class Request(models.Model):
     # SuperUsers have access to all courses
     title_override = models.CharField(max_length=100,null=True,default=None,blank=True) # previously SRS title override
     additional_instructions = models.TextField(blank=True,default=None, null=True)
+    admin_additional_instructions = models.TextField(blank=True,default=None, null=True)
     reserves = models.BooleanField(default=False)
     # this field is redundant
     canvas_instance = models.ForeignKey(CanvasSite,related_name='canvas', on_delete=models.CASCADE,null=True, blank=True )

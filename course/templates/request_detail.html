@@ -36,10 +36,9 @@
   </div>
 
 {% if staff %}
-  <h6> Admin Actions</h6>
-{% endif %}
+<fieldset>
+  <legend><h6 style="margin:0;">Admin</h6></legend>
   <div class="row" style="margin-left:7px;margin-top:.5rem;">
-
     {% if 'lock' in permissions %}
       <form action="{% url 'UI-request-detail' pk=request_instance.course_requested %}" method="put" >
         <input type="hidden" name="status" value="LOCKED">
@@ -64,8 +63,19 @@
       <button type="submit"  style="margin-right:20px" class="create" >Approve Site <i class="fas fa-check-circle"></i></button>
     </form>
     {% endif %}
-
   </div>
+
+      <div class="form-group ">
+        <label>
+          Admin Notes
+        </label>
+        <textarea name="admin_additional_instructions" class="form-control" disabled> {{ request_instance.admin_additional_instructions }}</textarea>
+      </div>
+</fieldset>
+
+{% endif %}
+
+
 
   <!--<p> permissions should be: {{ permissions }} - this will be removed later </p> -->
 

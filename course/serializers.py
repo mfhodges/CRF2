@@ -308,6 +308,8 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
             data['title_override'] =None
         if data.get('course_requested', None) == '':
             data['course_requested'] =None
+        if data.get('reserves',None)==None:
+            data['reserves'] = False
         return super(RequestSerializer, self).to_internal_value(data)
 
     def validate(self, data):
@@ -322,6 +324,7 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
             #check if additional_enrollments is not none
             if data['additional_enrollments'] != []:
                 for enrollment in data['additional_enrollments']:
+                    print("checking for user, ", enrollment['user'])
                     user = validate_pennkey(enrollment['user'])
                     if user == None:
                         raise serializers.ValidationError({"error":"an error occurred please check that the pennkey's you entered are correct and add the course information to the additional instructions field."})
@@ -425,6 +428,11 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
         instance.copy_from_course = validated_data.get('copy_from_course',instance.copy_from_course)
         instance.reserves = validated_data.get('reserves',instance.reserves)
         instance.additional_instructions = validated_data.get('additional_instructions',instance.additional_instructions)
+        instance.admin_additional_instructions = validated_data.get('admin_additional_instructions',instance.admin_additional_instructions)
+
+        if instance.reserves== None:
+            print("instance.reserves",instance.reserves)
+
 
         add_enrolls_data = validated_data.get('additional_enrollments')
         if add_enrolls_data:
@@ -603,6 +611,23 @@ class AutoAddSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = AutoAdd
         fields = '__all__'
+
+
+    """
+    def to_internal_value(self, data):
+        #('TA','TA'),
+        #('INST','Instructor'),
+        #('DES','Designer'),
+        #('LIB','Librarian'),
+        #('OBS', 'Observer'),)
+        data = dict(data)
+        print("AHHHHH",data)
+        if data.get('role', None) == 'librarian':
+
+            data['role'] ='LIB'
+
+        return super(AutoAddSerializer, self).to_internal_value(data)
+    """
 
     def create(self, validated_data):
         """
