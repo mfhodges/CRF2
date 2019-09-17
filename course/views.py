@@ -559,9 +559,9 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         request_status = response_data['status']
         request_owner = response_data['owner']
         request_masquerade = response_data['masquerade'] #
-        #print("request_masquerade",request_masquerade)
-        #print("request_status",request_status)
-        #print("request_owner",request_owner)
+        print("request_masquerade",request_masquerade)
+        print("request_status",request_status)
+        print("request_owner",request_owner)
             # owner is also considered masquerade
         if request_status == "SUBMITTED": permissions = {'staff':['lock','cancel','edit','create'],'owner':['cancel','edit']}
         elif request_status == "APPROVED": permissions = {'staff':['cancel','edit','lock'],'owner':['cancel']}
@@ -586,12 +586,12 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             return permissions['staff']
 
         # they own or was submitted on their behalf
-        #print('request.user.username',request.user.username,type(request.user.username), request_owner , type(request_owner), request_owner==request.user.username)
+        print('request.user.username',request.user.username,type(request.user.username), request_owner , type(request_owner), request_owner==request.user.username)
         if request.user.username == request_owner or (request.user.username == request_masquerade and request_masquerade !=''):
-            #print("yeahh buddy",request.user.username)
+            print("yeahh buddy",request.user.username)
             return permissions['owner']
         #
-        #print("no permissions case")
+        print("no permissions case")
         return ''
 
 
@@ -617,6 +617,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
         if request.accepted_renderer.format == 'html':
             print("bye george(UI-request-detail)!\n",response.data)
+			# {'owner':instance.owner.username,'masquerade':instance.masquerade,'status':instance.status}
             permissions = RequestViewSet.check_request_update_permissions(request, response.data)
             print("request permissions",permissions)
             if request.resolver_match.url_name == "UI-request-detail-edit":
