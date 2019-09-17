@@ -200,7 +200,7 @@ def fix_titles(roman_numeral):
     courses = Course.objects.filter(course_term='A')
     for c in courses:
         title = c.course_name
-        words = titles.split(" ")
+        words = title.split(" ")
         last_word = words[-1]
         if last_word == roman_numeral:
             new = last_word.upper()
