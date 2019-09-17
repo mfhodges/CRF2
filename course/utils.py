@@ -177,26 +177,35 @@ def updateCanvasSites(pennkey):
                 print("couldnt add course",canvas_course.id)
 
 
-def fix_crosslistings():
-    courses = Course.objects.all()
-    for c in courses:
-        #c.find_crosslisted()
-        x = c.crosslisted.all()
-        #x.delete()
-        for cx in x:
-            print(cx)
-            cx.find_crosslisted()
+
 
 def find_no_canvas_account():
-
     users = User.objects.all()
     for user in users:
         this_user = canvas_api.get_user_by_sis(user.username)
         if this_user == None:
             print(user.username)
-            canvas_api.mycreate_user(user.username,user.profile.penn_id,user.email,user.first_name+' '+user.last_name)
-            input("enter to continue")
+            try:
+                profile = user.profile
+                canvas_api.mycreate_user(user.username,user.profile.penn_id,user.email,user.first_name+' '+user.last_name)
+            except:
+                #profile doesnt exist yet
+                userdata = datawarehouse_lookup(PPENN_KEY=user.username)
+                if userdata:
+                    Profile.objects.create(user=user,penn_id=userdata['penn_id'])
+                    canvas_api.mycreate_user(user.username,user.profile.penn_id,user.email,user.first_name+' '+user.last_name)
+            #input("enter to continue")
 
+def fix_titles(roman_numeral):
+    courses = Course.objects.filter(course_term='A')
+    for c in courses:
+        title = c.course_name
+        words = titles.split(" ")
+        last_word = words[-1]
+        new = last_word.upper()
+        title = title.replace(last_word,new)
+        c.course_name = title
+        c.save()
 
 
 def my_test():
