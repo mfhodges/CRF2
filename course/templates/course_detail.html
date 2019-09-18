@@ -35,7 +35,17 @@
 
     <a href="{% url 'UI-request-detail' pk=course.associated_request %}"> See {{course.crosslisted_request}} Request</a>
   </fieldset>
+  {% elif course.requested_override %}
+  <fieldset >
+    <legend>Submitted Request</legend>
+    <center><i>*** REQUEST NOT IN CRF ***</i></center>
+  </fieldset>
   {% endif %}
+{% elif course.requested_override %}
+  <fieldset >
+    <legend>Submitted Request</legend>
+    <center><i>*** REQUEST NOT IN CRF ***</i></center>
+  </fieldset>
 {% elif course.requested == False %}
 
   <fieldset >
