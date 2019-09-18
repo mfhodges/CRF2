@@ -15,7 +15,7 @@ def roman_title(title):
     #print(roman_numeral)
     title = string.capwords(title)
     if roman_numeral:
-        title= title.replace(string.capwords(roman_numeral[-1]),roman_numeral[-1][1:])
+        title= title.replace(roman_numeral[-1].upper(),roman_numeral[-1][1:])
     return(title)
 
 
@@ -188,6 +188,59 @@ def pull_courses(term):
     #check if it already exists
 
 
+def pull_instructors(term):
+    config = ConfigParser()
+    config.read('config/config.ini')
+
+    # check that term is available!
+
+    info = dict(config.items('datawarehouse'))
+    connection = cx_Oracle.connect(info['user'], info['password'], info['service'])
+    cursor = connection.cursor()
+    cursor.execute("""
+    SELECT
+    e.FIRST_NAME,
+    e.LAST_NAME,
+    e.PENNKEY,
+    e.PENN_ID,
+    e.EMAIL_ADDRESS,
+    cs.Section_Id
+    FROM
+    dwadmin.course_section_instructor cs
+    JOIN DWADMIN.EMPLOYEE_GENERAL_V e ON cs.Instructor_Penn_Id=e.PENN_ID
+    WHERE cs.TERM='2020A'
+    """)
+    for first_name, last_name, pennkey, penn_id, email, section_id in cursor:
+        course_code = section_id+term
+        course = None
+        try:
+            course = Course.objects.get(course_code=course_code)
+        except:
+            pass # fail silently -- this course isnt in the CRF but this isnt the place to handle such an error
+        if course: # if we didn't fail silently
+            # check if instructor in CRF
+            instructor = None
+            try:
+                instructor = User.objects.get(username=pennkey)
+            except: # they are not in the CRF lets ~try~ to create them
+                #clean up first and last names
+                first_name = first_name.title()
+                last_name = last_name.title()
+                try:
+                    instructor =User.objects.create_user(username=pennkey,first_name=first_name,last_name=last_name,email=email)
+                    Profile.objects.create(user=instructor,penn_id=penn_id)
+                except:
+                    pass
+            if instructor: # we have the course in the CRF and the instructor in the CRF
+                course.instructors.add(instructor)
+                course.save()
+            else:
+                print("couldn't create account for ", first_name, last_name, pennkey, penn_id, email)
+                logging.getLogger("error_logger").error("couldn't create account for {first:%s, last:%s, pennkey:%s, penn_id:%s, email:%s}" , first_name, last_name, pennkey, penn_id, email)
+                #make this a log function!
+        else:
+            print("couldn't find course", course_code)
+            logging.getLogger("error_logger").error("couldn't find course %s" ,course_code)
 
 
 def crosslist_courses(term):
@@ -214,6 +267,7 @@ def available_terms():
       dwadmin.present_period""")
     for x in cursor:
         print(x)
+
 
 
 
