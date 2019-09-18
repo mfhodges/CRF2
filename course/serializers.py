@@ -422,12 +422,15 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
 
 
         print("in serializer update ", validated_data)
-        new_status = validated_data.get('status',instance.status)
+        new_status = validated_data.get('status',None)
         print("new_status, instance.status",new_status, instance.status)
-        if instance.status != new_status:
+
+        if new_status:
             print("status change all other changes are ignored")
+            instance.status = new_status
             instance.save()
             return instance
+        instance.status = validated_data.get('status',instance.status)
         instance.title_override = validated_data.get('title_override',instance.title_override)
         instance.copy_from_course = validated_data.get('copy_from_course',instance.copy_from_course)
         instance.reserves = validated_data.get('reserves',instance.reserves)
