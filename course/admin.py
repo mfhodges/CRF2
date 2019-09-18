@@ -39,7 +39,7 @@ class CourseAdmin(admin.ModelAdmin):
             'fields': ('crosslisted','primary_crosslist','course_primary_subject'),
         }),
         ('Request Info', {
-            'fields': ('requested_override', 'multisection_request','crosslisted_request'),
+            'fields': ('requested','request','requested_override', 'multisection_request','crosslisted_request',),
         }),
         ('Metadata', {
             'fields': ('created','updated','owner'),
@@ -55,7 +55,7 @@ class CourseAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
-            return ['created','updated','owner','course_code','course_section','course_term','year','course_number','course_subject']
+            return ['created','updated','owner','course_code','course_section','course_term','year','course_number','course_subject','requested','request']
         else:
             return ['created','updated','owner','course_code']
 
@@ -108,7 +108,7 @@ class RequestAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         #print("checkin save")
-        obj.owner = request.user
+        #obj.owner = request.user
         obj.save()
 
 
