@@ -1382,13 +1382,17 @@ def openDataProxy(request):
         id = config.get('opendata', 'id2')
         key = config.get('opendata', 'key2')
         OD = library.OpenData(domain,id,key)
+		print("failed here2.55")
         OD.set_uri('course_section_search')
         OD.add_param('course_id',course_id)
-        if term: OD.add_param('term',term)
+        if term:
+			OD.add_param('term',term)
         OD.add_param('number_of_results_per_page',5)
-        if instructor: OD.add_param('instructor',instructor)
+        if instructor:
+			OD.add_param('instructor',instructor)
         print("failed here3")
         data['data']= OD.call_api()#only_data=False)
+
         if isinstance(data['data'], list):
             size = len(data['data'])
         else:
