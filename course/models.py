@@ -222,7 +222,7 @@ class Course(models.Model):
     crosslisted_request = models.ForeignKey('course.Request',on_delete=models.CASCADE, related_name="tied_course",default=None,blank=True,null=True)
 
     class Meta:
-        ordering = ('course_code',)
+        ordering = ('-year','course_code',)
 
     def find_requested(self):
         if self.requested_override ==True:
@@ -471,6 +471,7 @@ class Request(models.Model):
         print("ohhh")
         print(self.course_requested.requested)
         self.course_requested.requested = False
+        self.course_requested.save()
         print(self.course_requested.requested)
 
         super(Request, self).delete()
