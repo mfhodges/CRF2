@@ -70,6 +70,9 @@
           Admin Notes
         </label>
         <textarea name="admin_additional_instructions" class="form-control" disabled> {{ request_instance.admin_additional_instructions }}</textarea>
+        <p>
+          <a href="{% url 'admin:course_request_change' request_instance.course_requested %}" target="_blank"><i class="fas fa-external-link-alt"></i> Edit Request Info in Admin Portal </a>
+        </p>
       </div>
 </fieldset>
 
