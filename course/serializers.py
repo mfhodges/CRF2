@@ -409,7 +409,13 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
                 section.save()
 
                 # FINISH
-
+        course= validated_data['course_requested']
+        if course.crosslisted.all():
+            print("instance.crosslisted",course.crosslisted.all())
+            for xc in course.crosslisted.all():
+                if course!=xc:
+                    xc.crosslisted_request = request_object
+                    xc.save()
         #print("RequestSerializer.create", validated_data)
         return request_object
 

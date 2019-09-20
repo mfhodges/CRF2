@@ -95,7 +95,7 @@ class OpenData(object):
                 else:
                     #potentially wrong
                     if isinstance(r['result_data'],list):
-                        print(r['result_data'])
+                        #print(r['result_data'])
                         if r['result_data'] == []:
                             result_data= []
                         else:

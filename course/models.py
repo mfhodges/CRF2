@@ -8,6 +8,7 @@ from django.utils.html import mark_safe
 from markdown import markdown
 from django.db.models.signals import pre_delete
 from django.db.models import Q
+import copy
 # This model is to represent a Course object in the CRF
 # the meta-data that is important with this is information that will help the course be
 # discoverable in the CRF2. all of these objects with be populated from the data
@@ -218,8 +219,8 @@ class Course(models.Model):
     requested =  models.BooleanField(default=False)# False -> not requested
     #section_request = models.ForeignKey('course.Request',on_delete=models.CASCADE, related_name="additional_sections",default=None,null=True)
     requested_override = models.BooleanField(default=False) # this field is just for certain cases !
-    multisection_request = models.ForeignKey('course.Request',on_delete=models.CASCADE, related_name="additional_sections",default=None,blank=True,null=True)
-    crosslisted_request = models.ForeignKey('course.Request',on_delete=models.CASCADE, related_name="tied_course",default=None,blank=True,null=True)
+    multisection_request = models.ForeignKey('course.Request',on_delete=models.SET_NULL, related_name="additional_sections",default=None,blank=True,null=True)
+    crosslisted_request = models.ForeignKey('course.Request',on_delete=models.SET_NULL, related_name="tied_course",default=None,blank=True,null=True)
 
     class Meta:
         ordering = ('-year','course_code',)
@@ -469,12 +470,35 @@ class Request(models.Model):
 
     def delete(self, *args, **kwargs):
         print("ohhh")
-        print(self.course_requested.requested)
-        self.course_requested.requested = False
-        self.course_requested.save()
-        print(self.course_requested.requested)
+        c = Course.objects.get(course_code=self.course_requested.course_code)
 
+        multisection = Course.objects.filter(multisection_request=c.course_code)
+        crosslisted = Course.objects.filter(crosslisted_request=c.course_code)
+        if crosslisted:
+            for xc in crosslisted:
+                xc.crosslisted_request =None
+                xc.requested = False
+                xc.save()
+        if multisection:
+            for ms in multisection:
+                ms.multisection_request=None
+                ms.requested =False
+                ms.save()
+        print(c.requested)
         super(Request, self).delete()
+        c.requested = False
+        c.save()
+        print(c.requested)
+
+        if crosslisted:
+            for xc in crosslisted:
+                if c!=xc:
+                    xc.requested = False
+                    xc.save()
+        if multisection:
+            for ms in multisection:
+                ms.requested =False
+                ms.save()
 
     #def __str__(self):
     #    return " \"%s\" site request" % ( self.course_requested.course_code)
