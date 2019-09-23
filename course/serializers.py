@@ -300,6 +300,13 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
         #exclude = ('masquerade',)
         #depth=2
 
+    def check_for_crf_account(enrollments):
+        # [{'user': 'Pennkey', 'role': 'TA'}]
+        for enrollment in enrollments:
+            print("checking for user, ", enrollment['user'])
+            user = validate_pennkey(enrollment['user'])
+            if user == None:
+                print("we have an error")
 
 
     def to_internal_value(self, data):
@@ -310,6 +317,8 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
             data['course_requested'] =None
         if data.get('reserves',None)==None:
             data['reserves'] = False
+        if data.get('additional_enrollments',None)!=None:
+            check_for_crf_account(data['additional_enrollments'])
         return super(RequestSerializer, self).to_internal_value(data)
 
     def validate(self, data):
