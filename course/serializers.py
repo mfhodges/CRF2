@@ -318,7 +318,7 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
         if data.get('reserves',None)==None:
             data['reserves'] = False
         if data.get('additional_enrollments',None)!=None:
-            check_for_crf_account(data['additional_enrollments'])
+            RequestSerializer.check_for_crf_account(data['additional_enrollments'])
         return super(RequestSerializer, self).to_internal_value(data)
 
     def validate(self, data):
