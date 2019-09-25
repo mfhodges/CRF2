@@ -215,6 +215,7 @@ def pull_instructors(term):
     """)
     for first_name, last_name, pennkey, penn_id, email, section_id in cursor:
         course_code = section_id+term
+        course_code = course_code.replace(" ","")
         course = None
         try:
             course = Course.objects.get(course_code=course_code)
