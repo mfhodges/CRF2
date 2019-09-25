@@ -86,6 +86,7 @@ def pull_courses(term):
     # ('VCSP6380012019C', 'VCSP638001', '2019C', 'VCSP', 'VM', None, 'VCSP638001', 'LEC', 'VCSP', None, 'LEGAL ISSUES FOR VETS', '2019-10-28 00:00:00', '2019-12-16 00:00:00', 'O', '6')
         course_code = course_code.replace(" ","")
         primary_crosslist = ''
+        subject_area = subject_area.replace(" ","")
         print("adding ", course_code)
         try:
             subject = Subject.objects.get(abbreviation=subject_area)
