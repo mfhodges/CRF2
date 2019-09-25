@@ -87,6 +87,8 @@ def pull_courses(term):
         course_code = course_code.replace(" ","")
         primary_crosslist = ''
         subject_area = subject_area.replace(" ","")
+        xc_code = xc_code.replace(" ","")
+        print("subject_area", subject_area)
         print("adding ", course_code)
         try:
             subject = Subject.objects.get(abbreviation=subject_area)
