@@ -1336,13 +1336,13 @@ def process_requests(request):
 		obj['status'] = req.status
 
 
-	with open('logs/result.json', 'w') as fp:
+	with open('course/static/logs/result.json', 'w') as fp:
 		json.dump(done, fp)
 	return django.http.JsonResponse(done)
 
 @staff_member_required
 def view_requests(request):
-	with open('logs/result.json') as json_file:
+	with open('course/static/logs/result.json') as json_file:
 	    data = json.load(json_file)
 	return django.http.JsonResponse(data)
 
