@@ -31,11 +31,9 @@ from course.forms import ContactForm, EmailChangeForm
 from django.template.loader import get_template
 import datetime
 import json
+from django.core.files import File
 from rest_framework.exceptions import PermissionDenied
 from django_celery_beat.models import PeriodicTask, IntervalSchedule, CrontabSchedule
-#from rest_framework.filters import SearchFilter
-#class CourseView(TemplateView):
-#    template_name = "index.html"
 from canvas import api as canvas_api
 from course.forms import UserForm, SubjectForm, CanvasSiteForm
 import time
@@ -1329,10 +1327,24 @@ def process_requests(request):
 	_to_process = Request.objects.filter(status='APPROVED')
 	for obj in _to_process:
 		item = {'request':obj.course_requested.course_code}
-		done['processed'] += [obj.course_requested.course_code]
+		done['processed'] += [{'course_code':obj.course_requested.course_code,'status':''}]
 	running = create_canvas_site()
+	print('done', done)
 
+	for obj in done['processed']:
+		req = Request.objects.get(course_requested=obj['course_code'])
+		obj['status'] = req.status
+
+
+	with open('logs/result.json', 'w') as fp:
+		json.dump(done, fp)
 	return django.http.JsonResponse(done)
+
+@staff_member_required
+def view_requests(request):
+	with open('logs/result.json') as json_file:
+	    data = json.load(json_file)
+	return django.http.JsonResponse(data)
 
 
 @staff_member_required
@@ -1397,7 +1409,6 @@ def openDataProxy(request):
             size = len(data['data'])
         else:
             size =1
-
 
     return render(request, "admin/course_lookup.html",{'data':data,'size':size})
 

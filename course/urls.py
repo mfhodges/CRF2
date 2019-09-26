@@ -48,7 +48,8 @@ This is fine because I want the API to be very generic
 # Additionally, we include the login URLs for the browsable API.
 # NOTE : pk = course_SRS_Title
 urlpatterns = [
-	url('admin/process_requests/', views.process_requests),
+	url('admin/process_requests/', views.process_requests, name="process_requests"),
+	url('admin/view_requests/', views.view_requests, name="view_requests"),
 	url('admin/delete_canceled_requests/', views.remove_canceled_requests),
 	url('admin/test_login/', views.side_sign_in),
 	path('siterequest/',views.emergency_redirect),

@@ -12,6 +12,8 @@
     have actual detailed information of the updates that have been made.
   </p>
 
+
+  {% comment %}
   <p> There will be a div detailing the last update timestamp, time till next, and a button to force an update/run of certain management processes </p>
 
   <ul>
@@ -67,6 +69,7 @@
       </tbody>
     </table>
 
+
     <!-- NOTE: the details should be a link to the most recent tasklog for that task type -->
 
     <div style="font-size: 1rem;">
@@ -74,8 +77,9 @@
       <p > <i>Site Creation</i> - when a 'in process' request is created in Canvas</p>
     </div>
       <small> please refer to <a href="https://raw.githubusercontent.com/Mfhodges/CRF2/master/wiki/request_process.png">this diagram</a> for more info on the request process</small>
-  </fieldset>
 
+  </fieldset>
+{% endcomment %}
 
 
   <fieldset>
@@ -87,17 +91,17 @@
       <thead>
         <tr>
           <th scope="col">Task Name</th>
-          <th scope="col">Last Run</th>
           <th scope="col">Description</th>
+          <th scope="col">Last Run</th>
           <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td scope="row"> One-off 1</td>
-          <td> x</td>
+          <td scope="row">Process Requests</td>
           <td> <a data-toggle="popover" tabindex="0" data-trigger="focus" data-content="And here's some amazing content. It's very engaging. Right?"><i class="fas fa-info-circle"></i></a></td>
-          <td> <button> run </button></td>
+          <td> <button id="#viewRequests" onclick="viewRequests()" class="muted-button"> View Recent </button></td>
+          <td> <button id="#processRequests" onclick="processRequests()"> Run </button></td>
         </tr>
         <tr>
           <td scope="row"> One-off 2</td>
@@ -116,6 +120,14 @@
    </table>
   </fieldset>
 
+<fieldset id="oneOffTasks" style="display:none;">
+  <legend></legend>
+
+    <div id="loader" style="display:none;"></div>
+    <pre id="json" style="overflow:auto;height:-webkit-fill-available;display:none">
+
+     </pre>
+</fieldset>
 
 
 <fieldset>
@@ -137,12 +149,85 @@
 {% endblock %}
 
 {% block template_page_js %}
+
 <script>
 $(function () {
   $('[data-toggle="popover"]').popover()
-})
+});
 $('.popover-dismiss').popover({
   trigger: 'focus'
-})
+});
+
+function viewRequests() {
+  console.log('running');
+  $.ajax({
+    url: '/admin/view_requests',
+    type: 'GET',
+    beforeSend: function() {
+        console.log("beforesend");
+        $("#oneOffTasks").css("display","block");
+        $("#oneOffTasks > legend").text("Viewing: Requests");
+        $("#json").css("display","none");
+        $("#loader").css("display","block");
+    },
+     success: function(result){
+       console.log("success");
+       console.log(result);
+       var myJSON = JSON.stringify(result,undefined,2);
+       console.log(myJSON);
+       $("#loader").css("display","none");
+       $("#json").css("display","block");
+       document.getElementById("json").innerHTML = myJSON;
+       $("#json").css("height","300px")
+  }});
+};
+
+
+
+
+
+//$(document).ready(function(){
+function processRequests() {
+  console.log('running');
+  $.ajax({
+    url: '/admin/process_requests',
+    type: 'GET',
+    beforeSend: function() {
+        console.log("beforesend");
+        $("#oneOffTasks").css("display","block");
+        $("#oneOffTasks > legend").text("Running: Requests");
+        $("#json").css("display","none");
+        $("#loader").css("display","block");
+    },
+     success: function(result){
+       console.log("success");
+       console.log(result);
+       var myJSON = JSON.stringify(result,undefined,2);
+       console.log(myJSON);
+       $("#loader").css("display","none");
+       $("#json").css("display","block");
+       document.getElementById("json").innerHTML = myJSON;
+       $("#json").css("height","300px")
+  }});
+};
+//});
+
+// document.getElementById("json").innerHTML = JSON.stringify(data, undefined, 2);
+
+/*
+jQuery.ajax({
+    type: "POST",
+    url: 'YOU_URL_TO_WHICH_DATA_SEND',
+    data:'YOUR_DATA_TO_SEND',
+    beforeSend: function() {
+        $("#loaderDiv").show();
+    },
+    success: function(data) {
+        $("#loaderDiv").hide();
+    }
+});
+
+*/
+
 </script>
 {% endblock %}
