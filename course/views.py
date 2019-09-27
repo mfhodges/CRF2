@@ -609,6 +609,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         if request.resolver_match.url_name == "UI-request-detail-success":
             return Response({'request_instance': response.data}, template_name='request_success.html')
 
+
         # CHECK PERMISSIONS custom_permissions(request_obj, current_masquerade,instructors)
         obj_permission = self.custom_permissions(response.data,request.session.get('on_behalf_of','None'),response.data['course_info']['instructors'])
         #print("permission, ", obj_permission)
@@ -1325,24 +1326,28 @@ def process_requests(request):
 
 	done = {'response':'response','processed':[]}
 	_to_process = Request.objects.filter(status='APPROVED')
-	for obj in _to_process:
-		item = {'request':obj.course_requested.course_code}
-		done['processed'] += [{'course_code':obj.course_requested.course_code,'status':''}]
-	running = create_canvas_site()
-	print('done', done)
+	if _to_process.exists():
+		for obj in _to_process:
+			item = {'request':obj.course_requested.course_code}
+			done['processed'] += [{'course_code':obj.course_requested.course_code,'status':''}]
+		running = create_canvas_site()
+		print('done', done)
 
-	for obj in done['processed']:
-		req = Request.objects.get(course_requested=obj['course_code'])
-		obj['status'] = req.status
+		for obj in done['processed']:
+			req = Request.objects.get(course_requested=obj['course_code'])
+			obj['status'] = req.status
 
 
-	with open('course/static/logs/result.json', 'w') as fp:
-		json.dump(done, fp)
+			with open('course/static/log/result.json', 'w') as fp:
+				json.dump(done, fp)
+	else:
+		done['processed']='No Approved Requests to Process'
+
 	return django.http.JsonResponse(done)
 
 @staff_member_required
 def view_requests(request):
-	with open('course/static/logs/result.json') as json_file:
+	with open('course/static/log/result.json') as json_file:
 	    data = json.load(json_file)
 	return django.http.JsonResponse(data)
 
