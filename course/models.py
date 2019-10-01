@@ -439,7 +439,7 @@ class Request(models.Model):
     additional_instructions = models.TextField(blank=True,default=None, null=True)
     admin_additional_instructions = models.TextField(blank=True,default=None, null=True)
     reserves = models.BooleanField(default=False)
-    # this field is redundant
+    #process_notes = models.TextField(blank=True,default=None, null=True)
     canvas_instance = models.ForeignKey(CanvasSite,related_name='canvas', on_delete=models.CASCADE,null=True, blank=True )
 
     # NOTE! needs something for multisection course sites!
@@ -529,10 +529,11 @@ class AdditionalEnrollment(models.Model):
 # see section on Extending User Model Using a One-To-One Link
 class AutoAdd(models.Model):
     ROLE_CHOICES = (
-    ('ta','TA'),
-    ('instructor','Instructor'),
-    ('designer','Designer'),
-    ('librarian','Librarian'),)
+    ('TA','TA'),
+    ('INST','Instructor'),
+    ('DES','Designer'),
+    ('LIB','Librarian'),
+    ('OBS', 'Observer'),)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False)
     school = models.ForeignKey(School, on_delete=models.CASCADE, blank=False)
     subject = models.ForeignKey(Subject,on_delete=models.CASCADE, blank=False)
