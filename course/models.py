@@ -439,7 +439,7 @@ class Request(models.Model):
     additional_instructions = models.TextField(blank=True,default=None, null=True)
     admin_additional_instructions = models.TextField(blank=True,default=None, null=True)
     reserves = models.BooleanField(default=False)
-    #process_notes = models.TextField(blank=True,default=None, null=True)
+    process_notes = models.TextField(blank=True,default=None, null=True)
     canvas_instance = models.ForeignKey(CanvasSite,related_name='canvas', on_delete=models.CASCADE,null=True, blank=True )
 
     # NOTE! needs something for multisection course sites!
