@@ -146,7 +146,7 @@ def create_canvas_site():
                     subj = pc[:-5][:-6]
                     section_name_code ="%s %s-%s %s " % (subj,number,section,term)
                 else:
-                    # it seems that we have a problem
+                    # it seems that we have a problem .primary_crosslist must be filled out
                     return
 
             else:
@@ -168,7 +168,7 @@ def create_canvas_site():
             try:
                 canvas_course = account.create_course(course=course)
             except:
-                # dont continue with the creation
+                request_obj.process_notes += "course site creation failed- check if it already exists,"
                 return
 
             print("created",canvas_course)
@@ -277,7 +277,7 @@ def create_canvas_site():
 
             # need to add error reporting to this
             while contentmigration.get_progress == 'queued' or contentmigration.get_progress == 'running':
-                pass
+                #pass
                 print("still running")
                 time.sleep(8)
             # if the progress is 'failed' --> report this
