@@ -147,6 +147,8 @@ def create_canvas_site():
                     section_name_code ="%s %s-%s %s " % (subj,number,section,term)
                 else:
                     # it seems that we have a problem .primary_crosslist must be filled out
+                    request_obj.process_notes += "primary_crosslist not set,"
+                    request_obj.save()
                     return
 
             else:
@@ -169,6 +171,7 @@ def create_canvas_site():
                 canvas_course = account.create_course(course=course)
             except:
                 request_obj.process_notes += "course site creation failed- check if it already exists,"
+                request_obj.save()
                 return
 
             print("created",canvas_course)
@@ -181,6 +184,7 @@ def create_canvas_site():
             except:
                 # dont continue with the loop so just stop for now.
                 request_obj.process_notes += "failed to create main section,"
+                request_obj.save()
                 return
             #first_section.edit(course_section={'sis_section_id':sis_course_id},enable_sis_reactivation=True)
 
@@ -203,6 +207,7 @@ def create_canvas_site():
             except:
                 # dont continue with the loop so just stop for now.
                 request_obj.process_notes += "failed to create section,"
+                request_obj.save()
                 return
 
         #check for crosslist

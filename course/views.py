@@ -1329,13 +1329,14 @@ def process_requests(request):
 	if _to_process.exists():
 		for obj in _to_process:
 			item = {'request':obj.course_requested.course_code}
-			done['processed'] += [{'course_code':obj.course_requested.course_code,'status':''}]
+			done['processed'] += [{'course_code':obj.course_requested.course_code,'status':'','notes':''}]
 		running = create_canvas_site()
 		print('done', done)
 
 		for obj in done['processed']:
 			req = Request.objects.get(course_requested=obj['course_code'])
 			obj['status'] = req.status
+			obj['notes'] = req.process_notes
 
 
 			with open('course/static/log/result.json', 'w') as fp:
