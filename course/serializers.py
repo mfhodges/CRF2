@@ -279,6 +279,7 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
     #url = serializers.HyperlinkedIdentityField(view_name='UI-requests', looku
     owner = serializers.ReadOnlyField(source='owner.username',required=False)
     course_info = CourseSerializer(source='course_requested', read_only=True)
+    #canvas_info = CanvasSiteSerializer(source='canvas',read_only=True) #-- doesnt work bc canvassites have p tight permissions? 
     masquerade = serializers.ReadOnlyField()
     #additional_sections = CourseSerializer()
     #sections = serializers.SerializerMethodField()
