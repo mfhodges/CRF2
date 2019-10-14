@@ -1,28 +1,25 @@
 {% load rest_framework %}
 {% load template_extra %}
 <fieldset>
-  <legend>Canvas Site</legend>
- {% if request_instance.canvas_instance %}
+  {% if request_instance.canvas_instance %}
+  <legend>Canvas Site: {{request_instance.canvas_instance.canvas_id}}</legend>
+
   <dl class="row" style="line-height:1.1;">
 
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Name</dt>
-        <dd class="col-8 col-md-9"> </dd>
+        <dd class="col-8 col-md-9"> {{request_instance.canvas_instance.name}}</dd>
 
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Workflow State</dt>
-        <dd class="col-8 col-md-9"> </dd>
+        <dd class="col-8 col-md-9"> {{request_instance.canvas_instance.workflow_state}}</dd>
 
         <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">SIS Course ID</dt>
-        <dd class="col-8 col-md-9"> </dd>
+        <dd class="col-8 col-md-9"> {{request_instance.canvas_instance.sis_course_id}}</dd>
 
-        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">URL</dt>
-        <dd class="col-8 col-md-9"> </dd>
-        <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">additional enrollments</dt>
-        <dd class="col-8 col-md-9"> </dd>
-
-        <a target="_blank" href="https://canvas.upenn.edu/courses/{{request_instance.canvas_instance}}">OPEN CANVAS SITE </a>
+        <a target="_blank" href="https://canvas.upenn.edu/courses/{{request_instance.canvas_instance.canvas_id}}"> <i class="fas fa-external-link-alt"></i> Open Canvas Site </a>
 
   </dl>
   {% else %}
+  <legend>Canvas Site</legend>
   <center><p> No Canvas Site on File.</p></center>
   {% if staff %}
   <a target="_blank" href="https://canvas.upenn.edu/api/v1/sections/sis_section_id:SRS_{{course|asrepr}}"> CHECK FOR CANVAS SITE  </a>
