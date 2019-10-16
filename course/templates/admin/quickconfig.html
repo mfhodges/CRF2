@@ -1,0 +1,82 @@
+{% extends "base_generic.html" %}
+{% load rest_framework %}
+
+{% block quickconfig %}active{% endblock %}
+
+{% block content %}
+<div class="medium-container">
+
+  <center> <h1> ~Still in development~</h1></center>
+  <h1>Quick Config</h1>
+
+  <ul class="nav nav-pills mb-3 nav-justified" id="pills-tab" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="pills-user-tab" data-toggle="pill" href="#pills-user" role="tab" aria-controls="pills-user" aria-selected="true">User</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="pills-course-tab" data-toggle="pill" href="#pills-course" role="tab" aria-controls="pills-course" aria-selected="false">Course</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Test</a>
+    </li>
+  </ul>
+  <div class="tab-content" id="pills-tabContent">
+    <!-- User  -->
+    <div class="tab-pane fade show active" id="pills-user" role="tabpanel" aria-labelledby="pills-user-tab">
+      <p>
+        Add User to Canvas Site or Create Canvas account (leave Course field blank).
+      should follow this for autocompletes https://www.w3schools.com/howto/howto_js_autocomplete.asp
+      </p>
+      <form >
+         <input type="hidden" name="config" value="user">
+        <div class="row">
+          <div class="col-sm-4">
+            <label for="pennkey">Pennkey</label>
+            <input type="text" id="pennkey" placeholder="Pennkey">
+          </div>
+          <div class="col-sm-4">
+            <label for="role">Role</label>
+            <select id="role">
+              <option value="inst">Instructor</option>
+              <option value="stud">Student</option>
+              <option value="ta">TA</option>
+              <option value="lib">Librarian</option>
+              <option value="obs">Observer</option>
+              <option value="des">Designer</option>
+            </select>
+          </div>
+          <div class="col-sm-4">
+            <label for="course_id">Course</label>
+            <input type="text" id="course_id" placeholder="SRS ID">
+          </div>
+
+        </div>
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+    <!-- Course  -->
+    <div class="tab-pane fade" id="pills-course" role="tabpanel" aria-labelledby="pills-course-tab">
+      <p> Add tool to Course</p>
+      <form >
+        <input type="hidden" name="config" value="course">
+        <div class="row">
+          <div class="col-sm-4">
+            <label for="course_id">Course</label>
+            <input type="text" id="course_id" placeholder="SRS ID">
+
+          </div>
+          <div class="col-sm-4">
+            <label for="tool">Tool</label>
+            <input type="text" id="Tool" placeholder="">
+          </div>
+        </div>
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+    <!-- ???  -->
+    <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+      The rule of 3 states that this tab must exist
+    </div>
+  </div>
+
+{% endblock %}

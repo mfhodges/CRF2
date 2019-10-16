@@ -14,7 +14,7 @@
 <form id="myForm" action="#" onsubmit="submitForm();return false;">
 
   <label style="width: 45%;">
-    user
+    User
   <input name="user" type="text" id="pennkey">
   {{ form2.username }}
   </label>
@@ -78,7 +78,7 @@ function submitForm() {
                  success : function (data) {
                         console.log(data);
                         var test = data;
-                        $('#showresults').empty();
+                        $('#showresults').empty().append("<legend>CRF Data</legend>");
                         for ( const element in data) {
                           console.log(element, data[element]);
                           if (Array.isArray(data[element])){
@@ -99,7 +99,7 @@ function submitForm() {
                         console.log(data.username)
                       },
                 error: function (xhr, status) {
-                   $('#showresults').append("<p>Sorry, there was a problem! Check that this user exists in the CRF</p>");
+                   $('#showresults').empty().append("<legend>CRF Data</legend><p>Sorry, there was a problem! Check that this user exists in the CRF</p>");
               }
                      });
 
@@ -111,7 +111,7 @@ function submitForm() {
                 success : function (data) {
                        console.log(data);
                        var test = data;
-                       $('#showresultscanvas').empty();
+                       $('#showresultscanvas').empty().append("<legend>Canvas Data</legend>");
                        for ( const element in data) {
                          console.log(element, data[element]);
                          if (Array.isArray(data[element])){
@@ -133,8 +133,8 @@ function submitForm() {
                        console.log(data.username)
                      },
                error: function (xhr, status) {
-                 $('#showresultscanvas').append("<p>Sorry, there was a problem! Check that this user exists in Canvas.</p>");
-                                        console.log("ok2");
+                 $('#showresultscanvas').empty().append("<legend>Canvas Data</legend><p>Sorry, there was a problem! Check that this user exists in Canvas.</p>");
+                  
 
              }
            });

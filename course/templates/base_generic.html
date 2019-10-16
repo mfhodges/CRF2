@@ -183,7 +183,7 @@
               <li><a href="/logs" class="{% block bulkupdates %}{% endblock %}">Manage Logs/Updates</a></li>
               <li><a href="/userlookup" class="{% block userlookup %}{% endblock %}">User Lookup</a></li>
               <li><a href="/courselookup" class="{% block courselookup %}{% endblock %}">Course Lookup</a></li>
-
+              <li><a href="/quickconfig" class="{% block quickconfig %}{% endblock %}">Quick Config</a></li>
               <li class="title">temporary</li>
               <li><a href="/emails">Emails</a></li>
               {% endif %}
@@ -236,6 +236,7 @@
             {% include "bits/banner.html" %}
 
            {% block content %}{% endblock %}
+
          </div>
       </main>
     </div> <!-- end flex-container -->

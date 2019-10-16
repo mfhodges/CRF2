@@ -1352,7 +1352,6 @@ def view_requests(request):
 	    data = json.load(json_file)
 	return django.http.JsonResponse(data)
 
-
 @staff_member_required
 def remove_canceled_requests(request):
 	from course.tasks import remove_canceled
@@ -1365,6 +1364,28 @@ def remove_canceled_requests(request):
 	running = remove_canceled()
 
 	return django.http.JsonResponse(done)
+
+
+
+# --------- Quick Config of Canvas (enrollment/add tool) ----------
+def quickconfig(request):
+
+	if request.method == 'post':
+		config = request.POST['config']
+		if config =='user':
+			roles = {'isnt':'TeacherEnrollment','stud':'StudentEnrollment','ta':'TaEnrollment','lib':'DesignerEnrollment','obs':'ObserverEnrollment','des':'DesignerEnrollment'}
+
+
+		elif config == 'course':
+			pass
+		else:
+			#error
+			data = 'something went wrong.'
+			pass
+
+		return render(request, "admin/quickconfig.html",{'data':data})
+	return render(request, "admin/quickconfig.html")
+
 
 
 def side_sign_in(request):
@@ -1426,6 +1447,21 @@ def openDataProxy(request):
 
 
 #---------------- AUTO COMPLETE -------------------
+def autocompleteCanvasCourse(request):
+	    if request.is_ajax():
+	        q = request.GET.get('course', '')
+	        print("q",q)
+	       	# canvas api query
+
+	        results = []
+	        for r in search_qs:
+	            results.append(r)
+	        data = json.dumps(results)
+	    else:
+	        data = 'fail'
+	    mimetype = 'application/json'
+	    return HttpResponse(data, mimetype)
+
 def autocompleteModel(request):
     if request.is_ajax():
         q = request.GET.get('term', '').capitalize()

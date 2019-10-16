@@ -48,18 +48,20 @@ This is fine because I want the API to be very generic
 # Additionally, we include the login URLs for the browsable API.
 # NOTE : pk = course_SRS_Title
 urlpatterns = [
-	url('admin/process_requests/', views.process_requests, name="process_requests"),
-	url('admin/view_requests/', views.view_requests, name="view_requests"),
-	url('admin/delete_canceled_requests/', views.remove_canceled_requests),
 	url('admin/test_login/', views.side_sign_in),
 	path('siterequest/',views.emergency_redirect),
 	path('contact/googleform/',views.googleform),
+
+	# --------------- Helpers ------------------
+	url('admin/process_requests/', views.process_requests, name="process_requests"),
+	url('admin/view_requests/', views.view_requests, name="view_requests"),
+	url('admin/delete_canceled_requests/', views.remove_canceled_requests),
+	url('quickconfig/', views.quickconfig),	
 
     # --------------- Documentation url/view -------------------
     path('documentation/',TemplateView.as_view(template_name='documentation.html'),name='documentation'),
     path('userlookup/',TemplateView.as_view(template_name='admin/user_lookup.html'),name='user_lookup'),
     url('courselookup/', views.openDataProxy),
-
 
 
     url(r'^api/', include(router.urls)),

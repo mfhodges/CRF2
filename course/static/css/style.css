@@ -936,6 +936,8 @@ td {
 
 tr td:nth-child(1){
   padding-left: 15px;
+  white-space: nowrap;
+
 }
 th#instructors,
 td#instructors {
@@ -1259,6 +1261,54 @@ div.alert-dismissible > p {
   }
 
 
+/* LOADER SPINNER */
+
+#loader {
+
+  z-index: 1;
+  width: 150px;
+  height: 150px;
+  margin: 0 50% 0 50%;
+  border: 8px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 8px solid var(--theme-blue);
+  width: 60px;
+  height: 60px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Add animation to "page content" */
+.animate-bottom {
+  position: relative;
+  -webkit-animation-name: animatebottom;
+  -webkit-animation-duration: 1s;
+  animation-name: animatebottom;
+  animation-duration: 1s
+}
+
+@-webkit-keyframes animatebottom {
+  from { bottom:-100px; opacity:0 }
+  to { bottom:0px; opacity:1 }
+}
+
+@keyframes animatebottom {
+  from{ bottom:-100px; opacity:0 }
+  to{ bottom:0; opacity:1 }
+}
+
+
+
   /* Bootstrap 4 Callouts - https://gist.github.com/mikeblum/aaffe654fc4f5a74c3b8b313fb43b2eb */
 
   .bd-callout {
@@ -1309,4 +1359,22 @@ div.alert-dismissible > p {
 
 .bd-callout-danger h4 {
     color: #d9534f
+}
+
+/* Bootstrap pills/tabs */
+
+.nav.mb-3 {
+    border-bottom: .5px solid #cdcdcd;
+  }
+.nav-link {
+  padding: .5rem 1rem .2rem;
+}
+.nav-pills .nav-link {
+     border-radius: 0rem;
+     font-weight: 500;
+}
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+    color: #404040;
+    background-color: #f0f0f0;
+    border-bottom: 5.5px solid var(--theme-blue);
 }
