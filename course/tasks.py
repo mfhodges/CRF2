@@ -268,11 +268,15 @@ def create_canvas_site():
         if serialized.data['reserves']:
             tabs = canvas_course.get_tabs()
             for tab in tabs:
+                ares_configured = False
                 if tab.id == 'context_external_tool_139969': # its the reserves !
                     tab.update(hidden=False)
+                    ares_configured = True
                 else:
-                    request_obj.process_notes += "failed to configure ARES,"
+
                     pass
+            if ares_configured == False:
+                request_obj.process_notes += "failed to configure ARES,"
         #input("STEP 4 DONE...\n")
 
 
