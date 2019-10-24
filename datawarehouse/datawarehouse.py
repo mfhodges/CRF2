@@ -4,6 +4,7 @@ import cx_Oracle
 from configparser import ConfigParser
 import string
 import logging
+from course import utils
 import re
 from OpenData.library import *
 from course.models import *
@@ -168,6 +169,13 @@ def pull_courses(term):
             #'year' :year})
 
         except Exception as e:
+            # check if updates !
+            # 1. check if the course exists
+            #   a. find the course
+            #   b. check if the primary_crosslist and course_primary_subject needs to be updated
+            #   c. update the crosslistings?
+            #
+            # 2. if doesnt exist -- report error
             print({
             'course_term' : term,
             'course_activity' : activity,
@@ -274,6 +282,13 @@ def available_terms():
 
 
 
+def daily_sync(term):
+    pull_courses(term)
+    #remove instructors() -- only for non requested courses
+    pull_instructors(term)
+    #crosslisting_cleanup()
+    utils.process_canvas()
+    #utils.updatesite info
 
 
 
