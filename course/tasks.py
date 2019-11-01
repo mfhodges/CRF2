@@ -6,17 +6,19 @@ from canvas import api as canvas_api
 from course.serializers import RequestSerializer
 from course.models import *
 import time
+from datawarehouse import datawarehouse
 
 @task()
-def task_process_approved():
+def task_nightly_sync():
     # this task takes all of the Approved requests and attempts to make a course
     # if it doesnt work then it is locked
     #print("howdy!")
-    time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    f = open("course/static/logs/test.log", "a")
-    ans = utils.update_request_status()
+    time_start = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    f = open("course/static/log/night_sync.log", "a")
+    datawarehouse.daily_sync('2020A')
+    time_end = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     print(ans)
-    f.write(time+" Now the file has more content! \n\t"+ans+"\n")
+    f.write("Nighly Update:" +time_start+" - "+time_end+"\n")
     f.close()
 
 # there should be a task that check all courses if they have been created in Canvas
@@ -64,7 +66,7 @@ def process_canvas():
     users = User.objects.all()
     for user in users:
         print("adding for ", user.username)
-        updateCanvasSites(user.username)
+        utils.updateCanvasSites(user.username)
 
 
 #----------- REMOVE CANCELED REQUESTS ---------------
@@ -125,6 +127,7 @@ def create_canvas_site():
     _to_process = Request.objects.filter(status='APPROVED')
     for request_obj in _to_process:
         serialized = RequestSerializer(request_obj)
+        additional_sections=[] # {'course_section':'','instructors':''} list of Canvas course section objects and instructors listed in CRF to use later when adding enrollments
         ######## Step 1. Set request to IN_PROCESS ########
         request_obj.status = 'IN_PROCESS'
         request_obj.save()
@@ -175,12 +178,14 @@ def create_canvas_site():
                 return
 
             print("created",canvas_course)
-            # add sections
-            # add main one
-
-
+            # Add sections
+            #   Add main Sections
             try:
-                canvas_course.create_course_section(course_section={'name':section_name,'sis_section_id':sis_course_id},enable_sis_reactivation=True)#first_section = canvas_course.get_sections()[0]
+                additional_section = {'course_section':'','instructors':''}
+                additional_section['course_section']=canvas_course.create_course_section(course_section={'name':section_name,'sis_section_id':sis_course_id},enable_sis_reactivation=True)#first_section = canvas_course.get_sections()[0]
+                MAIN_SECTION = additional_section['course_section']
+                additional_section['instructors']= course_requested.instructors.all()
+                additional_sections += [additional_section]
             except:
                 # dont continue with the loop so just stop for now.
                 request_obj.process_notes += "failed to create main section,"
@@ -192,23 +197,34 @@ def create_canvas_site():
             request_obj.process_notes += "failed to locate Canvas Account in Canvas,"
             #error log and stop for loop
             pass
-        # add sections
+        #   Add multi-sections
         if request_obj.title_override:
             namebit = request_obj.title_override
         else:
             namebit = course_requested.course_name
 
+
         for section in serialized.data['additional_sections']:
             section_course = Course.objects.get(course_code=section)
+            if section_course.course_activity.abbr !='LEC': # dont put the name in the title, instead add the activity abbr.
+                namebit = section_course.course_activity.abbr
             sis_section = 'SRS_'+section_course.srs_format_primary()
             #sis_sections += [sis_section]
             try:
-                canvas_course.create_course_section(course_section={'name':section_course.srs_format_primary() +' '+ namebit,'sis_section_id':sis_section},enable_sis_reactivation=True)
+
+                additional_section = {'course_section':'','instructors':''}
+                print({'name':section_course.srs_format_primary() +' '+ namebit,'sis_section_id':sis_section})
+                additional_section['course_section'] = canvas_course.create_course_section(course_section={'name':section_course.srs_format_primary() +' '+ namebit,'sis_section_id':sis_section},enable_sis_reactivation=True)
+                additional_section['instructors'] = section_course.instructors.all()
+                additional_sections += [additional_section]
+
+
             except:
                 # dont continue with the loop so just stop for now.
                 request_obj.process_notes += "failed to create section,"
                 request_obj.save()
                 return
+            #check if instructors are specified for each section
 
         #check for crosslist
         if course_requested.crosslisted:
@@ -218,50 +234,54 @@ def create_canvas_site():
         ######## Step 3. enroll faculty and additional enrollments  ########
         enrollment_types = {'INST':'TeacherEnrollment', 'instructor':'TeacherEnrollment','TA':'TaEnrollment','ta':'TaEnrollment', 'DES':'DesignerEnrollment', 'designer':'DesignerEnrollment', 'LIB':'DesignerEnrollment','librarian':'DesignerEnrollment'}
         librarian_role_id = '1383'
-        for instructor in course_requested.instructors.all():
-            # check that they have an account
-            user = canvas_api.get_user_by_sis(instructor.username)
-            if user == None: # user doesnt exist
-                try:
-                    user = canvas_api.mycreate_user(instructor.username, instructor.profile.penn_id, instructor.email,instructor.first_name+ ' '+ instructor.last_name)
-                    request_obj.process_notes += "created account for user: %s," % (instructor.username)
-                except:
-                    request_obj.process_notes += "failed to create account for user: %s," % (instructor.username)
-                    pass # fail silently
-            else:
-                try:
-                    for sect in canvas_course.get_sections():
-                        canvas_course.enroll_user(user.id, 'TeacherEnrollment' ,enrollment={'enrollment_state':'active', 'course_section_id':sect.id})
-                except:
+        # Enroll instructors listed in SRS
+        for section in additional_sections:
+            for instructor in section['instructors']:
+                # check that they have an account
+                user = canvas_api.get_user_by_sis(instructor.username)
+                if user == None: # user doesnt exist
+                    try:
+                        user = canvas_api.mycreate_user(instructor.username, instructor.profile.penn_id, instructor.email,instructor.first_name+ ' '+ instructor.last_name)
+                        request_obj.process_notes += "created account for user: %s," % (instructor.username)
+                    except:
+                        request_obj.process_notes += "failed to create account for user: %s," % (instructor.username)
+                        pass # fail silently
 
+                # either user exists or has been created now
+                try:
+                    canvas_course.enroll_user(user.id, 'TeacherEnrollment' ,enrollment={'enrollment_state':'active', 'course_section_id':section['course_section'].id})
+                except:
                     request_obj.process_notes += "failed to add user: %s," % (instructor.username)
                     pass #fail silently
                 #for sect in canvas_course.get_sections():canvas_course.enroll_user(user.id, 'TeacherEnrollment' ,enrollment={'course_section_id':sect.id,'enrollment_state':'active'} )
         additional_enrollments = serialized.data['additional_enrollments']
+        # enroll custom additional enrollments - all added to MAIN SECTION ONLY
         for enrollment in additional_enrollments:
             user = enrollment['user']
             role = enrollment['role']
             # check if user exists
             user_canvas = canvas_api.get_user_by_sis(user)
             if user_canvas == None: # user doesnt exist
-                user_crf = User.objects.get(username=user)
-                user_canvas = canvas_api.mycreate_user(user, user_crf.profile.penn_id, user_crf.email ,user_crf.first_name+user_crf.last_name)
-                request_obj.process_notes += "created account for user: %s," % (instructor.username)
+                try:
+                    user_crf = User.objects.get(username=user)
+                    user_canvas = canvas_api.mycreate_user(user, user_crf.profile.penn_id, user_crf.email ,user_crf.first_name+user_crf.last_name)
+                    request_obj.process_notes += "created account for user: %s," % (instructor.username)
+                except:
+                    request_obj.process_notes += "failed to create account for user: %s," % (instructor.username)
+                    pass # fail silently
 
             if role =='LIB' or role=='librarian':
-                for sect in canvas_course.get_sections():
-                    try:
-                        canvas_course.enroll_user( user_canvas.id , enrollment_types[role] ,enrollment={'course_section_id':sect.id,'role_id':librarian_role_id,'enrollment_state':'active'} )
-                    except:
-                        request_obj.process_notes += "failed to add user: %s," % (user)
-                        pass
+                try:
+                    canvas_course.enroll_user( user_canvas.id , enrollment_types[role] ,enrollment={'course_section_id':MAIN_SECTION.id,'role_id':librarian_role_id,'enrollment_state':'active'} )
+                except:
+                    request_obj.process_notes += "failed to add user: %s," % (user)
+                    pass
             else:
-                for sect in canvas_course.get_sections():
-                    try:
-                        canvas_course.enroll_user(user_canvas.id ,enrollment_types[role] ,enrollment={'course_section_id':sect.id,'enrollment_state':'active'} )
-                    except:
-                        request_obj.process_notes += "failed to add user: %s," % (user)
-                        pass
+                try:
+                    canvas_course.enroll_user(user_canvas.id ,enrollment_types[role] ,enrollment={'course_section_id':MAIN_SECTION.id,'enrollment_state':'active'} )
+                except:
+                    request_obj.process_notes += "failed to add user: %s," % (user)
+                    pass
         #enroll_user(user.id ,'DesignerEnrollment' ,enrollment={'role_id':1383,'enrollment_state':'active'})
         #input("STEP 3 DONE...\n")
         ######## Step 4. Configure reserves ########
@@ -290,10 +310,10 @@ def create_canvas_site():
                 print("still running")
                 time.sleep(8)
             # if the progress is 'failed' --> report this
+
+
         #input("STEP 5 DONE...\n")
         ######## Step 6. Create CanvasSite Object and link to Request ########
-
-
         instructors = canvas_course.get_enrollments(type='TeacherEnrollment')._elements
         print("instructors ", instructors)
         _canvas_id = canvas_course.id
