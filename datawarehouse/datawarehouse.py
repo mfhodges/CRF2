@@ -293,7 +293,7 @@ def daily_sync(term):
     pull_instructors(term)# -- only for non requested courses
     #crosslisting_cleanup() -- check that for every course with a primary crosslisting that its actually crosslisted with that course
     utils.process_canvas() # -- for each user check if they have any Canvas sites that arent in the CRF yet
-    utils.update_sites_info(term) info # -- for each Canvas Site in the CRF check if its been altered
+    utils.update_sites_info(term) #info # -- for each Canvas Site in the CRF check if its been altered
 
 
 
