@@ -200,6 +200,7 @@ def pull_courses(term):
 
 
 def pull_instructors(term):
+    # should add instructors to courses that have not been requested yet
     config = ConfigParser()
     config.read('config/config.ini')
 
@@ -229,7 +230,7 @@ def pull_instructors(term):
             course = Course.objects.get(course_code=course_code)
         except:
             pass # fail silently -- this course isnt in the CRF but this isnt the place to handle such an error
-        if course: # if we didn't fail silently
+        if course and course.requested==False: # if we didn't fail silently
             # check if instructor in CRF
             instructor = None
             try:
@@ -280,15 +281,19 @@ def available_terms():
     for x in cursor:
         print(x)
 
-
+def clear_instructors(term):
+    courses = Course.objects.filter(requested=False)
+    for course in courses:
+        course.instructors.clear()
+        course.save()
 
 def daily_sync(term):
     pull_courses(term)
-    #remove instructors() -- only for non requested courses
-    pull_instructors(term)
-    #crosslisting_cleanup()
-    utils.process_canvas()
-    #utils.updatesite info
+    clear_instructors(term)# -- only for non requested courses
+    pull_instructors(term)# -- only for non requested courses
+    #crosslisting_cleanup() -- check that for every course with a primary crosslisting that its actually crosslisted with that course
+    utils.process_canvas() # -- for each user check if they have any Canvas sites that arent in the CRF yet
+    utils.update_sites_info(term) info # -- for each Canvas Site in the CRF check if its been altered
 
 
 

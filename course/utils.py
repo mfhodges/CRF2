@@ -215,6 +215,42 @@ def my_test():
         if c.course_primary_subject != c.course_subject:
             print(c)
 
+def crosslisting_cleanup(): # this needs to be fixed!!
+    courses = Course.objects.exclude(primary_crosslist__isnull=True).exclude(primary_crosslist__exact='')
+    for course in courses:
+        try:
+            cx = Course.objects.get(course_code=course.primary_crosslist)
+            course.crosslisted.add(cx)
+            course.save()
+        except:
+            # see if course exists if not there seeems to be an error!
+            print("couldn't find course", course.primary_crosslist)
+
+def update_sites_info(term):
+    # look through all requests in a term and check the canvas sites info
+    canvas_sites = Requests.objects.exclude(canvas_instance__isnull=True)
+    for _canvas_site in canvas_sites:
+        crf_canvas_site = _canvas_site.canvas_instance
+        canvas = canvas_api.Canvas(canvas_api.API_URL, canvas_api.API_KEY)
+        site = canvas.get_course(crf_canvas_site.canvas_id)
+
+        #check name
+        if site.name != crf_canvas_site.name:
+            print(site.name , crf_canvas_site.name)
+            #crf_canvas_site.name = site.name
+            #crf_canvas_site.save()
+
+        #check sis_course_id
+        #if
+        #check workflow_state
+        if site.workflow_state != crf_canvas_site.workflow_state:
+            print(site.workflow_state,crf_canvas_site.workflow_state)
+            #crf_canvas_site.workflow_state = site.workflow_state
+            #crf_canvas_site.save()
+        #check owners
+
+
+
 def process_canvas():
     users = User.objects.all()
     for user in users:
