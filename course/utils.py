@@ -228,7 +228,9 @@ def crosslisting_cleanup(): # this needs to be fixed!!
 
 def update_sites_info(term):
     # look through all requests in a term and check the canvas sites info
-    canvas_sites = Request.objects.filter(~Q(canvas_instance__isnull=True)).filter(status='COMPLETED')
+    year = term[:4]
+    term=term[-1]
+    canvas_sites = Request.objects.filter(~Q(canvas_instance__isnull=True)).filter(status='COMPLETED',course_requested__year=year,course_requested__course_term=term)
     for _canvas_site in canvas_sites:
         crf_canvas_site = _canvas_site.canvas_instance
         canvas = canvas_api.Canvas(canvas_api.API_URL, canvas_api.API_KEY)
@@ -237,8 +239,8 @@ def update_sites_info(term):
             #check name
             if site.name != crf_canvas_site.name:
                 print((site.name , crf_canvas_site.name))
-                #crf_canvas_site.name = site.name
-                #crf_canvas_site.save()
+                crf_canvas_site.name = site.name
+                crf_canvas_site.save()
 
             #check sis_course_id
             #if
@@ -246,13 +248,13 @@ def update_sites_info(term):
             #check workflow_state
             if site.workflow_state != crf_canvas_site.workflow_state:
                 print((site.workflow_state,crf_canvas_site.workflow_state))
-                #crf_canvas_site.workflow_state = site.workflow_state
-                #crf_canvas_site.save()
+                crf_canvas_site.workflow_state = site.workflow_state
+                crf_canvas_site.save()
 
             #check owners
-            
+
         except:
-            print("couldnt find Canvas site")
+            print("couldnt find Canvas site: ", crf_canvas_site.course_id)
             pass # couldnt find canvas site -- weird!!!
 
 
