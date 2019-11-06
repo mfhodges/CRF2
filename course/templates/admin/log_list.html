@@ -198,7 +198,7 @@ function processRequests() {
     type: 'GET',
     beforeSend: function() {
         console.log("beforesend");
-        $("#processRequests").text("Running").fadeIn();
+        //$("#processRequests").text("Running").fadeIn(900);
         $("#processRequests").attr("disabled", true);
         $("#oneOffTasks").css("display","block");
         $("#oneOffTasks > legend").text("Running: Requests");
@@ -215,7 +215,7 @@ function processRequests() {
       $("#json").show(300).css("height","300px");
 
 
-       $("#processRequests").html("Run").fadeIn();
+       //$("#processRequests").html("Run").fadeIn(900);
        $("#processRequests").attr("disabled", false);
   }});
 };

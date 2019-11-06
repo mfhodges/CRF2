@@ -296,6 +296,65 @@ def daily_sync(term):
     utils.update_sites_info(term) #info # -- for each Canvas Site in the CRF check if its been altered
 
 
+def delete_canceled_courses(term):
+    config = ConfigParser()
+    config.read('config/config.ini')
+    domain = config.get('opendata', 'domain')
+    id = config.get('opendata', 'id')
+    key = config.get('opendata', 'key')
+    OData_lookup = OpenData(base_url=domain, id=id, key=key)
+
+    # check that term is available
+    info = dict(config.items('datawarehouse'))
+    connection = cx_Oracle.connect(info['user'], info['password'], info['service'])
+    cursor = connection.cursor()
+    cursor.execute("""
+    SELECT
+      cs.section_id
+      || cs.term section,
+      cs.section_id,
+      cs.term,
+      cs.subject_area subject_id,
+      cs.tuition_school school_id,
+      cs.xlist,
+      cs.xlist_primary,
+      cs.activity,
+      cs.section_dept department,
+      cs.section_division division,
+      trim(cs.title) srs_title,
+      cs.status srs_status,
+      cs.schedule_revision
+    FROM
+      dwadmin.course_section cs
+    WHERE
+      cs.activity IN ('LEC', 'REC', 'LAB', 'SEM', 'CLN', 'CRT', 'PRE', 'STU', 'ONL', 'HYB')
+    AND cs.schedule_revision IN ('8')
+    AND cs.tuition_school NOT IN ('WH', 'LW')
+    AND cs.term= '2020A'""")
+    #AND cs.status IN ('X','H')
+
+
+    #term_varaible = str(term))
+    f = open("course/static/log/deleted_courses_issues.log", "a")
+    for course_code, section_id, term, subject_area, school, xc, xc_code, activity, section_dept,section_division, title,status, rev  in cursor:
+        #print(course_code, section_id, term, subject_area, school, xc, xc_code, activity, section_dept,section_division, title,status, rev)
+        course_code = course_code.replace(" ","")
+        subject_area = subject_area.replace(" ","")
+        xc_code = xc_code.replace(" ","")
+
+        try:
+            course = Course.objects.get(course_code=course_code)
+            if course.requested == True:
+                # then we have to report this issue
+                f.write("Issue:" +course_code+" "+"\n")
+            else:
+                print("deleting ", course_code)
+                course.delete()
+        except:
+            #the canceled course doesnt exist in the CRF... no problem for us then
+            pass
+
+    f.close()
 
 """
 SELECT

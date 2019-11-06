@@ -11,7 +11,7 @@
 
 <p> Does something seem wrong about a course? Lets see if they exist in the Registrar Data ( IN PROGRESS :, the CRF and if they exist in Canvas!). Labs are not listed as courses
     <br>
-    <mark>All of this is still in progress!--If you get an error page the Cron Job is probably using the API token so try again later. </mark>
+    <mark>Results are capped at 5</mark>
 </p>
 
 
@@ -19,7 +19,7 @@
 <dl>
 	<dt>Course Id</dt>
 	<dd>All capitalized Subject code ( e.g. ACCT, MATH) plus the course number (optional) and section (optional) (e.g. ACCT101001 , ACCT101, ACCT)</dd>
-	<dt>Year/Term</dt>
+	<dt>Year/Term ** optional ** </dt>
 	<dd>Full numerical year appended by uppercase term letter </dd>
   <dt>Instructor ** optional ** </dt>
   <dd>valid pennkey (all lowecase)</dd>
@@ -45,10 +45,11 @@
 </form>
 </fieldset>
 
-
-<p> results ({{size}})</p>
-<fieldset style="height:600px;padding:1rem 0rem 1rem 0rem;">
-<pre style="overflow:auto;height:-webkit-fill-available;">
+<!--overflow:auto;height:-webkit-fill-available;-->
+<p> </p>
+<fieldset style="padding:0rem;">
+  <legend>Results ({{size}})</legend>
+<pre style="overflow-y:scroll;margin-bottom:0px;padding-bottom:0px;" id='json'>
    {{data | pprint}}
  </pre>
 </fieldset>
@@ -70,13 +71,21 @@
 
 {#
 {% block template_page_js %}
-<script src="dist/json-formatter.js"></script>
+<!--<script src="dist/json-formatter.js"></script>-->
 <script>
-const myJSON = '{{data|escapejs}}';
 
-const formatter = new JSONFormatter(myJSON);
+const size = '{{size}}';
 
-document.body.appendChild(formatter.render());
+
+if (size>0){
+  document.getElementById("json").style.height = "530px";
+  console.log("pass");
+}
+else{
+  console.log("fail");
+
+}
+
 </script>
 {% endblock %}
 #}
