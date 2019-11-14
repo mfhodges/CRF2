@@ -73,7 +73,7 @@ can implement EXACT search by user that made the request or masquerade, course c
 class RequestAdmin(admin.ModelAdmin):
     list_display =['course_requested','status','requestors','created','updated',]
     list_filter = (
-        ('status',)
+        ('status','course_requested__course_term','course_requested__course_schools')
     )
     search_fields = ('owner__username','masquerade','course_requested__course_code')
     readonly_fields = ['created','updated','masquerade','additional_sections']
