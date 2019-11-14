@@ -148,7 +148,7 @@ class RequestSummaryAdmin(admin.ModelAdmin):
             'ares': Count('reserves',filter=Q(reserves=True)),
             'multisection':Count('additional_sections'),
             'content_copy': Count('copy_from_course'),
-            'not_completed': Count('status',exclude=Q(status='COMPLETED')),
+            'not_completed': Count('status',filter=~Q(status='COMPLETED')),
             #'total_requests': Sum(''),
         }
         #
@@ -158,9 +158,13 @@ class RequestSummaryAdmin(admin.ModelAdmin):
             .annotate(**metrics)
             .order_by('course_requested__course_schools__abbreviation')
         )
+        ##### LAST ROW  #####
         response.context_data['summary_total'] = dict(
             qs.aggregate(**metrics)
         )
+
+        ##### BAR CHART #####
+
 
         return response
 
