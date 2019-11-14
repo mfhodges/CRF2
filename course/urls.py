@@ -56,7 +56,7 @@ urlpatterns = [
 	url('admin/process_requests/', views.process_requests, name="process_requests"),
 	url('admin/view_requests/', views.view_requests, name="view_requests"),
 	url('admin/delete_canceled_requests/', views.remove_canceled_requests),
-	url('quickconfig/', views.quickconfig),	
+	url('quickconfig/', views.quickconfig),
 
     # --------------- Documentation url/view -------------------
     path('documentation/',TemplateView.as_view(template_name='documentation.html'),name='documentation'),
@@ -149,6 +149,7 @@ urlpatterns = [
 
     # --------------- Canvas Proxies -------------------
     url(r'^canvasuser/(?P<username>\w+)/$',views.myproxy ),
+	url(r'^searchcanvas/(?P<search>\w+)/$',views.autocompleteCanvasCourse),
     # --------------- autocomplete -------------------
     # views are defined in autocomplete.py
     url(

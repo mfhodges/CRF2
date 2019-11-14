@@ -4,6 +4,8 @@ from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.db.models import Count, Sum, Min, Max, DateTimeField
+from django.db.models.functions import Trunc
 """
 can implement EXACT search by instructor username, course code, or course title
 
@@ -127,6 +129,41 @@ class UserAdmin(BaseUserAdmin):
 class AutoAddAdmin(admin.ModelAdmin):
     autocomplete_fields = ['user']
 
+class RequestSummaryAdmin(admin.ModelAdmin):
+    change_list_template = 'admin/request_summary_change_list.html'
+    date_hierarchy = 'created'
+
+    def changelist_view(self, request, extra_context=None):
+        response = super().changelist_view(
+            request,
+            extra_context=extra_context,
+        )
+        try:
+            qs = response.context_data['cl'].queryset
+        except (AttributeError, KeyError):
+            return response
+
+        metrics = {
+            'total': Count('course_requested'),
+            'ares': Count('reserves',filter=Q(reserves=True)),
+            'multisection':Count('additional_sections'),
+            'content_copy': Count('copy_from_course'),
+            'not_completed': Count('status',exclude=Q(status='COMPLETED')),
+            #'total_requests': Sum(''),
+        }
+        #
+        response.context_data['summary'] = list(
+            qs
+            .values('course_requested__course_schools__abbreviation')
+            .annotate(**metrics)
+            .order_by('course_requested__course_schools__abbreviation')
+        )
+        response.context_data['summary_total'] = dict(
+            qs.aggregate(**metrics)
+        )
+
+        return response
+
 # unregister old user admin
 admin.site.unregister(User)
 # register new user admin
@@ -143,7 +180,7 @@ admin.site.register(AutoAdd,AutoAddAdmin)
 admin.site.register(UpdateLog)
 admin.site.register(PageContent)
 admin.site.register(CanvasSite,CanvasSiteAdmin)
-
+admin.site.register(RequestSummary,RequestSummaryAdmin)
 
 # https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Admin_site
 

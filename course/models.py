@@ -383,6 +383,8 @@ class Course(models.Model):
 
 
 
+
+
 class Notice(models.Model):
     """
     this is a class that handles system wide notifications
@@ -583,6 +585,13 @@ class PageContent(models.Model):
 
     def __str__(self):
         return self.location
+
+
+class RequestSummary(Request):
+    class Meta:
+        proxy = True
+        verbose_name = 'Request Summary'
+        verbose_name_plural = 'Requests Summary'
 
 
 

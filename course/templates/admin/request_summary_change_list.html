@@ -1,0 +1,95 @@
+<!-- course/templates/admin/request_summary_change_list.html-->
+{% extends "admin/change_list.html" %}
+{% load humanize %}
+{% block content_title %}
+    <h1> Requests Summary </h1>
+    <p> <mark> PSOM is BGS </mark></p>
+{% endblock %}
+{% block result_list %}
+
+    <!--Our content goes here…-->
+{#<p>{{summary}}</p>#}
+
+
+<div class=”results”>
+    <table>
+
+    <thead>
+      <tr>
+        <th>
+          <div class=”text”>
+            <a href=”#”>School</a>
+          </div>
+        </th>
+
+        <th>
+          <div class=”text”>
+            <a href=”#”>Total</a>
+          </div>
+        </th>
+
+        <th>
+          <div class=”text”>
+            <a href=”#”>Multi-Section</a>
+          </div>
+        </th>
+
+        <th>
+          <div class=”text”>
+            <a href=”#”>Ares</a>
+          </div>
+        </th>
+
+        <th>
+          <div class=”text”>
+            <a href=”#”>Content Copy</a>
+          </div>
+        </th>
+
+        <th>
+          <div class=”text”>
+            <a href=”#”>Not Completed</a>
+          </div>
+        </th>
+
+        <th>
+          <div class=”text”>
+            <a href=”#”>
+              <strong>% Of Total Requests</strong>
+            </a>
+          </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in summary %}
+      <tr class="{% cycle 'row1' 'row2' %}">
+        <td> {{ row.course_requested__course_schools__abbreviation }} </td>
+        <td> {{ row.total | intcomma }} </td>
+        <td> {{ row.multisection | intcomma }} </td>
+        <td> {{ row.ares | intcomma }} </td>
+        <td> {{ row.content_copy | intcomma }} </td>
+        <td> {{ row.not_completed | intcomma }} </td>
+        <td>
+          <strong>
+          {% widthratio row.total summary_total.total 100 %}%
+          </strong>
+        </td>
+      </tr>
+      {% endfor %}
+      <tr style="font-weight:bold; border-top:2px solid #DDDDDD;">
+            <td> Total </td>
+            <td> {{ summary_total.total | intcomma }} </td>
+            <td> {{ summary_total.multisection | intcomma }} </td>
+            <td> {{ summary_total.ares | intcomma }} </td>
+            <td> {{ summary_total.content_copy | intcomma }} </td>
+            <td> {{ summary_total.not_completed | intcomma }} </td>
+            <td> 100% </td>
+        </tr>
+    </tbody>
+
+  </table>
+</div>
+
+{% endblock %}
+{% block pagination %}{% endblock %}
