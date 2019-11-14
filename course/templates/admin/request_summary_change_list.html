@@ -9,52 +9,52 @@
 
     <!--Our content goes here…-->
 {#<p>{{summary}}</p>#}
+<p>{{summary_over_time}}</p>
 
-
-<div class=”results”>
+<div class="results">
     <table>
 
     <thead>
       <tr>
         <th>
-          <div class=”text”>
-            <a href=”#”>School</a>
+          <div class="text">
+            <a href="#">School</a>
           </div>
         </th>
 
         <th>
-          <div class=”text”>
-            <a href=”#”>Total</a>
+          <div class="text">
+            <a href="#">Total</a>
           </div>
         </th>
 
         <th>
-          <div class=”text”>
-            <a href=”#”>Multi-Section</a>
+          <div class="text">
+            <a href="#">Multi-Section</a>
           </div>
         </th>
 
         <th>
-          <div class=”text”>
-            <a href=”#”>Ares</a>
+          <div class="text">
+            <a href="#">Ares</a>
           </div>
         </th>
 
         <th>
-          <div class=”text”>
-            <a href=”#”>Content Copy</a>
+          <div class="text">
+            <a href="#">Content Copy</a>
           </div>
         </th>
 
         <th>
-          <div class=”text”>
-            <a href=”#”>Not Completed</a>
+          <div class="text">
+            <a href="#">Not Completed</a>
           </div>
         </th>
 
         <th>
-          <div class=”text”>
-            <a href=”#”>
+          <div class="text">
+            <a href="#">
               <strong>% Of Total Requests</strong>
             </a>
           </div>
@@ -89,6 +89,61 @@
     </tbody>
 
   </table>
+
+  <h2> Sales over time </h2>
+    <style>
+    .bar-chart {
+      display: flex;
+      justify-content: space-around;
+      height: 160px;
+      padding-top: 60px;
+      overflow: hidden;
+    }
+    .bar-chart .bar {
+        flex: 100%;
+        align-self: flex-end;
+        margin-right: 2px;
+        position: relative;
+        background-color: #79aec8;
+    }
+    .bar-chart .bar:last-child {
+        margin: 0;
+    }
+    .bar-chart .bar:hover {
+        background-color: #417690;
+    }
+    .bar-chart .bar .bar-tooltip {
+        position: relative;
+        z-index: 999;
+    }
+    .bar-chart .bar .bar-tooltip {
+        position: absolute;
+        top: -60px;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        font-weight: bold;
+        opacity: 0;
+    }
+    .bar-chart .bar:hover .bar-tooltip {
+        opacity: 1;
+    }
+
+    </style>
+    <div class="results">
+        <div class="bar-chart">
+        {% for x in summary_over_time %}
+            <div class="bar" style="height:{{x.pct}}%">
+                <div class="bar-tooltip">
+                    {{x.total | default:0 | intcomma }}<br>
+                    {{x.period | date:"d/m/Y"}}
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+
+</div>
 </div>
 
 {% endblock %}
