@@ -4,7 +4,7 @@ from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from django.conf import settings
-from django.db.models import Count, Sum, Min, Max, DateTimeField
+from django.db.models import Count, Sum, Min, Max, DateTimeField, Case, When, IntegerField
 from django.db.models.functions import Trunc
 """
 can implement EXACT search by instructor username, course code, or course title
@@ -156,21 +156,28 @@ class RequestSummaryAdmin(admin.ModelAdmin):
         except (AttributeError, KeyError):
             return response
 
+
+        """
+        issues with multisection, content copy and not completed
+        """
         metrics = {
             'total': Count('course_requested'),
             'ares': Count('reserves',filter=Q(reserves=True)),
-            'multisection':Count('additional_sections'),
-            'content_copy': Count('copy_from_course'),
-            'not_completed': Count('status',filter=~Q(status='COMPLETED')),
+            #'multisection':Count(Case(When(~Q(additional_sections=None), then=1),output_field=IntegerField(),)),
+            'content_copy': Count('copy_from_course',filter=~Q(copy_from_course='')),# ,filter=~Q(copy_from_course='None')&~Q(copy_from_course='')),
+            #'not_completed': Sum(Case(When(~Q(status='COMPLETED'), then=1),output_field=IntegerField(),)),
             #'total_requests': Sum(''),
+            #'multisection':Count('additional_sections',filter=Q(additional_sections__isnull=False),distinct=True).count(),#/Count('additional_sections', distinct=True)),
+
         }
         #
         response.context_data['summary'] = list(
             qs
-            .values('course_requested__course_schools__abbreviation')
+            .values('course_requested__course_schools__abbreviation','status','course_requested','copy_from_course')#'course_requested','status',)#,'course_requested')
             .annotate(**metrics)
             .order_by('course_requested__course_schools__abbreviation')
         )
+
         ##### LAST ROW  #####
         response.context_data['summary_total'] = dict(
             qs.aggregate(**metrics)
