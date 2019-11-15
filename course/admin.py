@@ -4,7 +4,7 @@ from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from django.conf import settings
-from django.db.models import Count, Sum, Min, Max, DateTimeField, Case, When, IntegerField
+from django.db.models import Count, Sum, Min, Max, Exists,DateTimeField, OuterRef,Case, When, IntegerField, F, Value, Subquery
 from django.db.models.functions import Trunc
 """
 can implement EXACT search by instructor username, course code, or course title
@@ -158,28 +158,36 @@ class RequestSummaryAdmin(admin.ModelAdmin):
 
 
         """
-        issues with multisection, content copy and not completed
+        issues with multisection
         """
+        multisectionExists = qs.filter(course_requested=OuterRef('pk'),additional_sections__isnull=False)
+
         metrics = {
-            'total': Count('course_requested'),
-            'ares': Count('reserves',filter=Q(reserves=True)),
-            #'multisection':Count(Case(When(~Q(additional_sections=None), then=1),output_field=IntegerField(),)),
+            'total': Count('course_requested',distinct=True),
+            'ares': Count('reserves',filter=Q(reserves=True),distinct=True),
+            'multisection':Sum(Exists(multisectionExists)),
+            #F('additional_sections'),#Sum(Case(When(~Q(additional_sections=None), then=Value(1)),default=0,output_field=IntegerField(),distinct=True)),
             'content_copy': Count('copy_from_course',filter=~Q(copy_from_course='')),# ,filter=~Q(copy_from_course='None')&~Q(copy_from_course='')),
-            'not_completed': Count('status',filter=Q(status__in=['IN_PROCESS','CANCELED','APPROVED','SUBMITTED','LOCKED']))#Sum(Case(When(~Q(status='COMPLETED'), then=1),output_field=IntegerField(),)),
+            'not_completed': Count('status',filter=Q(status__in=['IN_PROCESS','CANCELED','APPROVED','SUBMITTED','LOCKED'])),#Sum(Case(When(~Q(status='COMPLETED'), then=1),output_field=IntegerField(),)),
             #'total_requests': Sum(''),
-            #'multisection':Count('additional_sections',distinct=True),#filter=Q(additional_sections__isnull=True),distinct=True),#/Count('additional_sections', distinct=True)),
+            #'multisection':Count(F('additional_sections'),filter=Q(additional_sections__isnull=False)),
+            #filter=Q(additional_sections__isnull=True),distinct=True),#/Count('additional_sections', distinct=True)),
 
         }
 
         #
         response.context_data['summary'] = list(
             qs
-            .values('course_requested__course_schools__abbreviation','status','course_requested','copy_from_course')#'course_requested','status',)#,'course_requested')
+            .values('course_requested__course_schools__abbreviation')#'course_requested','status',)#,'course_requested')
             .annotate(**metrics)
+            #.annotate(multisection=Case(When(mutlisection_count__gt=0,then=Value(1)),default=Value(0),output_field=IntegerField()))
             .order_by('course_requested__course_schools__abbreviation')
+            #.annotate(multisection=Count('additional_sections',filter=Q(additional_sections__isnull=False),distinct=True))
         )
 
         ##### LAST ROW  #####
+        #metrics = metrics.pop('multisection')
+
         response.context_data['summary_total'] = dict(
             qs.aggregate(**metrics)
         )

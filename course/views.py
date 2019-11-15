@@ -44,7 +44,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import UserPassesTestMixin
-
+import urllib.parse
 """
 For more 'Detailed descriptions, with full methods and attributes, for each
 of Django REST Framework's class-based views and serializers'see: http://www.cdrf.co/
@@ -1316,6 +1316,27 @@ def myproxy(request,username):
     final["courses"] = other
     return django.http.JsonResponse(final)
 
+def autocompleteCanvasCourse(request,search):
+	if True:#request.is_ajax():
+		q = urllib.parse.unquote(search)
+		print("q",q)#
+		canvas = canvas_api.Canvas(canvas_api.API_URL, canvas_api.API_KEY)
+		account = canvas.get_account(96678)
+		search_qs = account.get_courses(search_term=q,sort='course_name',per_page=10)[:10]
+		results = []
+		for r in search_qs:
+			print(r)
+			print({"label":r.name,"value":r.id})
+			#print(r['course']['name'])
+			#results.append(r['course']['name'])
+			results.append({"label":r.name,"value":r.id})
+		#data = json.dumps(search_qs)
+		data = json.dumps(results)
+	else:
+	    data = 'fail'
+	mimetype = 'application/json'
+	return HttpResponse(data, mimetype)
+
 
 # ------------- TEMPORARY PROCESS REQUESTS --------
 from django.contrib.admin.views.decorators import staff_member_required
@@ -1338,9 +1359,9 @@ def process_requests(request):
 			obj['status'] = req.status
 			obj['notes'] = req.process_notes
 
-
-			with open('course/static/log/result.json', 'w') as fp:
-				json.dump(done, fp)
+		done['response'] = datetime.datetime.now().strftime("%m/%d/%y %I:%M%p")
+		with open('course/static/log/result.json', 'w') as fp:
+			json.dump(done, fp)
 	else:
 		done['processed']='No Approved Requests to Process'
 
@@ -1447,20 +1468,7 @@ def openDataProxy(request):
 
 
 #---------------- AUTO COMPLETE -------------------
-def autocompleteCanvasCourse(request):
-	    if request.is_ajax():
-	        q = request.GET.get('course', '')
-	        print("q",q)
-	       	# canvas api query
 
-	        results = []
-	        for r in search_qs:
-	            results.append(r)
-	        data = json.dumps(results)
-	    else:
-	        data = 'fail'
-	    mimetype = 'application/json'
-	    return HttpResponse(data, mimetype)
 
 def autocompleteModel(request):
     if request.is_ajax():

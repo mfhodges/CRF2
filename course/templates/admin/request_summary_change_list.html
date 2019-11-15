@@ -3,13 +3,14 @@
 {% load humanize %}
 {% block content_title %}
     <h1> Requests Summary </h1>
-    <p> <mark> PSOM is BGS </mark></p>
+    <p> <mark> PSOM is BGS </mark>. Time zone needs to be confirmed to be correct.</p>
 {% endblock %}
 {% block result_list %}
 
     <!--Our content goes here…-->
-{#<p>{{summary}}</p>#}
-<p>{{summary_over_time}}</p>
+{% comment %}<p>({{summary|length}})</p><p>{{summary}}</p>
+<b>
+<p>{{summary_over_time}}</p> {% endcomment %}
 
 <div class="results">
     <table>
@@ -90,7 +91,7 @@
 
   </table>
 
-  <h2> Sales over time </h2>
+  <h2>Request time (by {{ period}}) </h2>
     <style>
     .bar-chart {
       display: flex;
@@ -105,6 +106,7 @@
         margin-right: 2px;
         position: relative;
         background-color: #79aec8;
+        min-height:1px !important;
     }
     .bar-chart .bar:last-child {
         margin: 0;
@@ -136,7 +138,11 @@
             <div class="bar" style="height:{{x.pct}}%">
                 <div class="bar-tooltip">
                     {{x.total | default:0 | intcomma }}<br>
-                    {{x.period | date:"d/m/Y"}}
+                    {% if period == "hour" %}
+                      {{x.period | date:"m/d/Y H:i"}}
+                    {% else %}
+                      {{x.period | date:"m/d/Y"}}
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}
