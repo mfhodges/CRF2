@@ -165,11 +165,12 @@ class RequestSummaryAdmin(admin.ModelAdmin):
             'ares': Count('reserves',filter=Q(reserves=True)),
             #'multisection':Count(Case(When(~Q(additional_sections=None), then=1),output_field=IntegerField(),)),
             'content_copy': Count('copy_from_course',filter=~Q(copy_from_course='')),# ,filter=~Q(copy_from_course='None')&~Q(copy_from_course='')),
-            #'not_completed': Sum(Case(When(~Q(status='COMPLETED'), then=1),output_field=IntegerField(),)),
+            'not_completed': Count('status',filter=Q(status__in=['IN_PROCESS','CANCELED','APPROVED','SUBMITTED','LOCKED']))#Sum(Case(When(~Q(status='COMPLETED'), then=1),output_field=IntegerField(),)),
             #'total_requests': Sum(''),
-            #'multisection':Count('additional_sections',filter=Q(additional_sections__isnull=False),distinct=True).count(),#/Count('additional_sections', distinct=True)),
+            #'multisection':Count('additional_sections',distinct=True),#filter=Q(additional_sections__isnull=True),distinct=True),#/Count('additional_sections', distinct=True)),
 
         }
+
         #
         response.context_data['summary'] = list(
             qs
