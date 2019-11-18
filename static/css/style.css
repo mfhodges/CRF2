@@ -936,7 +936,7 @@ td {
 
 tr td:nth-child(1){
   padding-left: 15px;
-  white-space: nowrap;
+   white-space: nowrap;
 
 }
 th#instructors,
@@ -1158,6 +1158,7 @@ main {
   padding: 1rem;
   margin: 2.3rem 0;
   max-width: 950px;
+  border-radius:.25rem;
 }
 
 
@@ -1264,18 +1265,16 @@ div.alert-dismissible > p {
 /* LOADER SPINNER */
 
 #loader {
-  position: absolute;
-  left: 50%;
-  top: 50%;
+
   z-index: 1;
   width: 150px;
   height: 150px;
-  margin: -75px 0 0 -75px;
-  border: 16px solid #f3f3f3;
+  margin: 0 50% 0 50%;
+  border: 8px solid #f3f3f3;
   border-radius: 50%;
-  border-top: 16px solid var(--theme-blue);
-  width: 120px;
-  height: 120px;
+  border-top: 8px solid var(--theme-blue);
+  width: 60px;
+  height: 60px;
   -webkit-animation: spin 2s linear infinite;
   animation: spin 2s linear infinite;
 }
@@ -1361,4 +1360,22 @@ div.alert-dismissible > p {
 
 .bd-callout-danger h4 {
     color: #d9534f
+}
+
+/* Bootstrap pills/tabs */
+
+.nav.mb-3 {
+    border-bottom: .5px solid #cdcdcd;
+  }
+.nav-link {
+  padding: .5rem 1rem .2rem;
+}
+.nav-pills .nav-link {
+     border-radius: 0rem;
+     font-weight: 500;
+}
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+    color: #404040;
+    background-color: #f0f0f0;
+    border-bottom: 5.5px solid var(--theme-blue);
 }
