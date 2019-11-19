@@ -2,8 +2,17 @@
 {% extends "admin/change_list.html" %}
 {% load humanize %}
 {% block content_title %}
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
     <h1> Requests Summary </h1>
     <p> <mark> PSOM is BGS </mark>. Time zone needs to be confirmed to be correct.</p>
+{% endblock %}
+{% block object-tools-items %}
+  <li>
+    <a href='#' onclick='downloadCSV({ filename: "Request_Summary.csv" });' >
+     Save Table <i class="fas fa-file-download"></i>
+    </a>
+  </li>
 {% endblock %}
 {% block result_list %}
 
@@ -93,6 +102,11 @@
 
   <h2>Request time (by {{ period}}) </h2>
     <style>
+    .download {
+    	content: "\f56d";
+    	font-family: 'FontAwesome';
+    }
+
     .bar-chart {
       display: flex;
       justify-content: space-around;
@@ -148,6 +162,67 @@
         {% endfor %}
         </div>
     </div>
+
+    <script type="text/javascript">
+        var totalSummary = {{summary_total|safe}};
+        console.log(totalSummary)
+        totalSummary['course_requested__course_schools__abbreviation']='TOTAL';
+        //delete totalSummary['total'];
+        console.log(totalSummary)
+        var stockData = {{summary|safe}};
+        stockData.push(totalSummary);
+        console.log(stockData)
+        function convertArrayOfObjectsToCSV(args) {
+            var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+
+            data = args.data || null;
+            if (data == null || !data.length) {
+                return null;
+            }
+
+            columnDelimiter = args.columnDelimiter || ',';
+            lineDelimiter = args.lineDelimiter || '\n';
+
+            keys = Object.keys(data[0]);
+
+            result = '';
+            result += keys.join(columnDelimiter);
+            result += lineDelimiter;
+
+            data.forEach(function(item) {
+                ctr = 0;
+                keys.forEach(function(key) {
+                    if (ctr > 0) result += columnDelimiter;
+
+                    result += item[key];
+                    ctr++;
+                });
+                result += lineDelimiter;
+            });
+            return result;
+        }
+
+        window.downloadCSV = function(args) {
+            var data, filename, link;
+            var csv = convertArrayOfObjectsToCSV({
+                data: stockData
+            });
+            if (csv == null) return;
+            filename = args.filename || 'export.csv';
+            if (!csv.match(/^data:text\/csv/i)) {
+                csv = 'data:text/csv;charset=utf-8,' + csv;
+            }
+            data = encodeURI(csv);
+            link = document.createElement('a');
+            link.setAttribute('href', data);
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+           }
+    </script>
+
+
 
 </div>
 </div>

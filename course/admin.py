@@ -11,6 +11,24 @@ can implement EXACT search by instructor username, course code, or course title
 
 """
 
+class ExportCsvMixin:
+    def export_as_csv(self, request, queryset):
+
+        meta = self.model._meta
+        field_names = [field.name for field in meta.fields]
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
+        writer = csv.writer(response)
+
+        writer.writerow(field_names)
+        for obj in queryset:
+            row = writer.writerow([getattr(obj, field) for field in field_names])
+
+        return response
+
+    export_as_csv.short_description = "Export Selected"
+
 
 #admin.site.site_url = settings.URL_PREFIX
 
@@ -73,7 +91,7 @@ can implement EXACT search by user that made the request or masquerade, course c
 class RequestAdmin(admin.ModelAdmin):
     list_display =['course_requested','status','requestors','created','updated',]
     list_filter = (
-        ('status','course_requested__course_term','course_requested__course_schools')
+        ('status','course_requested__course_term','course_requested__course_schools',)
     )
     search_fields = ('owner__username','masquerade','course_requested__course_code')
     readonly_fields = ['created','updated','masquerade','additional_sections']
@@ -140,11 +158,15 @@ def get_next_in_date_hierarchy(request, date_hierarchy):
     return 'month'
 
 class RequestSummaryAdmin(admin.ModelAdmin):
+
     change_list_template = 'admin/request_summary_change_list.html'
     date_hierarchy = 'created'
     list_filter = (
         'course_requested__course_term',
     )
+
+
+
 
     def changelist_view(self, request, extra_context=None):
         response = super().changelist_view(
@@ -164,8 +186,8 @@ class RequestSummaryAdmin(admin.ModelAdmin):
 
         metrics = {
             'total': Count('course_requested',distinct=True),
-            'ares': Count('reserves',filter=Q(reserves=True),distinct=True),
-            'multisection':Sum(Exists(multisectionExists)),
+            'ares': Count('reserves',filter=Q(reserves=True)),
+            'multisection':Sum(Exists(multisectionExists),output_field=IntegerField()),
             #F('additional_sections'),#Sum(Case(When(~Q(additional_sections=None), then=Value(1)),default=0,output_field=IntegerField(),distinct=True)),
             'content_copy': Count('copy_from_course',filter=~Q(copy_from_course='')),# ,filter=~Q(copy_from_course='None')&~Q(copy_from_course='')),
             'not_completed': Count('status',filter=Q(status__in=['IN_PROCESS','CANCELED','APPROVED','SUBMITTED','LOCKED'])),#Sum(Case(When(~Q(status='COMPLETED'), then=1),output_field=IntegerField(),)),
