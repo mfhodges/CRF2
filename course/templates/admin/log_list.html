@@ -135,6 +135,7 @@
     <li><a href="https://esb.isc-seo.upenn.edu/8093/jsp/registerUser.jsp"> Create Canvas Account</a></li>
     <li><a href="https://canvas.upenn.edu/accounts/96678/sis_import"> SIS Import</a></li>
     <li><a href="https://esb.isc-seo.upenn.edu/8093/jsp/research.jsp"> Enrollment Research</a></li>
+    <li><a href="https://www.site24x7.com/sv.do?id=wpdDGdqhZh3AEfebhWS0zB19hcUM6sQepLjBjOdP5x-zAm3C-LDZ-7Dxe4xsaLS2FgajJGBvx2K3sn59m650wH19kAV6t9WQschut6uKx1o%3D"> LTS Status Page</a></li>
   </ul>
 
 </fieldset>
@@ -198,7 +199,7 @@ function processRequests() {
     type: 'GET',
     beforeSend: function() {
         console.log("beforesend");
-        //$("#processRequests").text("Running").fadeIn(900);
+        $("#processRequests").text("Running").fadeIn(900);
         $("#processRequests").attr("disabled", true);
         $("#oneOffTasks").css("display","block");
         $("#oneOffTasks > legend").text("Running: Requests");
