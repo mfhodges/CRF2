@@ -11,14 +11,12 @@
 
 <h1>403 - Permssions Error </h1>
 
-{% for key, value in request.session.items  %}
-        <p> Key: {{ key }}  Value: {{ value }} </p>
-{% endfor %}
 
+<br><br>
 
 <p>
-  You do not have permission to see this page/make that action. If you are acting on behalf of another user
-  please check that you have set that in the in the form above or from the homepage. For more information on this error
+  You do not have permission to see this page/make that action. If you are trying to proxy as another user in order to request their sites
+  please check that you have set that in the in the form at the top of each page or from the homepage. For more information on this error
   please refer to the documentation <a href="/documentation">here</a>.
 </p>
 <p>
@@ -26,10 +24,14 @@
 </p>
 
 
+
+
+
+
 {% if messages %}
-<div class="bd-callout bd-callout-warning">
+<div class="bd-callout bd-callout-info">
 <ul class="messages">
-  <h5 style="margin-bottom:0px;margin-top:0.5rem;"> Messages </h5>
+  <h4 style="margin-bottom:0px;margin-top:0.5rem;"> Messages </h4>
     {% for message in messages %}
     <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
     {% endfor %}
@@ -39,4 +41,19 @@
 
 
 <a href='{{request.META.HTTP_REFERER}}'> <i class="fas fa-arrow-left"></i> Go Back </a>
+<br>
+<br>
+{% if request.session.items %}
+
+    <div class="card card-body">
+      <h6 style="margin-bottom:0px;margin-top:0.5rem;"> Debugging </h6>
+    <ul style="font-size:0.8rem;">
+      {% for key, value in request.session.items  %}
+              <li> Key: {{ key }}  Value: {{ value }} </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+{% endif %}
+
 {% endblock %}
