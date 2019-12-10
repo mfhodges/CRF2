@@ -21,8 +21,9 @@ about how users are added
 
 def validate_pennkey(pennkey):
     # assumes usernames are valid pennkeys
-    pennkey= pennkey.lower()
-    print("validating pennkey (utils.py)")
+    if isinstance(pennkey,str):
+        pennkey= pennkey.lower()
+    print("validating pennkey (utils.py)",pennkey)
     try:
         user = User.objects.get(username=pennkey)
     except User.DoesNotExist:

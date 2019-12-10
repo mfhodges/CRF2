@@ -673,7 +673,7 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         if additional_enrollments_partial or additional_sections_partial:
             if additional_enrollments_partial:
                 final_add_enroll = clean_custom_input(additional_enrollments_partial)
-                #print(additional_enrollments_partial.dict())
+                print("additional_enrollments_partial",additional_enrollments_partial)
                 d['additional_enrollments']=final_add_enroll#[{'user':'molly','role':'DES'}]})
             else:
                 d['additional_enrollments']=[]
@@ -739,6 +739,9 @@ def clean_custom_input(partial):
             #print("")
             pass
         else:
+            if 'user' in new_add.keys():
+            	new_add['user']=new_add['user'].lower()
+
             final_add +=[new_add]
     print("(create)final_add",final_add)
     return final_add

@@ -279,7 +279,7 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
     #url = serializers.HyperlinkedIdentityField(view_name='UI-requests', looku
     owner = serializers.ReadOnlyField(source='owner.username',required=False)
     course_info = CourseSerializer(source='course_requested', read_only=True)
-    canvas_instance = CanvasSiteSerializer(read_only=True) #-- doesnt work bc canvassites have p tight permissions? 
+    canvas_instance = CanvasSiteSerializer(read_only=True) #-- doesnt work bc canvassites have p tight permissions?
     masquerade = serializers.ReadOnlyField()
     #additional_sections = CourseSerializer()
     #sections = serializers.SerializerMethodField()
@@ -337,6 +337,7 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
                     print("checking for user, ", enrollment['user'])
                     user = validate_pennkey(enrollment['user'])
                     if user == None:
+                        print('error validate pennkey')
                         raise serializers.ValidationError({"error":"an error occurred please check that the pennkey's you entered are correct and add the course information to the additional instructions field."})
 
         # Lets check if we want to update content source and if so, lets check if its valid
