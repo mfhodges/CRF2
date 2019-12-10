@@ -17,6 +17,7 @@ headers = {
 
 # Import the Canvas class
 from canvasapi import Canvas
+from canvasapi.tab import Tab
 from canvasapi.enrollment_term import EnrollmentTerm
 from canvasapi.exceptions import CanvasException
 
