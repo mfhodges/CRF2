@@ -9,17 +9,51 @@ import time
 from datawarehouse import datawarehouse
 
 @task()
-def task_nightly_sync():
+def task_nightly_sync(term):
     # this task takes all of the Approved requests and attempts to make a course
     # if it doesnt work then it is locked
     #print("howdy!")
-    time_start = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    time_start = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     f = open("course/static/log/night_sync.log", "a")
     datawarehouse.daily_sync('2020A')
-    time_end = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    print(ans)
-    f.write("Nighly Update:" +time_start+" - "+time_end+"\n")
+    time_end = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    #print(ans)
+    f.write("Nighly Update "+term+":" +time_start+" - "+time_end+"\n")
     f.close()
+
+@task()
+def task_pull_courses(term):
+    datawarehouse.pull_courses(term)
+
+
+
+def update_instrutors(term):
+    chain= task_clear_instructors.s(term)|task_pull_instructors.s(term)
+    chain()
+
+
+@task()
+def task_clear_instructors(term):
+    datawarehouse.clear_instructors(term)# -- only for non requested courses
+
+@task()
+def task_pull_instructors(term):
+    datawarehouse.pull_instructors(term)# -- only for non requested courses
+
+@task()
+def task_process_canvas():
+    utils.process_canvas() # -- for each user check if they have any Canvas sites that arent in the CRF yet
+
+@task()
+def task_update_sites_info(term):
+    utils.update_sites_info(term) #info # -- for each Canvas Site in the CRF check if its been altered
+
+
+
+
+
+
+
 
 # there should be a task that check all courses if they have been created in Canvas
 # if they have then course.requested is set to true !
@@ -33,7 +67,7 @@ def task_nightly_sync():
 #----------- CHECK COURSE IN CANVAS ---------------
 # FREQUENCY = NIGHTLY
 @task()
-def task_check_course_in_canvas():
+def task_check_courses_in_canvas():
     """
     check to see if any of the courses that do not have a request object associated with them exist yet in Canvas
     if they do then write to the file and set the course to request_override
@@ -60,30 +94,10 @@ def task_check_course_in_canvas():
 
 
 #----------- PULL IN CANVAS COURSES ---------------
-# FREQUENCY = NIGHTLY
-@task()
-def process_canvas():
-    users = User.objects.all()
-    for user in users:
-        print("adding for ", user.username)
-        utils.updateCanvasSites(user.username)
+
 
 
 #----------- REMOVE CANCELED REQUESTS ---------------
-# FREQUENCY = NIGHTLY
-@task()
-def remove_canceled():
-    ################### STEPS ######################
-    # 1. delete request obj
-    # 2. save associated course object ( re-sets the request bool status)
-    ################################################
-    _to_process = Request.objects.filter(status='CANCELED')
-    for request_obj in _to_process:
-        serialized = RequestSerializer(request_obj).data
-        print(serialized)
-        course = Course.objects.get(course_code = serialized['course_info']['course_code'])
-        request_obj.delete()
-        course.save()
 
 
 
@@ -109,6 +123,8 @@ def check_for_account(pennkey):
         except:
             # log error
             pass
+
+
 
 @task()
 def create_canvas_site():
@@ -286,16 +302,13 @@ def create_canvas_site():
         #input("STEP 3 DONE...\n")
         ######## Step 4. Configure reserves ########
         if serialized.data['reserves']:
-            tabs = canvas_course.get_tabs()
-            for tab in tabs:
-                ares_configured = False
-                if tab.id == 'context_external_tool_139969': # its the reserves !
-                    tab.update(hidden=False)
-                    ares_configured = True
-                else:
+            try:
+                tab = canvas_api.Tab(canvas_course._requester, {"course_id":canvas_course.id, "id":'context_external_tool_139969'})
+                tab.update(hidden=False)
 
-                    pass
-            if ares_configured == False:
+                if tab.visibility != 'public':
+                    request_obj.process_notes += "failed to configure ARES,"
+            except:
                 request_obj.process_notes += "failed to configure ARES,"
         #input("STEP 4 DONE...\n")
 
@@ -339,18 +352,3 @@ def create_canvas_site():
 
         #input("STEP 7 DONE...\n")
         ######## Step 8. Notify with email ########
-
-
-
-# get all approved sites, if a creation fails the site is then locked !
-# check that instructors and additional enrollments have canvas accounts
-"""
-    {'_state': <django.db.models.base.ModelState object at 0x102bc3ba8>,
-    'course_requested_id': 'ACCT1019102019B', 'copy_from_course': '',
-    'title_override': None, 'additional_instructions': None,
-    'reserves': False, 'canvas_instance_id': None,
-    'status': 'SUBMITTED',
-    'created': datetime.datetime(2019, 8, 11, 23, 34, 52, 868865, tzinfo=<UTC>),
-     'updated': datetime.datetime(2019, 8, 11, 23, 34, 52, 868916, tzinfo=<UTC>),
-     'owner_id': 1, 'masquerade': ''}
- """
