@@ -49,6 +49,7 @@ class CourseAdmin(admin.ModelAdmin):
     #readonly_fields = ['created','updated','owner','course_code','course_section','course_term','year','course_number','course_subject'] # maybe add requested to here.
     autocomplete_fields = ['crosslisted','instructors','multisection_request','crosslisted_request']
 
+
     fieldsets = (
         (None, {
             'fields': ('course_code','course_name',
@@ -77,7 +78,7 @@ class CourseAdmin(admin.ModelAdmin):
         if obj:
             return ['created','updated','owner','course_code','course_section','course_term','year','course_number','course_subject','requested','request']
         else:
-            return ['created','updated','owner','course_code']
+            return ['created','updated','owner','course_code','request']
 
     def save_model(self, request, obj, form, change):
         #print("checkin save")
@@ -100,8 +101,8 @@ class RequestAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {
-            'fields': ('course_requested','copy_from_course','title_override','additional_sections',
-            'additional_instructions','reserves','status','canvas_instance')
+            'fields': ('course_requested','copy_from_course','title_override','additional_sections','reserves',
+            'additional_instructions','admin_additional_instructions','status','canvas_instance')
         }),
         ('Metadata', {
             'fields': ('created','updated','owner','masquerade'),
