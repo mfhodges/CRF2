@@ -21,6 +21,7 @@ about how users are added
 
 def validate_pennkey(pennkey):
     # assumes usernames are valid pennkeys
+    pennkey= pennkey.lower()
     print("validating pennkey (utils.py)")
     try:
         user = User.objects.get(username=pennkey)
@@ -216,7 +217,7 @@ def my_test():
             print(c)
 
 def crosslisting_cleanup(): # this needs to be fixed!!
-    courses = Course.objects.exclude(primary_crosslist__isnull=True).exclude(primary_crosslist__exact='')
+    courses = Course.objects.filter(requested=False).exclude(primary_crosslist__isnull=True).exclude(primary_crosslist__exact='')
     for course in courses:
         try:
             cx = Course.objects.get(course_code=course.primary_crosslist)
@@ -254,7 +255,7 @@ def update_sites_info(term):
             #check owners
 
         except:
-            print("couldnt find Canvas site: ", crf_canvas_site.course_id)
+            print("couldnt find Canvas site: ", crf_canvas_site.sis_course_id)
             pass # couldnt find canvas site -- weird!!!
 
 

@@ -317,9 +317,6 @@ class RequestFilter(filters.FilterSet):
     requestor = filters.CharFilter(field_name='owner__username', label='Requestor') # does not include masquerade! and needs validator on input!
     date = filters.DateTimeFilter(field_name='created',label='Created')
 
-    #school = filters.CharFilter(field_name='course_schools__abbreviation',label='School (abbreviation)')
-    #subject = filters.CharFilter(field_name='course_subjects__abbreviation', label='Subject (abbreviation)')
-    #term = filters.ChoiceFilter(choices=Course.TERM_CHOICES, field_name='course_term', label='Term')
     class Meta:
         model = Request
         fields = ['status','requestor','date']
@@ -1152,7 +1149,7 @@ class HomePage(APIView,UserPassesTestMixin):#,
     def set_session(request):
         print("set_session request.data",request.data)
         try:
-            on_behalf_of = request.data['on_behalf_of']
+            on_behalf_of = request.data['on_behalf_of'].lower()
             print("found on_behalf_of in request.data ", on_behalf_of)
             if on_behalf_of: # if its not none -> if exists then see if pennkey works
                 lookup_user = utils.validate_pennkey(on_behalf_of)
@@ -1322,7 +1319,7 @@ def autocompleteCanvasCourse(request,search):
 		print("q",q)#
 		canvas = canvas_api.Canvas(canvas_api.API_URL, canvas_api.API_KEY)
 		account = canvas.get_account(96678)
-		search_qs = account.get_courses(search_term=q,sort='course_name',per_page=10)[:10]
+		search_qs = account.get_courses(search_term=q,search_by='course',sort='course_name',per_page=10)[:10]
 		results = []
 		for r in search_qs:
 			print(r)
@@ -1390,19 +1387,87 @@ def remove_canceled_requests(request):
 
 # --------- Quick Config of Canvas (enrollment/add tool) ----------
 def quickconfig(request):
-
-	if request.method == 'post':
-		config = request.POST['config']
+	data = {'Job':'','Info':{'Errors':''}}
+	print('start')
+	if request.method == 'POST':
+		canvas = canvas_api.Canvas(canvas_api.API_URL, canvas_api.API_KEY)
+		print(request.POST)
+		config = request.POST.get('config')
+		pennkey = request.POST.get('pennkey')
+		role = request.POST.get('role')
+		course_id = request.POST.get('course_id')
+		print("1")
 		if config =='user':
-			roles = {'isnt':'TeacherEnrollment','stud':'StudentEnrollment','ta':'TaEnrollment','lib':'DesignerEnrollment','obs':'ObserverEnrollment','des':'DesignerEnrollment'}
+			print("2")
 
+			roles = {'inst':'TeacherEnrollment','stud':'StudentEnrollment','ta':'TaEnrollment','lib':'DesignerEnrollment','obs':'ObserverEnrollment','des':'DesignerEnrollment'}
+			# could either be a Account creation or an Enrollment creation
+			if pennkey:
 
-		elif config == 'course':
-			pass
-		else:
-			#error
-			data = 'something went wrong.'
-			pass
+				user = validate_pennkey(pennkey)# looks them up in EMPLOYEE_GENERAL DW table and returns the django CRF user
+				if user==None:# there was an issue finding them in the DW
+					data += 'failed to find user (%s) in DW,' % pennkey
+					return render(request, "admin/quickconfig.html",{'data':data})
+				else: pass
+				#else found user info in DW
+				#check if user in Canvas
+
+				user_canvas = canvas_api.get_user_by_sis(pennkey)
+				if user_canvas == None: # user doesnt exist
+					data['Job']='AccountCreation'
+					#get user in DW info:
+					user_crf = user # variable already exists from above
+					# create Canvas account
+					try:
+						user_canvas = canvas_api.mycreate_user(pennkey, user_crf.profile.penn_id, user_crf.email ,user_crf.first_name+user_crf.last_name)
+					except:
+						data += 'failed create user in Canvas,'
+						return render(request, "admin/quickconfig.html",{'data':data})
+					data += 'created canvas account for user %s,' % pennkey
+
+				# we should have a Canvas account for the user by now or we have terminated the function
+				print("3")
+				if role and course_id: # enrollement creation
+					data['Job']+='EnrollmentCreation'
+					data['Info']['role']= roles[role]
+
+					print("4")
+
+					active_terms = canvas.get_account(96678).get_enrollment_terms(workflow_state='active')
+					canvas_course = canvas.get_course(course_id)
+
+					# lets check that the term wont need to be changed.
+					enrollment_term_id = canvas_course.enrollment_term_id
+					account_id = canvas_course.root_account_id
+					active_terms = canvas.get_account(account_id).get_enrollment_terms()
+
+					if role =='lib':
+						try:
+							canvas_course.enroll_user( user_canvas.id , roles[role] ,enrollment={'role_id':'1383','enrollment_state':'active'} )
+							data['Info']['Course'] = {'title': canvas_course.name,'link': 'https://canvas.upenn.edu/courses/'+course_id}
+							data['Info']['User'] = {'pennkey':pennkey}
+							#data += 'enrolled %s as %s in %s (https://canvas.upenn.edu/courses/%s)' % (pennkey, roles[role], canvas_course.name, course_id)
+
+						except canvas_api.CanvasException as e:
+							print("CanvasException: ", e)
+							data['Info']['Errors'] += "CanvasException: %s" % e
+					else:
+						try:
+							canvas_course.enroll_user(user_canvas.id ,roles[role] ,enrollment={'enrollment_state':'active'} )
+							data['Info']['Course'] = {'title': canvas_course.name,'link': 'https://canvas.upenn.edu/courses/'+course_id}
+							data['Info']['User'] = {'pennkey':pennkey}
+							#data += 'enrolled %s as %s in %s (https://canvas.upenn.edu/courses/%s)' % (pennkey, roles[role], canvas_course.name, course_id)
+						except canvas_api.CanvasException as e:
+							print("CanvasException: ", e)
+							data['Info']['Errors']+= "CanvasException: %s" % e
+
+				else: # we dont have the role and course_id field filled out lets just return what we havet
+					return render(request, "admin/quickconfig.html",{'data':data})
+			else: # no pennkey
+				data['Info']['Errors'] += 'please set pennkey.'
+		else: #error
+			data['Info']['Errors'] += 'something went wrong.'
+
 
 		return render(request, "admin/quickconfig.html",{'data':data})
 	return render(request, "admin/quickconfig.html")
@@ -1545,6 +1610,8 @@ from django.http import HttpResponse
 def my_email(request,value):
     email = open("course/static/emails/"+value, "rb").read()
     return render(request, 'email/email_detail.html', {'email':email.decode("utf-8")} )
+
+
 
 
 #SEE MORE: https://docs.djangoproject.com/en/2.1/topics/email/
