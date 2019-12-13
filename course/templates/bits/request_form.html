@@ -33,7 +33,7 @@
     {% endif %}
   {% endif %}
   <div class="input-group-append">
-    <button class="btn btn-outline-secondary accent-button" type="button" data-toggle="modal"  data-target="#ContentCopy" style='z-index:unset;'>Select Copy</button>
+    <button class="btn btn-outline-secondary accent-button" type="button" data-toggle="modal"  data-target="#ContentCopy" data-backdrop="static" data-keyboard="false" style='z-index:unset;'>Select Copy</button>
   </div>
 </div>
 
@@ -187,7 +187,7 @@
     <legend><h6 style="margin:0;">Admin</h6></legend>
     <label> Admin Notes</label>
     <textarea name="admin_additional_instructions" class="form-control"> {{ request_instance.admin_additional_instructions }}</textarea>
-  
+
   </fieldset>
   {% endif %}
 
