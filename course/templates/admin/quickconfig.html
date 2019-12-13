@@ -4,6 +4,60 @@
 {% block quickconfig %}active{% endblock %}
 
 {% block content %}
+<script src="https://code.jquery.com/ui/1.10.2/jquery-ui.min.js"></script>
+<script src="https://code.jquery.com/jquery-migrate-3.0.0.min.js"></script>
+
+
+<style>
+.ui-autocomplete {
+  width:unset ;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 90%; /*try 90?*/
+  left: 0;
+  right: 0;
+  margin: 0% 6%;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+
+}
+
+
+
+.ui-state-hover, .ui-state-active {
+    color: #ffffff !important;
+    text-decoration: none;
+    border-radius: 0px;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    background-image: none;
+}
+
+
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
+    border: 1px solid #999;
+    background: unset;
+    font-weight: normal;
+    background-color: #ecf0fc;
+    color: #212121;
+}
+
+/*ui-menu-item style hover*/
+
+</style>
+
 <div class="medium-container">
 
   <center> <h1> ~Still in development~</h1></center>
@@ -21,22 +75,30 @@
     </li>
   </ul>
   <div class="tab-content" id="pills-tabContent">
-    <!-- User  -->
+
+    <!-- USER  -->
+
+
+
     <div class="tab-pane fade show active" id="pills-user" role="tabpanel" aria-labelledby="pills-user-tab">
       <p>
-        Add User to Canvas Site or Create Canvas account (leave Course field blank).
-      should follow this for autocompletes https://www.w3schools.com/howto/howto_js_autocomplete.asp
+        Add User to Canvas Site or Create Canvas account (leave Course and Role field blank).
+        The greyed-out box below the course site title is the site's Canvas ID (tool could also be used for quick ID look ups).
+        This tool <b> can enroll users in concluded sites</b>!
+        Currently does not work for student pennkeys.
+
       </p>
-      <form >
+      <form autocomplete="off" method="post">{% csrf_token %}
          <input type="hidden" name="config" value="user">
         <div class="row">
-          <div class="col-sm-4">
+          <div class="col-sm-4 autocomplete">
             <label for="pennkey">Pennkey</label>
-            <input type="text" id="pennkey" placeholder="Pennkey">
+            <input type="text" id="pennkey" placeholder="Pennkey" name='pennkey'>
           </div>
           <div class="col-sm-4">
             <label for="role">Role</label>
-            <select id="role">
+            <select id="role" name='role'>
+              <option value="">---Select---</option>
               <option value="inst">Instructor</option>
               <option value="stud">Student</option>
               <option value="ta">TA</option>
@@ -46,18 +108,23 @@
             </select>
           </div>
           <div class="col-sm-4">
-            <label for="course_id">Course</label>
-            <input type="text" id="course_id" placeholder="SRS ID">
+            <label for="course_name">Course</label>
+            <input type="text" id="course_name" placeholder="SRS ID or Title" name='course_title'>
+            <input class="form-control" type="number" name="course_id" id="course_id" readonly placeholder="Canvas ID">
           </div>
 
         </div>
-        <input type="submit" value="Submit">
+        <input type="submit" value="Submit" id="userSubmit">
       </form>
     </div>
+
+
     <!-- Course  -->
+
+
     <div class="tab-pane fade" id="pills-course" role="tabpanel" aria-labelledby="pills-course-tab">
-      <p> Add tool to Course</p>
-      <form >
+      <p> Add tool to Course <mark>I do not work at all </mark></p>
+      <form method="post">
         <input type="hidden" name="config" value="course">
         <div class="row">
           <div class="col-sm-4">
@@ -79,4 +146,52 @@
     </div>
   </div>
 
+  <fieldset id="quickConfigResult" style="">
+    <legend></legend>
+
+      <pre id="json" style="height:300px;">
+        <p>{% if data %} {{data | pprint}}{% else %}no data{% endif %}</p>
+       </pre>
+  </fieldset>
+
+{% endblock %}
+
+
+{% block template_page_js %}
+<script>
+
+$( "#course_name" ).autocomplete({
+  //appendTo: $('#json'),
+  source: function( request, response ) {
+    inp = encodeURI(document.getElementById("course_name").value)
+    console.log("inp",inp);
+    $.ajax( {
+      url: '/searchcanvas/'+inp+'/',
+      type: "GET",
+      success: function( data ) {
+        console.log("data",data)
+        response( data );
+      },
+      /*error: function (jqXHR, textStatus, errorThrown) {
+                 if (jqXHR.status == 500) {
+                     alert('Internal error: ' + jqXHR.responseText);
+                 } else {
+                     alert('No search matches that query');
+                 }
+             }*/
+    } );
+  },
+  minLength: 2,
+  select: function( event, ui ) {
+    console.log("ui",ui);
+    event.preventDefault();
+    document.getElementById("course_id").value = ui.item.value;
+    document.getElementById("course_name").value = ui.item.label;
+    //$("#course_id")
+    //log( "Selected: " + ui.item.value + " aka " + ui.item.id );
+  }
+} );
+
+
+</script>
 {% endblock %}
