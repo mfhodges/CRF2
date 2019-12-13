@@ -1390,6 +1390,8 @@ def remove_canceled_requests(request):
 
 # --------- Quick Config of Canvas (enrollment/add tool) ----------
 def quickconfig(request):
+	from canvasapi.exceptions import CanvasException
+
 	data = {'Job':'','Info':{'Errors':''}}
 	print('start')
 	if request.method == 'POST':
@@ -1399,22 +1401,16 @@ def quickconfig(request):
 		pennkey = request.POST.get('pennkey')
 		role = request.POST.get('role')
 		course_id = request.POST.get('course_id')
-		print("1")
 		if config =='user':
-			print("2")
-
 			roles = {'inst':'TeacherEnrollment','stud':'StudentEnrollment','ta':'TaEnrollment','lib':'DesignerEnrollment','obs':'ObserverEnrollment','des':'DesignerEnrollment'}
 			# could either be a Account creation or an Enrollment creation
 			if pennkey:
-
 				user = validate_pennkey(pennkey)# looks them up in EMPLOYEE_GENERAL DW table and returns the django CRF user
 				if user==None:# there was an issue finding them in the DW
 					data += 'failed to find user (%s) in DW,' % pennkey
 					return render(request, "admin/quickconfig.html",{'data':data})
-				else: pass
-				#else found user info in DW
+				else: pass #else found user info in DW
 				#check if user in Canvas
-
 				user_canvas = canvas_api.get_user_by_sis(pennkey)
 				if user_canvas == None: # user doesnt exist
 					data['Job']='AccountCreation'
@@ -1432,38 +1428,57 @@ def quickconfig(request):
 				print("3")
 				if role and course_id: # enrollement creation
 					data['Job']+='EnrollmentCreation'
-					data['Info']['role']= roles[role]
+					data['Info']['Role']= roles[role]
 
-					print("4")
-
-					active_terms = canvas.get_account(96678).get_enrollment_terms(workflow_state='active')
+					#active_terms = canvas.get_account(96678).get_enrollment_terms(workflow_state='active')
 					canvas_course = canvas.get_course(course_id)
-
 					# lets check that the term wont need to be changed.
 					enrollment_term_id = canvas_course.enrollment_term_id
-					account_id = canvas_course.root_account_id
-					active_terms = canvas.get_account(account_id).get_enrollment_terms()
+					canvas_account = canvas.get_account(canvas_course.root_account_id)
 
 					if role =='lib':
 						try:
 							canvas_course.enroll_user( user_canvas.id , roles[role] ,enrollment={'role_id':'1383','enrollment_state':'active'} )
-							data['Info']['Course'] = {'title': canvas_course.name,'link': 'https://canvas.upenn.edu/courses/'+course_id}
-							data['Info']['User'] = {'pennkey':pennkey}
+							data['Role']= 'LibrarianEnrollment'
 							#data += 'enrolled %s as %s in %s (https://canvas.upenn.edu/courses/%s)' % (pennkey, roles[role], canvas_course.name, course_id)
 
 						except canvas_api.CanvasException as e:
 							print("CanvasException: ", e)
-							data['Info']['Errors'] += "CanvasException: %s" % e
+							if e.message == "{\"message\":\"Can\'t add an enrollment to a concluded course.\"}":
+								# change term n try again
+								print("we are adjusting the term")
+								try:
+									canvas_course.update(course={'term_id':4373})
+									canvas_course.enroll_user(user_canvas.id ,roles[role] ,enrollment={'role_id':'1383','enrollment_state':'active'} )
+									canvas_course.update(course={'term_id':enrollment_term_id})
+								except canvas_api.CanvasException as e:
+									print("CanvasException 2: ", e)
+									data['Info']['Errors']+= "CanvasException: %s" % e
+							else:
+								data['Info']['Errors']+= "CanvasException: %s" % e
 					else:
 						try:
 							canvas_course.enroll_user(user_canvas.id ,roles[role] ,enrollment={'enrollment_state':'active'} )
-							data['Info']['Course'] = {'title': canvas_course.name,'link': 'https://canvas.upenn.edu/courses/'+course_id}
-							data['Info']['User'] = {'pennkey':pennkey}
+
 							#data += 'enrolled %s as %s in %s (https://canvas.upenn.edu/courses/%s)' % (pennkey, roles[role], canvas_course.name, course_id)
 						except canvas_api.CanvasException as e:
-							print("CanvasException: ", e)
-							data['Info']['Errors']+= "CanvasException: %s" % e
+							print("CanvasException 1: ", e, e.message[0], e.message=="{\"message\":\"Can\'t add an enrollment to a concluded course.\"}")
+							if e.message == "{\"message\":\"Can\'t add an enrollment to a concluded course.\"}":
+								# change term n try again
+								print("we are adjusting the term")
+								try:
+									canvas_course.update(course={'term_id':4373})
+									canvas_course.enroll_user(user_canvas.id ,roles[role] ,enrollment={'enrollment_state':'active'} )
+									canvas_course.update(course={'term_id':enrollment_term_id})
+								except canvas_api.CanvasException as e:
+									print("CanvasException 2: ", e)
+									data['Info']['Errors']+= "CanvasException: %s" % e
+							else:
+								data['Info']['Errors']+= "CanvasException: %s" % e
 
+
+					data['Info']['Course'] = {'title': canvas_course.name,'link': 'https://canvas.upenn.edu/courses/'+course_id}
+					data['Info']['User'] = {'pennkey':pennkey}
 				else: # we dont have the role and course_id field filled out lets just return what we havet
 					return render(request, "admin/quickconfig.html",{'data':data})
 			else: # no pennkey
