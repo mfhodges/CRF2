@@ -283,7 +283,7 @@ def available_terms():
         print(x)
 
 def clear_instructors(term):
-    courses = Course.objects.filter(requested=False,term=term)
+    courses = Course.objects.filter(requested=False,term=term[-1],year=term[:4])
     for course in courses:
         course.instructors.clear()
         course.save()
