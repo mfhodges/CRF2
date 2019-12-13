@@ -78,7 +78,8 @@ def pull_courses(term):
       cs.activity IN ('LEC', 'REC', 'LAB', 'SEM', 'CLN', 'CRT', 'PRE', 'STU', 'ONL', 'HYB')
     AND cs.tuition_school NOT IN ('WH', 'LW')
     AND cs.status in ('O')
-    AND cs.term= '2020A'""")
+    AND cs.term = :term""",
+    term = term)
     #term_varaible = str(term))
 
     for course_code, section_id, term, subject_area, school, xc, xc_code, activity, section_dept,section_division, title,status, rev  in cursor:
@@ -220,8 +221,8 @@ def pull_instructors(term):
     FROM
     dwadmin.course_section_instructor cs
     JOIN DWADMIN.EMPLOYEE_GENERAL_V e ON cs.Instructor_Penn_Id=e.PENN_ID
-    WHERE cs.TERM='2020A'
-    """)
+    WHERE cs.TERM= :term""",
+    term = term)
     for first_name, last_name, pennkey, penn_id, email, section_id in cursor:
         course_code = section_id+term
         course_code = course_code.replace(" ","")
@@ -282,7 +283,7 @@ def available_terms():
         print(x)
 
 def clear_instructors(term):
-    courses = Course.objects.filter(requested=False)
+    courses = Course.objects.filter(requested=False,term=term)
     for course in courses:
         course.instructors.clear()
         course.save()
@@ -328,9 +329,10 @@ def delete_canceled_courses(term):
       dwadmin.course_section cs
     WHERE
       cs.activity IN ('LEC', 'REC', 'LAB', 'SEM', 'CLN', 'CRT', 'PRE', 'STU', 'ONL', 'HYB')
-    AND cs.schedule_revision IN ('8')
+    AND cs.status IN ('X')
     AND cs.tuition_school NOT IN ('WH', 'LW')
-    AND cs.term= '2020A'""")
+    AND cs.term= = :term""",
+    term = term)
     #AND cs.status IN ('X','H')
 
 
