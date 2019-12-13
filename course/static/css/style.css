@@ -960,6 +960,9 @@ caption {
   .contain-table {
     width: 100%; } }
 
+.requestTable {
+  padding: .3rem .3rem;
+}
 
 
 /* Navigation
@@ -1158,7 +1161,7 @@ main {
   padding: 1rem;
   margin: 2.3rem 0;
   max-width: 950px;
-  border-radius:.25rem;
+  border-radius:4px;
 }
 
 
@@ -1378,4 +1381,22 @@ div.alert-dismissible > p {
     color: #404040;
     background-color: #f0f0f0;
     border-bottom: 5.5px solid var(--theme-blue);
+}
+
+
+/*  UI WIDGET AUTOCOMPLETE */
+.ui-widget {
+    font-family: unset !important;
+    font-size: unset !important;
+  }
+
+
+.ui-state-hover, .ui-state-active {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #0088cc;
+  border-radius: 0px;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  background-image: none;
 }
