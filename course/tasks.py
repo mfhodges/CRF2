@@ -46,8 +46,9 @@ def task_process_canvas():
 
 @task()
 def task_update_sites_info(term):
+    print("term",term)
     utils.update_sites_info(term) #info # -- for each Canvas Site in the CRF check if its been altered
-
+    print("finished canvas site metadata update")
 
 
 
