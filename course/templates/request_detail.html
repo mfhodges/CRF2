@@ -20,15 +20,38 @@
 
     <div class="row" style="margin-left:7px;margin-top:2.5rem;margin-bottom:.5rem;">
 
-
-
     {% if 'cancel' in permissions %}
-    <form action="{% url 'UI-request-detail' pk=request_instance.course_requested %}" method="put" >
-      <input type="hidden" name="status" value="CANCELED">
-      <input type="hidden" name="course_requested" value="{{request_instance.course_requested}}">
-      <input name="view_type" class="form-control" type="hidden" value="UI-request-detail">
-      <button type="submit"  style="margin-right:20px" class="cancel" >Cancel</button>
-    </form>
+    <!-- Button trigger modal -->
+    <button style="margin-right:20px" class="cancel" data-toggle="modal" data-target="#cancelModal">
+      Cancel
+    </button>
+
+    <div class="modal fade" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Canceling Request</h5>
+            <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>-->
+          </div>
+          <div class="modal-body">
+            <p>
+              If you Cancel this Request, it will be <b>automatically deleted in 20 minutes</b> and all of the associated Courses will be requestable again.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button class="button accent-button" data-dismiss="modal">Close</button>
+            <form action="{% url 'UI-request-detail' pk=request_instance.course_requested %}" method="put" >
+              <input type="hidden" name="status" value="CANCELED">
+              <input type="hidden" name="course_requested" value="{{request_instance.course_requested}}">
+              <input name="view_type" class="form-control" type="hidden" value="UI-request-detail">
+              <button type="submit"  style="margin-right:20px" class="cancel" >Cancel Request</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
     {% endif %}
     {% if 'edit' in permissions %}
       <a href="{% url 'UI-request-detail-edit' pk=request_instance.course_requested %}" class="button" style="margin-right:20px;">Edit Request <i class="fas fa-edit"></i></a>
