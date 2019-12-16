@@ -7,6 +7,7 @@ from course.serializers import RequestSerializer
 from course.models import *
 import time
 from datawarehouse import datawarehouse
+import sys
 
 @task()
 def task_nightly_sync(term):
@@ -17,14 +18,12 @@ def task_nightly_sync(term):
     f = open("course/static/log/night_sync.log", "a")
     datawarehouse.daily_sync('2020A')
     time_end = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    #print(ans)
     f.write("Nighly Update "+term+":" +time_start+" - "+time_end+"\n")
     f.close()
 
 @task()
 def task_pull_courses(term):
     datawarehouse.pull_courses(term)
-
 
 
 def update_instrutors(term):
@@ -43,6 +42,7 @@ def task_pull_instructors(term):
 @task()
 def task_process_canvas():
     utils.process_canvas() # -- for each user check if they have any Canvas sites that arent in the CRF yet
+
 
 @task()
 def task_update_sites_info(term):
@@ -81,24 +81,23 @@ def task_check_courses_in_canvas():
             pass # this course doesnt exist in canvas yet
         else:
             # set the course to requested
-            course.requested_override= True
+            #course.requested_override = True
             # check that the canvas site exists in the CRF
             try:
                 canvas_site = CanvasSite.objects.get(canvas_id=found.course_id)
 
             except: #doesnt exist in CRF
                 # Create in CRF
-                #canvas_site =
+                canvas_site = CanvasSite
                 pass
 
 
-
-#----------- PULL IN CANVAS COURSES ---------------
-
-
-
 #----------- REMOVE CANCELED REQUESTS ---------------
-
+@task()
+def delete_canceled_requests():
+    _to_process = Request.objects.filter(status='CANCELED')
+    for request in _to_process:
+        request.delete()
 
 
 
@@ -205,6 +204,7 @@ def create_canvas_site():
             except:
                 # dont continue with the loop so just stop for now.
                 request_obj.process_notes += "failed to create main section,"
+                request_obj.process_notes += sys.exc_info()[0]
                 request_obj.save()
                 return
             #first_section.edit(course_section={'sis_section_id':sis_course_id},enable_sis_reactivation=True)
