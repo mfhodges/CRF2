@@ -310,7 +310,7 @@ def create_canvas_site():
                 if tab.visibility != 'public':
                     request_obj.process_notes += "failed to configure ARES,"
             except:
-                request_obj.process_notes += "failed to configure ARES,"
+                request_obj.process_notes += "failed to try to configure ARES,"
         #input("STEP 4 DONE...\n")
 
 
