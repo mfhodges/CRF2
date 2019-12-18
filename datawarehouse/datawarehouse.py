@@ -8,7 +8,7 @@ from course import utils
 import re
 from OpenData.library import *
 from course.models import *
-
+from datetime import datetime
 
 def roman_title(title):
     # takes the last roman numeral and capitalizes it
@@ -283,7 +283,7 @@ def available_terms():
         print(x)
 
 def clear_instructors(term):
-    courses = Course.objects.filter(requested=False,term=term[-1],year=term[:4])
+    courses = Course.objects.filter(requested=False,course_term=term[-1],year=term[:4])
     for course in courses:
         course.instructors.clear()
         course.save()
@@ -295,6 +295,7 @@ def daily_sync(term):
     #crosslisting_cleanup() -- check that for every course with a primary crosslisting that its actually crosslisted with that course
     utils.process_canvas() # -- for each user check if they have any Canvas sites that arent in the CRF yet
     utils.update_sites_info(term) #info # -- for each Canvas Site in the CRF check if its been altered
+    delete_canceled_courses(term)
 
 
 def delete_canceled_courses(term):
@@ -331,13 +332,15 @@ def delete_canceled_courses(term):
       cs.activity IN ('LEC', 'REC', 'LAB', 'SEM', 'CLN', 'CRT', 'PRE', 'STU', 'ONL', 'HYB')
     AND cs.status IN ('X')
     AND cs.tuition_school NOT IN ('WH', 'LW')
-    AND cs.term= = :term""",
+    AND cs.term= :term""",
     term = term)
     #AND cs.status IN ('X','H')
 
 
     #term_varaible = str(term))
     f = open("course/static/log/deleted_courses_issues.log", "a")
+    time_start = datetime.datetime.now().strftime('%Y-%m-%d')
+    f.write('-----'+time_start+'-----')
     for course_code, section_id, term, subject_area, school, xc, xc_code, activity, section_dept,section_division, title,status, rev  in cursor:
         #print(course_code, section_id, term, subject_area, school, xc, xc_code, activity, section_dept,section_division, title,status, rev)
         course_code = course_code.replace(" ","")
@@ -348,7 +351,7 @@ def delete_canceled_courses(term):
             course = Course.objects.get(course_code=course_code)
             if course.requested == True:
                 # then we have to report this issue
-                f.write("Issue:" +course_code+" "+"\n")
+                f.write("Canvas Site already Exists:" +course_code+" "+"\n")
             else:
                 print("deleting ", course_code)
                 course.delete()
