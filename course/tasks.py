@@ -16,7 +16,7 @@ def task_nightly_sync(term):
     #print("howdy!")
     time_start = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     f = open("course/static/log/night_sync.log", "a")
-    datawarehouse.daily_sync('2020A')
+    datawarehouse.daily_sync(term)
     time_end = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     f.write("Nighly Update "+term+":" +time_start+" - "+time_end+"\n")
     f.close()

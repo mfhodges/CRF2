@@ -103,16 +103,16 @@
           <td> <center><button id="processRequests" onclick="processRequests()"> Run </button></center></td>
         </tr>
         <tr>
-          <td scope="row"> One-off 2</td>
-          <td> x</td>
-          <td> <a data-toggle="popover" tabindex="0" data-trigger="focus" data-content="texts"><i class="fas fa-info-circle"></i></a></td>
-          <td> <center><button id="" onclick=""> Run </button></center></td>
+          <td scope="row">Delete Canceled Requests</td>
+          <td> <a data-toggle="popover" tabindex="0" data-trigger="focus" data-content="Requests that are Canceled are deleted every 20 minutes. If you need to delete them immediately, run this process."><i class="fas fa-info-circle"></i></a></td>
+          <td> <!--<button id="viewRequests" onclick="viewRequests()" class="muted-button"> View Recent </button>--> N/A</td>
+          <td> <center><button id="" onclick="deleteCanceledRequests()"> Run </button></center></td>
         </tr>
         <tr>
-          <td scope="row"> One-off 3</td>
-          <td> x</td>
-          <td> <a data-toggle="popover" tabindex="0" data-trigger="focus" data-content="And here's some amazing content. It's very engaging. Right?"><i class="fas fa-info-circle"></i></a></td>
-          <td><center><button id="" onclick=""> Run </button></center></td>
+          <td scope="row">Check Canceled SRS Courses</td>
+          <td> <a data-toggle="popover" tabindex="0" data-trigger="focus" data-content="Every night the CRF checks if SRS courses with Canvas sites have been canceled. Click 'View Recent' to see the file."><i class="fas fa-info-circle"></i></a></td>
+          <td> <button id="viewRequests"  onclick="viewCanceledSRS()"class="muted-button"> View Recent </button></td>
+          <td> <!-- <center><button id="" onclick="viewCanceledSRS()"> Run </button> </center>--> N/A </td>
         </tr>
 
    </tbody>
@@ -158,6 +158,65 @@ $('.popover-dismiss').popover({
   trigger: 'focus'
 });
 
+function deleteCanceledRequests() {
+  console.log('Deleting Canceled Requests');
+  $.ajax({
+    url: '/admin/delete_canceled_requests/',
+    type: 'GET',
+    beforeSend: function() {
+        console.log("beforesend");
+
+        $("#oneOffTasks").show(400);
+        $("#oneOffTasks > legend").text("Deleting: Canceled Requests");
+        $("#json").hide(300)//css("display","none");
+        $("#loader").show(400);
+    },
+     success: function(result){
+       console.log("success");
+       console.log(result);
+       var myJSON = JSON.stringify(result,undefined,2);
+       console.log(myJSON);
+       $("#loader").hide(300);//css("display","none");
+       //$("#json").show(100);//css("display","block");
+       document.getElementById("json").innerHTML = myJSON;
+       $("#json").show(500).css("height","300px");
+
+  }});
+};
+
+
+
+
+function viewCanceledSRS() {
+  console.log('running view canceled');
+  $.ajax({
+    url: '/admin/view_canceled_SRS',
+    type: 'GET',
+    beforeSend: function() {
+        console.log("beforesend");
+
+        $("#oneOffTasks").show(400);
+        $("#oneOffTasks > legend").text("Viewing: Canceled SRS Courses");
+        $("#json").hide(300)//css("display","none");
+        $("#loader").show(400);
+    },
+     success: function(result){
+       console.log("success");
+       console.log(result);
+       //var myJSON = JSON.stringify(result,undefined,2);
+       //console.log(myJSON);
+       $("#loader").hide(300);//css("display","none");
+       //$("#json").show(100);//css("display","block");
+       document.getElementById("json").innerHTML = result;
+       $("#json").show(500).css("height","300px");
+
+  }});
+};
+
+
+
+
+
 function viewRequests() {
   console.log('running view');
 
@@ -189,11 +248,10 @@ function viewRequests() {
 
 
 
+
 //$(document).ready(function(){
 function processRequests() {
   console.log('running process');
-
-
   $.ajax({
     url: '/admin/process_requests',
     type: 'GET',
@@ -214,12 +272,14 @@ function processRequests() {
        document.getElementById("json").innerHTML = myJSON;
        $("#loader").hide(300)//.css("display","none");
       $("#json").show(300).css("height","300px");
-
-
-       //$("#processRequests").html("Run").fadeIn(900);
+       $("#processRequests").html("Run").fadeIn(900);
        $("#processRequests").attr("disabled", false);
   }});
 };
+
+
+
+
 //});
 
 // document.getElementById("json").innerHTML = JSON.stringify(data, undefined, 2);

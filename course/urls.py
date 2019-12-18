@@ -11,7 +11,7 @@ from course.autocomplete import UserAutocomplete, SubjectAutocomplete, CanvasSit
 from django.conf import settings
 schema_view = get_swagger_view(title='Pastebin API')
 
-
+import csv
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
@@ -55,6 +55,7 @@ urlpatterns = [
 	# --------------- Helpers ------------------
 	url('admin/process_requests/', views.process_requests, name="process_requests"),
 	url('admin/view_requests/', views.view_requests, name="view_requests"),
+	url('admin/view_canceled_SRS/', views.view_canceled_SRS),
 	url('admin/delete_canceled_requests/', views.remove_canceled_requests),
 	url('quickconfig/', views.quickconfig),
 
@@ -149,8 +150,9 @@ urlpatterns = [
 
     # --------------- Canvas Proxies -------------------
     url(r'^canvasuser/(?P<username>\w+)/$',views.myproxy ),
-	url(r'^searchcanvas/(?P<search>\w+)/$',views.autocompleteCanvasCourse),
-    # --------------- autocomplete -------------------
+	path('searchcanvas/<search>/',views.autocompleteCanvasCourse),
+
+	# --------------- autocomplete -------------------
     # views are defined in autocomplete.py
     url(
         r'^user-autocomplete/$',

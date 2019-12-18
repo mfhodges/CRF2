@@ -1374,16 +1374,24 @@ def view_requests(request):
 	return django.http.JsonResponse(data)
 
 @staff_member_required
-def remove_canceled_requests(request):
-	from course.tasks import remove_canceled
+def view_canceled_SRS(request):
+	with open('course/static/log/deleted_courses_issues.log') as content:
+	    #data = json.load(json_file)
+		return HttpResponse(content, content_type='text/plain; charset=utf8')
+		#return django.http.JsonResponse(json_file)
 
-	done = {'response':'response','processed':[]}
+
+@staff_member_required
+def remove_canceled_requests(request):
+	from course.tasks import delete_canceled_requests
+
+	done = {'response':'','processed':[]}
 	_to_process = Request.objects.filter(status='CANCELED')
 	for obj in _to_process:
 		item = {'canceled/deleted':obj.course_requested.course_code}
 		done['processed'] += [obj.course_requested.course_code]
-	running = remove_canceled()
-
+	running = delete_canceled_requests()
+	done['response'] = datetime.datetime.now().strftime("%m/%d/%y %I:%M%p")
 	return django.http.JsonResponse(done)
 
 
