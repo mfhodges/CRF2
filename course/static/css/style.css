@@ -51,6 +51,25 @@ https://www.colorbook.io/hexcolors/view/296bde
 /* Mixins
   =============== */
 
+
+/* ======= Remove Arrows/Spinners ======= */
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance:textfield;
+  }
+
+
+
+
+
+
 html {
   height: 100%;
   -ms-text-size-adjust: 100%;

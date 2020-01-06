@@ -62,9 +62,8 @@
               {% if course.associated_request %}
               <a  href='{% url "UI-request-detail" pk=course.associated_request %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</a>
               {% else %}
-
               <!-- this button should pull up the submitted request! -->
-              <a  href='{% url "UI-request-detail" pk=course.course_code %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">c Requested</a>
+              <a  href='{% url "UI-request-detail" pk=course.course_code %}' class="button muted-button" data-toggle="tooltip" data-placement="top" title="click to see details">Requested</a>
               {% endif %}
 
           {% else %}
@@ -101,11 +100,11 @@
           {% csrf_token %}
             <div class="modal-body">
               <label for="inputCanvasID">Copy From Canvas Site </label>
-              <input type="text" id="inputCanvasID" name="copy_from_course" class="form-control" placeholder="CANVAS SITE ID" aria-describedby="textHelpInline">
+              <input type="number" id="inputCanvasID" name="copy_from_course" class="form-control" placeholder="Canvas Site ID (number)" aria-describedby="textHelpInline">
               <small id="passwordHelpInline" class="text-muted">
-                Canvas Site ID is found in `https://canvas.upenn.edu/courses/&lt;CANVAS_ID&gt;`
-                If left blank, the course created will have no content copied.
+                Canvas Site ID is the terminal number in the URL of the Canvas site.
               </small>
+              <p> If you would like to specify more customizations (add Reserves, additional Users, etc.) Please click 'Custom Request'.</p>
             </div>
             <div class="modal-footer">
               <input name="course_requested" type="hidden"class="form-control" type="text" value="">
@@ -126,9 +125,6 @@
   {% include "bits/filter_modal.html" %}
 
 <!-- END MODAL FILTERING -->
-
-
-
 
 
   <!-- PAGINATION -->
