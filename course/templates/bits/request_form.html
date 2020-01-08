@@ -179,6 +179,16 @@
 
   </fieldset>
 
+  <blockquote style="min-width:unset;" class="show" id="noticeForm">
+    <div>
+    <h5 style="margin:0rem 0rem 0.5rem 0rem;font-family: Menlo, monospace;">Please Read Before Submitting</h5>
+    <p> If you have set a Content Copy, please check that it has properly populated as a numeric ID in the field 'Copy from course'.<br>
+     If the field has not populated, please specify the Course you would like to copy content from in the text field below. </p>
+   </div>
+     <div style="height:40px;">
+       <i class="fas fa-times" style="font-size:20px;height:20px;" onclick="document.getElementById('noticeForm').remove()"></i>
+     </div>
+   </blockquote>
 
 {% render_field request_form.additional_instructions style=style %}
 
