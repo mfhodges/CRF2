@@ -91,7 +91,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle"> Basic Request For </h5>
+          <h5 class="modal-title" id="exampleModalLongTitle">Quick Request For </h5>
           <div class="close" data-dismiss="modal" aria-label="Close">
             <i class="fas fa-times"></i>
           </div>
@@ -99,19 +99,20 @@
         <form action="{% url 'UI-request-list' %}" method="post">
           {% csrf_token %}
             <div class="modal-body">
-              <label for="inputCanvasID">Copy From Canvas Site </label>
+               <p style="margin: .5rem 0 0.5rem 0;">If you would like the full form please click 'Custom Request'.</p>
+              <label for="inputCanvasID">Copy From Canvas Site (OPTIONAL) </label>
               <input type="number" id="inputCanvasID" name="copy_from_course" class="form-control" placeholder="Canvas Site ID (number)" aria-describedby="textHelpInline">
               <small id="passwordHelpInline" class="text-muted">
                 Canvas Site ID is the terminal number in the URL of the Canvas site.
               </small>
-              <p style="margin: .5rem 0 0 0;"> If you would like to specify more customizations (add Reserves, additional Users, etc.) Please click 'Custom Request'.</p>
+              <p style="margin: .5rem 0 0 0;"> If you would like to specify more customizations (add Reserves, additional Users, etc.) please click 'Custom Request'.</p>
             </div>
             <div class="modal-footer">
               <input name="course_requested" type="hidden"class="form-control" type="text" value="">
               <input name="status" class="form-control" type="hidden" value="SUBMITTED">
               <input name="view_type" class="form-control" type="hidden" value="UI-course-list">
               <a href='' type="button" class="button accent-button" style="font-weight: 600;">Custom Request</a> <!-- Custom Request takes you to the full page form -->
-              <button type="submit" value="save" style="font-weight: 600;">Submit request</button>
+              <button type="submit" value="save" style="font-weight: 600;">Submit Request</button>
             </div>
         </form>
       </div>
@@ -167,20 +168,12 @@ $('#CourseModal').on('show.bs.modal', function (event) {
   // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
   console.log(course.replace('_',''))
   var modal = $(this)
-  modal.find('.modal-title').text('Basic Request for ' + course)
+  modal.find('.modal-title').text('Quick Request for ' + course)
   modal.find(".modal-footer input[name='course_requested']").val(short_course)
   modal.find(".modal-footer a").attr("href", '/courses/'+ short_course +'#RequestForm')
 })
 
-//$('#CourseModal').on('show.bs.modal', function (event) {
-  //var button = $(event.relatedTarget) // Button that triggered the modal
-  //var param = button.data('param') // Extract info from data-* attributes
-  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-//  var modal = $(this)
-//  modal.find('.modal-title').text('Filtering Results by ' + param)
-//  modal.find(".modal-body input").attr("name",param)
-//})
+
 
 // removes null query_params ! <3
 $('form[method="get"]').submit(function(){
