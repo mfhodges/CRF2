@@ -97,7 +97,7 @@ class RequestAdmin(admin.ModelAdmin):
     search_fields = ('owner__username','masquerade','course_requested__course_code')
     readonly_fields = ['created','updated','masquerade','additional_sections']
     inlines = [AdditionalEnrollmentInline]
-    autocomplete_fields = ['owner','course_requested']
+    autocomplete_fields = ['owner','course_requested','canvas_instance']
 
     fieldsets = (
         (None, {
