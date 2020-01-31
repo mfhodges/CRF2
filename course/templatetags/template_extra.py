@@ -63,6 +63,12 @@ def filter_messages(messages, type):
     return answer
 
 @register.filter
+def coursecodetoString(coursecode):
+    middle= coursecode[:-5][4:]
+    return("%s-%s-%s %s" % (coursecode[:-11], middle[:3],middle[3:], coursecode[-5:] ))
+
+
+@register.filter
 def asrepr(course):
     term = course['year'] + course['course_term']
     #print(course['course_section'])

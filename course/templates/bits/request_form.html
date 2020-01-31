@@ -75,7 +75,7 @@
                 <!-- check if already requested -> cannot be requested -->
                 <input  name="additional_sections[{{ forloop.counter0 }}][course_code]" value="{{section_code}}" class="form-control" type="checkbox" checked>
               </td>
-              <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}}</td>
+              <td> {{section_code|coursecodetoString}}</td> <td> {{section_activity}} </td> <td> {{section_requested}}</td>
             </tr>
           {# must be in some other request! #}
           {% elif section_requested %}
@@ -86,7 +86,7 @@
                 <input  name="additional_sections[{{ forloop.counter0 }}][course_code]" value="{{section_code}}" class="form-control" type="checkbox" disabled>
               </span>
               </td>
-              <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}}</td>
+              <td> {{section_code|coursecodetoString}}</td> <td> {{section_activity}} </td> <td> In Request</td>
             </tr>
 
           {% else %}
@@ -95,7 +95,7 @@
               <!-- check if already requested -> cannot be requested -->
               <input  name="additional_sections[{{ forloop.counter0 }}][course_code]" value="{{section_code}}" class="form-control" type="checkbox">
             </td>
-            <td> {{section_code}}</td> <td> {{section_activity}} </td> <td> {{section_requested}}</td>
+            <td> {{section_code|coursecodetoString}}</td> <td> {{section_activity}} </td> <td> None</td>
           </tr>
           {% endif %}
 
