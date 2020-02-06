@@ -175,8 +175,8 @@ def create_canvas_site():
             name_code = section_name_code
             # check if there is a title override
             if request_obj.title_override:
-                name = name_code + request_obj.title_override
-                section_name = section_name_code + request_obj.title_override
+                name = name_code + request_obj.title_override[:45]
+                section_name = section_name_code + request_obj.title_override[:45]
             else:
                 name = name_code + course_requested.course_name
                 section_name = section_name_code + course_requested.course_name
@@ -197,13 +197,16 @@ def create_canvas_site():
             # Add sections
             #   Add main Sections
             try:
+
                 additional_section = {'course_section':'','instructors':''}
                 additional_section['course_section']=canvas_course.create_course_section(course_section={'name':section_name,'sis_section_id':sis_course_id},enable_sis_reactivation=True)#first_section = canvas_course.get_sections()[0]
                 MAIN_SECTION = additional_section['course_section']
                 additional_section['instructors']= course_requested.instructors.all()
                 additional_sections += [additional_section]
+                print("1",{"additional_section":additional_section,"additional_sections":additional_sections})
             except:
                 # dont continue with the loop so just stop for now.
+                print("failed to create main section,", canvas_course)
                 request_obj.process_notes += "failed to create main section,"
                 request_obj.process_notes += sys.exc_info()[0]
                 request_obj.save()
@@ -234,7 +237,7 @@ def create_canvas_site():
                 additional_section['course_section'] = canvas_course.create_course_section(course_section={'name':section_course.srs_format_primary() +' '+ namebit,'sis_section_id':sis_section},enable_sis_reactivation=True)
                 additional_section['instructors'] = section_course.instructors.all()
                 additional_sections += [additional_section]
-
+                print("2",{"additional_section":additional_section,"additional_sections":additional_sections})
 
             except:
                 # dont continue with the loop so just stop for now.
@@ -247,6 +250,7 @@ def create_canvas_site():
         if course_requested.crosslisted:
             pass
 
+        print("starting step 2")
         #input("STEP 2 DONE...\n")
         ######## Step 3. enroll faculty and additional enrollments  ########
         enrollment_types = {'INST':'TeacherEnrollment', 'instructor':'TeacherEnrollment','TA':'TaEnrollment','ta':'TaEnrollment', 'DES':'DesignerEnrollment', 'designer':'DesignerEnrollment', 'LIB':'DesignerEnrollment','librarian':'DesignerEnrollment'}
