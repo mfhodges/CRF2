@@ -90,6 +90,15 @@ def get_markdown_id(location):
         return page.pk
     return ''
 
+@register.filter("mytruncate_chars")
+def truncate_chars(value, max_length):
+    if len(value) > max_length:
+        truncd_val = value[:max_length]
+        if not len(value) == max_length+1 and value[max_length+1] != " ":
+            truncd_val = truncd_val[:truncd_val.rfind(" ")]
+        return  truncd_val
+    return value
+
 """
 @register.simple_tag
 def add_query_param(request, key, val):
