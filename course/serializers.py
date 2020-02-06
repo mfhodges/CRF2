@@ -285,7 +285,7 @@ class RequestSerializer(DynamicFieldsModelSerializer): #HyperlinkedModelSerializ
     #sections = serializers.SerializerMethodField()
 
     course_requested = serializers.SlugRelatedField(many=False,queryset=Course.objects.all(), slug_field='course_code' , style={'base_template': 'input.html'})
-    title_override = serializers.CharField(allow_null=True,required=False , style={'base_template': 'input.html'})
+    title_override = serializers.CharField(allow_null=True,required=False ,max_length=45, style={'base_template': 'input.html'})
     additional_enrollments = AdditionalEnrollmentSerializer(many=True,default=[], style={'base_template':'list_fieldset.html'},required=False)
     created = serializers.DateTimeField(format="%I:%M%p %b,%d %Y", required=False)
     updated = serializers.DateTimeField(format="%I:%M%p %b,%d %Y", required=False)
