@@ -12,7 +12,7 @@
     {% if course.primary_crosslist %} {{course.primary_crosslist|coursecodetoString}}
     {% else %}{{request_instance.course_info|asrepr}}
     {% endif %} {{ course.course_name|mytruncate_chars:30 }}</i> <!--</a>-->
-    . You may modify it in the box provided below. The course code will always prepend the title.</p>
+    . You may modify it in the box provided below. The primary course code will always prepend the title.</p>
 {% render_field request_form.title_override style=style %}
 
 <p> If you would like to copy content from an existing course site, please click 'Select Copy' and select the source from the list. <i>The field should populate with a 7 digit number.</i></p>
