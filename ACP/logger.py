@@ -19,7 +19,7 @@ LOG_LEVEL = logging.INFO
 
 
 # canvas logger
-CANVAS_LOG_FILE = "./logs/canvas.log"
+CANVAS_LOG_FILE = "ACP/logs/canvas.log"
 
 canvas_logger = logging.getLogger("Canvas")
 canvas_logger.setLevel(LOG_LEVEL)
@@ -29,7 +29,8 @@ canvas_logger_file_handler.setFormatter(Formatter(LOG_FORMAT))
 canvas_logger.addHandler(canvas_logger_file_handler)
 
 # crf logger
-CRF_LOG_FILE = "./logs/crf.log"
+
+CRF_LOG_FILE = "ACP/logs/crf.log"
 
 crf_logger = logging.getLogger("CRF")
 crf_logger.setLevel(LOG_LEVEL)
@@ -37,3 +38,13 @@ crf_file_handler = FileHandler(CRF_LOG_FILE)
 crf_file_handler.setLevel(LOG_LEVEL)
 crf_file_handler.setFormatter(Formatter(LOG_FORMAT))
 crf_logger.addHandler(crf_file_handler)
+
+# email logger
+EMAIL_LOG_FILE = "ACP/logs/email.log"
+
+email_logger = logging.getLogger("email")
+email_logger.setLevel(LOG_LEVEL)
+email_file_handler = FileHandler(EMAIL_LOG_FILE)
+email_file_handler.setLevel(LOG_LEVEL)
+email_file_handler.setFormatter(Formatter(LOG_FORMAT))
+email_logger.addHandler(email_file_handler)
