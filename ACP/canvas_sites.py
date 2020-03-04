@@ -79,7 +79,7 @@ def create_requests(inputfile='notUsedSIS.txt',copy_site=''):
 				)
 				r.status = 'APPROVED' # mark request as approved
 				r.save()
-				c.save() ## you have to save the course to update its request status !
+				course.save() ## you have to save the course to update its request status !
 			except:
 				# report that this was failed to be created
 				crf_logger.info("Failed to create request for: %s", line)
@@ -88,7 +88,8 @@ def create_requests(inputfile='notUsedSIS.txt',copy_site=''):
 			#LOG
 			crf_logger.info("Not in CRF : %s", line)
 	print("-> Finished Creating Requests in CRF")
-	print("-> Please now run `process_requests`")
+	print("-> Please check `ACP/logs/crf.log` for a list of failed Request creations")
+	print("-> NEXT: Please now run `process_requests('%s')`" % inputfile)
 
 def gather_request_process_notes(inputfile='notUsedSIS.txt'):
 	# Gathers the `process_notes` for all processed requests
@@ -124,10 +125,14 @@ def process_requests(file='notUsedSIS.txt'):
 	# per
 	create_canvas_site() # runs the task 
 	# should wait till the above task is done... 
+	print("\t-> Finished Processing Requests in CRF")
+	print("\t-> NOW: gathering Request Processing Report in `ACP/data/requestProcessNotes.txt`")
 	gather_request_process_notes(file)
-	print("-> Finished Processing Requests in CRF")
-	print("->(OPTIONAL) Please now run `config_sites` to ")
-	pass
+	print("-> Finished Generating: `ACP/data/requestProcessNotes.txt`")
+	print("-> Please Check `ACP/logs/canvas.log` for a list of incomplete Requests")
+	print("-> Please Check `ACP/logs/crf.log` for a list of errors in the CRF")
+	print("-> Please Check `ACP/data/requestProcessNotes.txt` for a details on each Request")
+	print("-> NEXT: (OPTIONAL) Please now run `config_sites` to configure these sites")
 	
 
 
@@ -148,6 +153,8 @@ def config_sites(inputfile="canvasSitesFile.txt",capacity=2,tool):
 
 def copy_content(file,source_site):
 	#check that the site exists
+	canvas = Canvas(domain, key)
+	canvas.get_course(course=sis_id,use_sis_id=True)
 	try:
 		pass
 	except:

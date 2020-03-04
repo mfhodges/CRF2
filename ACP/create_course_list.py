@@ -41,23 +41,25 @@ def sis_id_status(id):
 
 
 def create_unrequested_list(outputfile='notRequestestedSIS.txt',*term):
+    # NEEDS TESTING 
     # creates a list of unrequested courses in the CRF based on a term 
+    # this list only represents the primary 
     t = term[-1]
     year = term[:-1]
     c = Course.objects.filter(course_term=t,year=year,requested=False,requested_override=False,primary_crosslist='',course_schools__visible=True)
     print("%d potential new course sites" % (len(c)))
     my_path = os.path.dirname(os.path.abspath(sys.argv[0]))
-    file_path = os.path.join(my_path, "data/", outputfile)
+    file_path = os.path.join(my_path, "ACP/data/", outputfile)
     f= open(file_path,"w+")
-    
     for x in c: 
         f.write("%s\n" % (x.srs_format_primary()))
     print("-> Finished Generating: ", outputfile)
-    print("-> Please now run `create_unused_sis_list(inputfile=%s,outputfile)` to determine which of these course codes are already used in Canvas" % outputfile)
+    print("-> NEXT: Please now run `create_unused_sis_list(inputfile='%s')` to determine which of these course codes are already used in Canvas" % outputfile)
 
 
 def create_unused_sis_list(inputfile='notRequestestedSIS.txt',outputfile='notUsedSIS.txt'):
-    #based on the outputfile (pass as `inputfile`) from `create_unrequested_list` check that each sis id is not in use in canvas. 
+    # √ TESTED 
+    # based on the outputfile (pass as `inputfile`) from `create_unrequested_list` check that each sis id is not in use in canvas. 
     # if the sis id is NOT in use, then write to the outputfile.
     my_path = os.path.dirname(os.path.abspath(sys.argv[0]))
     print("path",my_path)
@@ -74,7 +76,8 @@ def create_unused_sis_list(inputfile='notRequestestedSIS.txt',outputfile='notUse
             notUsedSIS.write(id+"\n")            
 
     print("-> Finished Generating: ", outputfile)
-    print("-> To create Requests these courses please run `create_requests(inputfile=%s)`" % outputfile)
+    print("-> Please Check `ACP/logs/canvas.log` for a list of SIS IDs arleady in used")
+    print("-> NEXT: To create Requests for these courses please run `create_requests(inputfile='%s')`" % outputfile)
 
         
 
