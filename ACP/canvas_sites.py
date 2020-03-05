@@ -17,10 +17,19 @@ from .logger import crf_logger
 import sys
 from course.tasks import create_canvas_site
 from .create_course_list import sis_id_status
+from configparser import ConfigParser
+
+config = ConfigParser()
+config.read('config/config.ini')
+API_URL = config.get('canvas','test_env') #'prod_env')
+API_KEY = config.get('canvas', 'test_key')#'prod_key')
+
 
 """
 BEFORE YOU DO ANYTHING PLEASE SYNC INSTRUCTORS AND COURSES WITH SRS!!!
 """
+
+
 
 
 ######## TESTS / HELPERS ########
@@ -67,7 +76,7 @@ def create_requests(inputfile='notUsedSIS.txt',copy_site=''):
 		#FIND IN CRF	
 		id = line.replace('\n',"").replace(" ","").replace("-","")
 		course = get_or_none(Course,course_code=id)
-		if course: #test this and? 
+		if course: 
 			# create request
 			try:
 				r = Request.objects.create(
@@ -143,13 +152,14 @@ def process_requests(file='notUsedSIS.txt'):
 		Automatically publish the site once created.
 """
 
-"""
-def config_sites(inputfile="canvasSitesFile.txt",capacity=2,tool):
+
+def config_sites(inputfile="canvasSitesFile.txt",capacity=2,*tool,*source_site):
 	
+	copy_content(inputfile,source_site)
 	inc_storage(inputfile,capacity=2)
 	enable_lti(inputfile,tool)
 	publish_sites(inputfile)
-"""
+
 
 def copy_content(file,source_site):
 	#check that the site exists
