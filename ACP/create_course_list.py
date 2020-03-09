@@ -40,7 +40,7 @@ def sis_id_status(id):
 ################ MAIN CODE ################
 
 
-def create_unrequested_list(outputfile='notRequestestedSIS.txt',*term):
+def create_unrequested_list(outputfile='notRequestestedSIS.txt',term='2020A'):
     # NEEDS TESTING 
     # creates a list of unrequested courses in the CRF based on a term 
     # this list only represents the primary 
