@@ -21,12 +21,21 @@ from configparser import ConfigParser
 
 config = ConfigParser()
 config.read('config/config.ini')
-API_URL = config.get('canvas','test_env') #'prod_env')
-API_KEY = config.get('canvas', 'test_key')#'prod_key')
+API_URL = config.get('canvas','prod_env') #'prod_env')
+API_KEY = config.get('canvas', 'prod_key')#'prod_key')
 
 
 """
 BEFORE YOU DO ANYTHING PLEASE SYNC INSTRUCTORS AND COURSES WITH SRS!!!
+
+
+Configurations to run with:
+
+	- publish
+	- enable panopto - external_tools/90311
+	- copy from: 1502387
+	- storage: 2GB
+
 """
 
 
@@ -82,7 +91,7 @@ def create_requests(inputfile='notUsedSIS.txt',copy_site=''):
 				r = Request.objects.create(
 					course_requested = course,
 					copy_from_course = copy_site,
-					additional_instructions = 'Created In Emergency Provisioning, contact courseware support for more info.',
+					additional_instructions = 'Created automatically, contact courseware support for info',
 					owner = owner,
 					created= datetime.datetime.now()
 				)
@@ -153,34 +162,103 @@ def process_requests(file='notUsedSIS.txt'):
 """
 
 
-def config_sites(inputfile="canvasSitesFile.txt",capacity=2,*tool,*source_site):
-	
-	copy_content(inputfile,source_site)
-	inc_storage(inputfile,capacity=2)
-	enable_lti(inputfile,tool)
-	publish_sites(inputfile)
+def config_sites(inputfile="canvasSitesFile.txt",capacity=2,publish=False,tool=None,source_site=None):
+	if source_site:
+		copy_content(inputfile,source_site)
+	if tool:
+		enable_lti(inputfile,tool)
+
+	config = {}
+	if capacity:
+		config['storage_quota_mb'] = capacity
+	if publish:
+		config['event']='offer'
+	if publish or capacity:
+		canvas = Canvas(API_URL, API_KEY)
+		my_path = os.path.dirname(os.path.abspath(sys.argv[0]))
+		print("path",my_path)
+		file_path = os.path.join(my_path, "ACP/data", file)
+		print("file path", file_path)
+		dataFile = open(file_path, "r") # # test6660002020A,1500426
+		for line in dataFile:
+			canvas_id = line.replace("\n","").split(",")[-1]
+			#check that the site exists
+			try:
+				course_site = canvas.get_course(canvas_id)
+			except:
+				canvas_logger.info('(inc. quota/publish) failed to find site %s' % canvas_id)
+				course_site =None
+			if course_site:
+				print(course_site)
+				course_site.update(course=config)
 
 
 def copy_content(file,source_site):
-	#check that the site exists
-	canvas = Canvas(domain, key)
-	canvas.get_course(course=sis_id,use_sis_id=True)
-	try:
-		pass
-	except:
-		# log that there is an issue
-		pass
-	pass
+	# NOT TESTING THAT THE SOURCE SITE IS VALID
+	# √ TESTED 
+	canvas = Canvas(API_URL, API_KEY)
+	my_path = os.path.dirname(os.path.abspath(sys.argv[0]))
+	print("path",my_path)
+	file_path = os.path.join(my_path, "ACP/data", file)
+	print("file path", file_path)
+	dataFile = open(file_path, "r") # # test6660002020A,1500426
+	for line in dataFile:
+		canvas_id = line.replace("\n","").split(",")[-1]
+		#check that the site exists
+		try:
+			course_site = canvas.get_course(canvas_id)
+		except:
+			canvas_logger.info('(copy content) failed to find site %s' % canvas_id)
+			course_site =None
+		if course_site:
+			print(course_site)
+			contentmigration = course_site.create_content_migration(migration_type='course_copy_importer',settings={'[source_course_id':source_site})
+
+
+		
 
 def publish_sites(file):
-
+	# ? TESTED 
+	canvas = Canvas(API_URL, API_KEY)
+	my_path = os.path.dirname(os.path.abspath(sys.argv[0]))
+	print("path",my_path)
+	file_path = os.path.join(my_path, "ACP/data", file)
+	print("file path", file_path)
+	dataFile = open(file_path, "r") # # test6660002020A,1500426
+	for line in dataFile:
+		canvas_id = line.replace("\n","").split(",")[-1]
+		#check that the site exists
+		try:
+			course_site = canvas.get_course(canvas_id)
+		except:
+			canvas_logger.info('(publish) failed to find site %s' % canvas_id)
+			course_site =None
+		if course_site:
+			print(course_site)
+			course_site.update(course={'storage_quota_mb':capacity,'event':'offer'})
 	pass
 
 def enable_lti(file,tool):
-	
+	#tool = "context_external_tool_90311"
+	canvas = Canvas(API_URL, API_KEY)
+	my_path = os.path.dirname(os.path.abspath(sys.argv[0]))
+	print("path",my_path)
+	file_path = os.path.join(my_path, "ACP/data", file)
+	print("file path", file_path)
+	dataFile = open(file_path, "r") # # test6660002020A,1500426
+	for line in dataFile:
+		canvas_id = line.replace("\n","").split(",")[-1]
+		#check that the site exists
+		try:
+			course_site = canvas.get_course(canvas_id)
+		except:
+			canvas_logger.info('(enable tool) failed to find site %s' % canvas_id)
+			course_site =None
+		if course_site:
+			print(course_site)
+
+			course_site.update_tab( tool, {'hidden':'false','position':3})
 	pass
 
-def inc_storage(file,capacity=2):
 
-	pass
 

@@ -14,8 +14,8 @@ from configparser import ConfigParser
 
 config = ConfigParser()
 config.read('config/config.ini')
-API_URL = config.get('canvas','test_env') #'prod_env')
-API_KEY = config.get('canvas', 'test_key')#'prod_key')
+API_URL = config.get('canvas','prod_env') #'prod_env')
+API_KEY = config.get('canvas', 'prod_key')#'prod_key')
 
 
 ################ HELPERS ################
