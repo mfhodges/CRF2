@@ -36,8 +36,12 @@ def check_canceled(yearterm,outputfile='checkingCanceled.txt'):
     f= open(file_path,"w+")
     for r in requests: 
         course = r.course_requested
-        if is_canceled(course.course_code)
+        is_cancel = is_canceled(course.course_code)
+        if is_cancel ==True:
             f.write("CANCELED:%s\n" % course.course_code)
+        if is_cancel =='ERROR':
+            f.write("ERROR:%s\n" % course.course_code)
+
 
 def delete_canceled(inputfile='checkingCanceled.txt'):
     pass

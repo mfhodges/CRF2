@@ -50,4 +50,28 @@ def search_course(subject_area,course_number='*',sect_number='*',term='*'):
 
 
         for data in cursor:
-            print(data)
+            return(data)
+
+
+def is_canceled(course_code):
+  """
+    O      The course section has space available
+    C      The course section has no space available
+    H      The course section is on hold, pending review by department
+    X      The course section has been cancelled
+  """
+  middle= course_code[:-5][4:]
+  #return("%s-%s-%s %s" % (coursecode[:-11], middle[:3],middle[3:], coursecode[-5:] ))
+  subject = course_code[:-11]
+  course_number = middle[:3]
+  course_section = middle[3:]
+  term = course_code[-5:]
+  data = search_course(subject,course_number,course_section,term)
+  if data:
+    status = data[-2]
+  else:
+    return 'ERROR'
+  if status=='X':
+    print("%s is canceled" % course_code)
+    return True
+  
