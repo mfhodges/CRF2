@@ -92,23 +92,26 @@ def check_canceled(yearterm,outputfile='checkingCanceled.txt'):
             f.write("ERROR:%s\n" % course.course_code)
 
 
-def delete_canceled(inputfile='checkingCanceled.txt'):
+def delete_canceled(inputfile='checkingCanceled.txt',outputfile='deletingCanceled.txt'):
     canvas = Canvas(API_URL, API_KEY)
     my_path = os.path.dirname(os.path.abspath(sys.argv[0]))
     file_path = os.path.join(my_path, "ACP/data", inputfile)
     dataFile = open(file_path, "r") 
+    outFile = open(os.path.join(my_path, "ACP/data", outFile),"w+")
     for line in dataFile:
         #FIND IN CRF	
-        id = line.replace('\n',"").replace(" ","").replace("-","")
-        sis_id = id
+        id = line.replace('\n',"").replace("ERROR:","").replace("CANCELED:","")
         crf_course = get_or_none(Course,course_code=id)
+        sis_id = 'SRS_'+crf_course.srs_format()
         canvas_course= canvas.get_course(sis_id, use_sis_id=True)
         try:
             canvas_course.conclude()
+            outFile.write("deleted %s canvas site\n" % sis_id)
         except:
             print("didnt delete %s site" % sis_id)
         try:
             crf_course.delete()
+            outFile.write("deleted %s request\n" % sis_id)
         except:
             print("didnt delete %s request" % sis_id)
 
@@ -117,6 +120,7 @@ def update_not_in_crf(yearterm):
     term = yearterm[-1]
     year = yearterm[:-1]
     canvas = Canvas(API_URL, API_KEY)
+    # EDIT THIS FOLLOWING LINE AS U NEED!
     courses =Course.objects.filter(course_term=term,year=year,requested_override=True,course_schools__visible=True,primary_crosslist='')
     for course in courses:
         # check if the sis id is in use
