@@ -97,7 +97,7 @@ def delete_canceled(inputfile='checkingCanceled.txt',outputfile='deletingCancele
     my_path = os.path.dirname(os.path.abspath(sys.argv[0]))
     file_path = os.path.join(my_path, "ACP/data", inputfile)
     dataFile = open(file_path, "r") 
-    outFile = open(os.path.join(my_path, "ACP/data", outFile),"w+")
+    outFile = open(os.path.join(my_path, "ACP/data", outputfile),"w+")
     for line in dataFile:
         #FIND IN CRF	
         id = line.replace('\n',"").replace("ERROR:","").replace("CANCELED:","")
