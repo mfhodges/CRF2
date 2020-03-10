@@ -10,7 +10,7 @@
   <!--<a data-toggle="popover" tabindex="0" data-trigger="focus" data-content="The primary full course code is required. We recommend keeping the full title under 50 characters." data-original-title="" title="">-->
     <i style="text-decoration: underline;">
     {% if course.primary_crosslist %} {{course.primary_crosslist|coursecodetoString}}
-    {% else %}{{request_instance.course_info|asrepr}}
+    {% else %}{{course.course_code|coursecodetoString}}
     {% endif %} {{ course.course_name|mytruncate_chars:30 }}</i> <!--</a>-->
     . You may modify it in the box provided below. The primary course code will always prepend the title.</p>
 {% render_field request_form.title_override style=style %}
