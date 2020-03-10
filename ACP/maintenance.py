@@ -117,7 +117,7 @@ def update_not_in_crf(yearterm):
     term = yearterm[-1]
     year = yearterm[:-1]
     canvas = Canvas(API_URL, API_KEY)
-    courses =Course.objects.filter(course_term=term,year=year,requested=False,requested_override=False,course_schools__visible=True,primary_crosslist='')
+    courses =Course.objects.filter(course_term=term,year=year,requested_override=True,course_schools__visible=True,primary_crosslist='')
     for course in courses:
         # check if the sis id is in use
         sis_id = 'SRS_' + course.srs_format()
@@ -130,7 +130,10 @@ def update_not_in_crf(yearterm):
         if section:
             course.requested_override =True
             course.save()
-        # https://canvas.upenn.edu/api/v1/sections/sis_section_id:SRS_
+        other_courses = Course.objects.filter(primary_crosslist=course.course_code,course_term=term,year=year,requested=False,requested_override=False,course_schools__visible=True)
+        for other_course in other_courses:
+            other_course.requested_override =True
+            other_course.save()
         
 
 def check_requests(yearterm):
