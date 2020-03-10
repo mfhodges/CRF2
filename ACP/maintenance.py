@@ -71,7 +71,7 @@ def create_instructor_updates(yearterm):
     f= open(file_path,"w+")
     for r in requests:
         course = r.course_requested
-        
+
     pass
 
 
@@ -95,13 +95,13 @@ def check_canceled(yearterm,outputfile='checkingCanceled.txt'):
 def delete_canceled(inputfile='checkingCanceled.txt'):
     canvas = Canvas(API_URL, API_KEY)
     my_path = os.path.dirname(os.path.abspath(sys.argv[0]))
-	file_path = os.path.join(my_path, "ACP/data", inputfile)
-	dataFile = open(file_path, "r") 
-	for line in dataFile:
-		#FIND IN CRF	
-		id = line.replace('\n',"").replace(" ","").replace("-","")
+    file_path = os.path.join(my_path, "ACP/data", inputfile)
+    dataFile = open(file_path, "r") 
+    for line in dataFile:
+        #FIND IN CRF	
+        id = line.replace('\n',"").replace(" ","").replace("-","")
         sis_id = id
-		crf_course = get_or_none(Course,course_code=id)
+        crf_course = get_or_none(Course,course_code=id)
         canvas_course= canvas.get_course(sis_id, use_sis_id=True)
         try:
             canvas_course.conclude()
