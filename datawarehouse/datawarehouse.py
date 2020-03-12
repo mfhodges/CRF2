@@ -352,13 +352,13 @@ def delete_canceled_courses(term):
           if course.requested == True:
             # does this course have course.request , course.multisection_request or course.crosslisted_request 
             try: 
-              canvas_site = course.request.canvas_site
+              canvas_site = course.request.canvas_instance
             except:
               print("no main request:%s" % course.course_code)
               if course.multisection_request:
-                canvas_site = course.multisection_request.canvas_site
+                canvas_site = course.multisection_request.canvas_instance
               elif course.crosslisted_request:     
-                canvas_site = course.crosslisted_request.canvas_site
+                canvas_site = course.crosslisted_request.canvas_instance
               else:
                 # doesnt seem to be tied to a request.
                 canvas_site = None
