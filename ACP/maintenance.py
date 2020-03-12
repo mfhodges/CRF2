@@ -192,6 +192,7 @@ def update_accidentally_deleted_crf(yearterm,outputfile='update_accidentally_del
     """
 
     """
+    owner = User.objects.get(username='mfhodges')
     my_path = os.path.dirname(os.path.abspath(sys.argv[0]))
     file_path = os.path.join(my_path, "ACP/data", outputfile)
     dataFile = open(file_path, "w+") 
@@ -205,6 +206,7 @@ def update_accidentally_deleted_crf(yearterm,outputfile='update_accidentally_del
     counter =1
     for course in courses:
         print("%s/%s" % (counter,count))
+        counter+=1
         # check if the sis id is in use
         sis_id = 'SRS_' + course.srs_format()
         try:
@@ -219,6 +221,7 @@ def update_accidentally_deleted_crf(yearterm,outputfile='update_accidentally_del
                 dataFile.write("found deleted request, %s \n" % sis_id)
                 crf_canvas_site = get_or_none(CanvasSite,sis_course_id=sis_id)
                 if crf_canvas_site:
+                    print(sis_id)
                     r = Request.objects.create(
                         course_requested = course,
                         copy_from_course = '',
