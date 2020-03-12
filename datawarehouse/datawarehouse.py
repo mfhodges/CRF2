@@ -339,8 +339,8 @@ def delete_canceled_courses(term):
 
     #term_varaible = str(term))
     f = open("course/static/log/deleted_courses_issues.log", "a")
-    time_start = datetime.datetime.now().strftime('%Y-%m-%d')
-    f.write('-----'+time_start+'-----')
+    time_start = datetime.now().strftime('%Y-%m-%d')
+    f.write('-----'+time_start+'-----\n')
     for course_code, section_id, term, subject_area, school, xc, xc_code, activity, section_dept,section_division, title,status, rev  in cursor:
         #print(course_code, section_id, term, subject_area, school, xc, xc_code, activity, section_dept,section_division, title,status, rev)
         course_code = course_code.replace(" ","")
