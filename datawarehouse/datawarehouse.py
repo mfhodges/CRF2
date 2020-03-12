@@ -361,7 +361,7 @@ def delete_canceled_courses(term):
                 except:
                   #no canvas site
                   f.write("Canceled but Requested and no Site:" +course_code+" "+"\n")
-                f.write("Canvas Site already Exists:" +course_code+" "+"\n")
+                #f.write("Canvas Site already Exists:" +course_code+" "+"\n")
             else:
                 print("deleting ", course_code)
                 course.delete()
