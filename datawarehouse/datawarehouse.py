@@ -351,6 +351,16 @@ def delete_canceled_courses(term):
             course = Course.objects.get(course_code=course_code)
             if course.requested == True:
                 # then we have to report this issue
+                try: 
+                  canvas_site = course.request.canvas_site
+                  if canvas_site.workflow_state == 'deleted':
+                    # no issue
+                    pass
+                  else:
+                    f.write("Canvas Site already Exists:" +course_code+" "+"\n")
+                except:
+                  #no canvas site
+                  f.write("Canceled but Requested and no Site:" +course_code+" "+"\n")
                 f.write("Canvas Site already Exists:" +course_code+" "+"\n")
             else:
                 print("deleting ", course_code)
