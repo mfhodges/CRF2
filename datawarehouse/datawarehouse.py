@@ -350,18 +350,18 @@ def delete_canceled_courses(term):
         try:
           course = Course.objects.get(course_code=course_code)
           if course.requested == True:
-            # does this course have course.request , course.multisection_request or course.crosslisted_request
-            canvas_site = None 
+            # does this course have course.request , course.multisection_request or course.crosslisted_request 
             try: 
               canvas_site = course.request.canvas_site
             except:
+              print("no main request:%s" % course.course_code)
               if course.multisection_request:
-                canvas_site = course.multisection_request
+                canvas_site = course.multisection_request.canvas_site
               elif course.crosslisted_request:     
-                canvas_site = course.crosslisted_request
+                canvas_site = course.crosslisted_request.canvas_site
               else:
                 # doesnt seem to be tied to a request.
-                pass 
+                canvas_site = None
             
             if canvas_site:
               if canvas_site.workflow_state == 'deleted':
