@@ -1114,7 +1114,7 @@ class HomePage(APIView,UserPassesTestMixin):#,
         else:
             user = request.user
 
-        courses= Course.objects.filter(instructors=user)
+        courses= Course.objects.filter(instructors=user,course_schools__visible=True)
         courses_count = courses.count()
         courses = courses[:15] #requested=False
         #print(courses)
