@@ -257,6 +257,8 @@ def update_sites_info(term):
 
         except:
             print("couldnt find Canvas site: ", crf_canvas_site.sis_course_id)
+            crf_canvas_site.workflow_state = 'deleted'
+            crf_canvas_site.save()
             pass # couldnt find canvas site -- weird!!!
 
 
