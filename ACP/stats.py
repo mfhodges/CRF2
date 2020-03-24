@@ -33,11 +33,11 @@ def code_to_sis(course_code):
 def get_requests(outputfile='RequestSummary.csv'):
     canvas = Canvas(API_URL, API_KEY)
     my_path = os.path.dirname(os.path.abspath(sys.argv[0]))
-    file_path = os.path.join(my_path, "ACP/data", inputfile)
+    #file_path = os.path.join(my_path, "ACP/data", inputfile)
     outFile = open(os.path.join(my_path, "ACP/data", outputfile),"w+")
     requests = Request.objects.all()
     outFile.write('course_code, subaccount, status, provisioned, date_created')
-    total  = r.count()
+    total  = requests.count()
     counter = 1
     for r in requests:
         if counter % 25 == 0:
@@ -59,7 +59,7 @@ def get_requests(outputfile='RequestSummary.csv'):
             datecreated = 'NA'
         
         provisioned = ''
-        outFile.write('%s,%s,%s,%s,%s,', % (course_code, subaccount, status, provisioned, date_created))
+        outFile.write('%s,%s,%s,%s,%s,' % (course_code, subaccount, status, provisioned, date_created))
         counter +=1
 
 
