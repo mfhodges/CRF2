@@ -36,7 +36,7 @@ def get_requests(outputfile='RequestSummary.csv'):
     #file_path = os.path.join(my_path, "ACP/data", inputfile)
     outFile = open(os.path.join(my_path, "ACP/data", outputfile),"w+")
     requests = Request.objects.all()
-    outFile.write('course_code, subaccount, status, provisioned, date_created')
+    outFile.write('course_code, subaccount, status, provisioned, date_created\n')
     total  = requests.count()
     counter = 1
     for r in requests:
@@ -59,8 +59,10 @@ def get_requests(outputfile='RequestSummary.csv'):
             datecreated = 'NA'
         
         provisioned = ''
-        outFile.write('%s,%s,%s,%s,%s,' % (course_code, subaccount, status, provisioned, datecreated))
+        outFile.write('%s,%s,%s,%s,%s\n' % (course_code, subaccount, status, provisioned, datecreated))
         counter +=1
+
+
 
 
 
