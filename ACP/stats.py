@@ -59,7 +59,7 @@ def get_requests(outputfile='RequestSummary.csv'):
             datecreated = 'NA'
         
         provisioned = ''
-        outFile.write('%s,%s,%s,%s,%s,' % (course_code, subaccount, status, provisioned, date_created))
+        outFile.write('%s,%s,%s,%s,%s,' % (course_code, subaccount, status, provisioned, datecreated))
         counter +=1
 
 
