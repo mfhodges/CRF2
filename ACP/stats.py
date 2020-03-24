@@ -55,9 +55,10 @@ def get_requests(outputfile='RequestSummary.csv'):
         try:
             canvas_course = canvas.get_course(r.canvas_instance.canvas_id)
             datecreated = canvas_course.created_at
+        except:
+            datecreated = 'NA'
         
         provisioned = ''
-
         outFile.write('%s,%s,%s,%s,%s,', % (course_code, subaccount, status, provisioned, date_created))
         counter +=1
 
