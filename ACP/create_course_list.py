@@ -41,7 +41,7 @@ def sis_id_status(id):
 
 
 def create_unrequested_list(outputfile='notRequestestedSIS.txt',term='2020A'):
-    # NEEDS TESTING 
+    # NEEDS TESTING for added column
     # creates a list of unrequested courses in the CRF based on a term 
     # this list only represents the primary 
     t = term[-1]
@@ -52,13 +52,13 @@ def create_unrequested_list(outputfile='notRequestestedSIS.txt',term='2020A'):
     file_path = os.path.join(my_path, "ACP/data/", outputfile)
     f= open(file_path,"w+")
     for x in c: 
-        f.write("%s\n" % (x.srs_format_primary()))
+        f.write("%s,%s\n" % (x.srs_format_primary(),x.course_schools.abbreviation))
     print("-> Finished Generating: ", outputfile)
     print("-> NEXT: Please now run `create_unused_sis_list(inputfile='%s')` to determine which of these course codes are already used in Canvas" % outputfile)
 
 
 def create_unused_sis_list(inputfile='notRequestestedSIS.txt',outputfile='notUsedSIS.txt'):
-    # √ TESTED 
+    # NEEDS TESTING for added column
     # based on the outputfile (pass as `inputfile`) from `create_unrequested_list` check that each sis id is not in use in canvas. 
     # if the sis id is NOT in use, then write to the outputfile.
     my_path = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -68,7 +68,7 @@ def create_unused_sis_list(inputfile='notRequestestedSIS.txt',outputfile='notUse
     dataFile = open(file_path, "r") 
     notUsedSIS = open(os.path.join(my_path, "ACP/data", outputfile),"w+")
     for line in dataFile:
-        id = line.replace("\n","")
+        id,school = line.replace("\n","").split(",")
         sis_id = 'SRS_'+id
         if sis_id_status(sis_id):# returns True if sis id in use
             canvas_logger.warning("sis_id already in use %s", sis_id)

@@ -139,8 +139,8 @@ def gather_request_process_notes(inputfile='notUsedSIS.txt'):
 
 
 def process_requests(file='notUsedSIS.txt'):
-	# Processes in batch ? lets just see how creating 1k will work. 
-	# per
+
+	# THERE IS A BUG IN THE FOLLOWING FUNCTION THAT DOES NOT ALLOW A CREATION TO FAIL SILENTLY
 	create_canvas_site() # runs the task 
 	# should wait till the above task is done... 
 	print("\t-> Finished Processing Requests in CRF")
@@ -217,8 +217,9 @@ def copy_content(file,source_site):
 
 		
 
-def publish_sites(file):
+def publish_sites(file,capacity):
 	# ? TESTED 
+	# CAPACITY IS IN MB NOT GB
 	canvas = Canvas(API_URL, API_KEY)
 	my_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 	print("path",my_path)
