@@ -22,6 +22,14 @@ def task_nightly_sync(term):
     f.close()
 
 @task()
+def task_test():
+    time_start = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    f = open("course/static/log/test.log", "a")    
+    f.write(time_start+"\n")
+    f.close()
+
+
+@task()
 def task_pull_courses(term):
     datawarehouse.pull_courses(term)
 
@@ -52,7 +60,9 @@ def task_update_sites_info(term):
 
 
 
-
+@task()
+def task_delete_canceled_courses(term):
+    datawarehouse.delete_canceled_courses(term)
 
 
 
