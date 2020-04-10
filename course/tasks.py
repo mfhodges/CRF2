@@ -199,12 +199,24 @@ def create_canvas_site():
             try:
                 canvas_course = account.create_course(course=course)
             except:
+                # check what went wrong () !!!
+
+                # canvas_course = 
                 request_obj.process_notes += "course site creation failed- check if it already exists,"
                 request_obj.save()
                 return
 
             print("created",canvas_course)
-            # Add sections
+            ## Raise course quota ##
+            try:
+                canvas_course.update(course={'storage_quota_mb':2000})
+            except:
+                request_obj.process_notes += "course site quota not raised,"
+                request_obj.save()
+                
+
+
+            ## Add sections ##
             #   Add main Sections
             try:
 
