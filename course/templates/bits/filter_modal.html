@@ -51,7 +51,9 @@
             </div>
 
             {% else %}
+
             {#  heres stuff for the Requestlist filter #}
+            
             <div class="form-group">
                 {{ filter.form.status.errors }}
                 <label for="{{ filter.form.term.id_for_label }}">Status</label>
@@ -64,6 +66,17 @@
                 {{ filter.form.requestor }}
             </div>
 
+            <div class="form-group">
+              {{ filter.form.school.errors }}
+              <label for="{{ filter.form.term.id_for_label }}">School</label>
+              {{ filter.form.school }}
+          </div>
+
+          <div class="form-group">
+            {{ filter.form.term.errors }}
+            <label for="{{ filter.form.term.id_for_label }}">Term</label>
+            {{ filter.form.term }}
+          </div>
 
 
             {% endif %}

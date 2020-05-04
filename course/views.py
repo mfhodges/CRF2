@@ -189,7 +189,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
     """
     # # TODO:
     # [ ] create and test permissions
-    # [x] on creation of request instance mutatate course instance so courese.requested = True
+    # [x] on creation of request instance mutate course instance so course.requested = True
     #[x ] ensure POST is only setting masquerade
     lookup_field = 'course_code'
 
@@ -316,10 +316,14 @@ class RequestFilter(filters.FilterSet):
     status = filters.ChoiceFilter(choices=Request.REQUEST_PROCESS_CHOICES, field_name='status', label='Status')
     requestor = filters.CharFilter(field_name='owner__username', label='Requestor') # does not include masquerade! and needs validator on input!
     date = filters.DateTimeFilter(field_name='created',label='Created')
+    school = filters.ModelChoiceFilter(queryset=School.objects.all(), field_name='course_requested__course_schools',to_field_name='abbreviation',label='School (abbreviation)')
+    term = filters.ChoiceFilter(choices=Course.TERM_CHOICES, field_name='course_requested__course_term', label='Term')
+
+
 
     class Meta:
         model = Request
-        fields = ['status','requestor','date']
+        fields = ['status','requestor','date','school','term']
         #fields = ['activity','instructor','school','subject','term']
 
 
