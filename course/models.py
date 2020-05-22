@@ -66,6 +66,7 @@ class School(models.Model):
     visible = models.BooleanField(default=True)
     opendata_abbr = models.CharField(max_length=2)
     canvas_subaccount = models.IntegerField(null=True)
+    form_additional_enrollments = models.BooleanField(default=True,verbose_name='Additional Enrollments Form Field')
 
     def get_subjects(self):
         return self.subjects
@@ -284,10 +285,10 @@ class Course(models.Model):
         #print("saving Course instance")
         #print("self.pk",self.pk)
         if self._state.adding == True: # creating
-            self.requested = self.find_requested()
-            super().save(*args,**kwargs) #super(Course, self)
-            self.sections.set(self.find_sections())
-            self.find_crosslisted()
+            #?#self.requested = self.find_requested()
+            #?#super().save(*args,**kwargs) #super(Course, self)
+            #?#self.sections.set(self.find_sections())
+            #?#self.find_crosslisted()
             super().save(*args,**kwargs)
             # here is where you do the updating of cross listed instances
         else: #updating
@@ -441,6 +442,7 @@ class Request(models.Model):
     additional_instructions = models.TextField(blank=True,default=None, null=True)
     admin_additional_instructions = models.TextField(blank=True,default=None, null=True)
     reserves = models.BooleanField(default=False)
+    #libguide = models.BooleanField(default=False)
     process_notes = models.TextField(blank=True,default='')
     canvas_instance = models.ForeignKey(CanvasSite,related_name='canvas', on_delete=models.CASCADE,null=True, blank=True )
 
@@ -464,14 +466,14 @@ class Request(models.Model):
 
     def save(self, *args, **kwargs):
         #some text
-        print("saving")
-        print("..",self.status,args,kwargs)
+        #print("saving")
+        #print("..",self.status,args,kwargs)
         #print("(Model.py) Request self.pk",self.pk)
         super(Request, self).save(*args,**kwargs)
 
 
     def delete(self, *args, **kwargs):
-        print("ohhh")
+        #print("ohhh")
         c = Course.objects.get(course_code=self.course_requested.course_code)
 
         multisection = Course.objects.filter(multisection_request=c.course_code)
