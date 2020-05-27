@@ -126,56 +126,67 @@
   </fieldset>
 
 
+
+  
   <fieldset>
     <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
-    <p> Batch Enrollment Processes will pull in any Instructors or TAs listed in the Registrar. To add other users to the Canvas site you can specify them below. If you recieve an error when trying to add an enrollment, try to proxy as the user in the box at the top of the page to ensure they are an user in the CRF.</p>
+    {% if course.course_schools != 'GSE' %}
+      <p>Batch Enrollment Processes will pull in any Instructors or TAs listed in the Registrar. To add other users to the Canvas site you can specify them below. If you recieve an error when trying to add an enrollment, try to proxy as the user in the box at the top of the page to ensure they are an user in the CRF.</p>
 
-    <fieldset id="additional_enrollments" style="border:none;padding-right:0px;padding-left:0px;margin-top:0px;">
+      <fieldset id="additional_enrollments" style="border:none;padding-right:0px;padding-left:0px;margin-top:0px;">
 
-      {% if request_instance.additional_enrollments %}
-        {% for enrollment in request_instance.additional_enrollments %}
+        {% if request_instance.additional_enrollments %}
+          {% for enrollment in request_instance.additional_enrollments %}
 
-          <div id="addEnroll-{{ forloop.counter0 }}" class="row vertical-center" style="">
-            <label style="width: 45%;" for="name">
-            User(pennkey)
-            <input  name="additional_enrollments[{{ forloop.counter0 }}][user]" value="{{enrollment.user}}" class="form-control" type="text">
+            <div id="addEnroll-{{ forloop.counter0 }}" class="row vertical-center" style="">
+              <label style="width: 45%;" for="name">
+              User(pennkey)
+              <input  name="additional_enrollments[{{ forloop.counter0 }}][user]" value="{{enrollment.user}}" class="form-control" type="text">
+              </label>
+              <label>
+            Role
+            <!--<input name="additional_enrollments[0][role]" value="" class="form-control" type="text">-->
+            <select id="choose" name="additional_enrollments[{{ forloop.counter0 }}][role]" >
+              <option disabled>Please select</option>
+              <option value="TA" {% if enrollment.role == "TA" %} selected {% endif %}>TA</option>
+              <option value="DES" {% if enrollment.role == "DES" or enrollment.role == "designer" %} selected {% endif %}>Designer</option>
+              <option value="LIB" {% if enrollment.role == "LIB" or enrollment.role == "librarian"  %} selected {% endif %}>Librarian</option>
+              <option value="INST" {% if enrollment.role == "INST" or enrollment.role == "instructor" %} selected {% endif %}>Instructor</option>
+            </select>
+              </label>
+            <a onClick="removeElement('additional_enrollments', 'addEnroll-{{ forloop.counter0 }}');" style="padding-left:5px;"> Delete <i class="fas fa-times"></i></a>
+          </div>
+        {% endfor %}
+      {% else %}
+
+      <!-- to validate this see https://stackoverflow.com/questions/5272433/html5-form-required-attribute-set-custom-validation-message -->
+          <div id="addEnroll-1" class="row vertical-center" style="">
+            <label style="width: 45%;">
+              user
+            <input name="additional_enrollments[0][user]" value="" class="form-control" type="text">
             </label>
             <label>
-          Role
-          <!--<input name="additional_enrollments[0][role]" value="" class="form-control" type="text">-->
-          <select id="choose" name="additional_enrollments[{{ forloop.counter0 }}][role]" >
-            <option disabled>Please select</option>
-            <option value="TA" {% if enrollment.role == "TA" %} selected {% endif %}>TA</option>
-            <option value="DES" {% if enrollment.role == "DES" or enrollment.role == "designer" %} selected {% endif %}>Designer</option>
-            <option value="LIB" {% if enrollment.role == "LIB" or enrollment.role == "librarian"  %} selected {% endif %}>Librarian</option>
-            <option value="INST" {% if enrollment.role == "INST" or enrollment.role == "instructor" %} selected {% endif %}>Instructor</option>
-          </select>
+            role
+            <!--<input name="additional_enrollments[0][role]" value="" class="form-control" type="text">-->
+            <select id="choose" name="additional_enrollments[0][role]" >
+              <option disabled selected>Please select</option>
+              <option value="TA">TA</option>
+              <option value="DES">Designer</option>
+              <option value="LIB">Librarian</option>
+              <option value="INST">Instructor</option>
+
+            </select>
             </label>
-          <a onClick="removeElement('additional_enrollments', 'addEnroll-{{ forloop.counter0 }}');" style="padding-left:5px;"> Delete <i class="fas fa-times"></i></a>
-        </div>
-      {% endfor %}
-    {% else %}
-
-    <!-- to validate this see https://stackoverflow.com/questions/5272433/html5-form-required-attribute-set-custom-validation-message -->
-        <div id="addEnroll-1" class="row vertical-center" style="">
-          <label style="width: 45%;">
-            user
-          <input name="additional_enrollments[0][user]" value="" class="form-control" type="text">
-          </label>
-          <label>
-          role
-          <!--<input name="additional_enrollments[0][role]" value="" class="form-control" type="text">-->
-          <select id="choose" name="additional_enrollments[0][role]" >
-            <option disabled selected>Please select</option>
-            <option value="TA">TA</option>
-            <option value="DES">Designer</option>
-            <option value="LIB">Librarian</option>
-            <option value="INST">Instructor</option>
-
-          </select>
-          </label>
-          <a onClick="removeElement('additional_enrollments', 'addEnroll-1');" style="padding-left:5px;"> Delete <i class="fas fa-times"></i></a>
-        </div>
+            <a onClick="removeElement('additional_enrollments', 'addEnroll-1');" style="padding-left:5px;"> Delete <i class="fas fa-times"></i></a>
+          </div>
+      {% endif %}
+    {% else %} 
+    <p>
+       <b>Students, TAs, Instructors and Co-Instructors</b> are added to GSE Canvas courses through the University's Student Record System (SRS).
+       Instructor and TA enrollments are updated twice per day. 
+       Please contact the GSE Student Records Office at <a href="mailto:gse-sro@gse.upenn.edu">gse-sro@gse.upenn.edu</a> to add TAs, official student auditors, and co-instructors 
+       to courses. For additional Canvas questions, please open a GSE-IT <a href="https://tickets.gse.upenn.edu/support/login">help request</a>.
+    </p>
     {% endif %}
     </fieldset>
     <div onclick="addrow()"> <a>
