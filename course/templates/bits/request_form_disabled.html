@@ -111,38 +111,48 @@
             <dt class="col-4 col-md-3 text-right" style="padding-right: 0px;">Reserves</dt>
             <dd class="col-8 col-md-9"> {{ request_instance.reserves }}</dd>
       </dl>
+
 </fieldset>
 
 <fieldset>
   <legend><h6 style="margin:0;">Add Additional Users </h6></legend>
-
-  <!-- this would be the disabled section -->
-  <p>Batch Enrollment Processes will pull in any Instructors or TAs listed in the Registrar. To add other users to the Canvas site you can specify them below.</p>
-  <div>
-    {% if request_instance.additional_enrollments %}
-    <div class="contain-table vertical-center">
-      <table style="max-width:500px;">
-        <thead>
+  {% if course.course_schools != 'GSE' %}
+    <!-- this would be the disabled section -->
+    <p>Batch Enrollment Processes will pull in any Instructors or TAs listed in the Registrar. To add other users to the Canvas site you can specify them below.</p>
+    
+    <div>
+      {% if request_instance.additional_enrollments %}
+      <div class="contain-table vertical-center">
+        <table style="max-width:500px;">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Role</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for enrollment in enrollments %}
           <tr>
-            <th>User</th>
-            <th>Role</th>
-          </tr>
-      </thead>
-      <tbody>
-      {% for enrollment in enrollments %}
-        <tr>
-        <td> {{enrollment.user}}</td> <td> {{enrollment.role}} </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-      </table>
+          <td> {{enrollment.user}}</td> <td> {{enrollment.role}} </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+        </table>
+      </div>
+      {% else %}
+        <center><i><p> no additional enrollments </p></i></center>
+
+      {% endif %}
+
     </div>
-    {% else %}
-      <center><i><p> no additional enrollments </p></i></center>
-
-    {% endif %}
-  </div>
-
+  {% else %} 
+  <p>
+     <b>Students, TAs, Instructors and Co-Instructors</b> are added to GSE Canvas courses through the University's Student Record System (SRS).
+     Instructor and TA enrollments are updated twice per day. 
+     Please contact the GSE Student Records Office at <a href="mailto:gse-sro@gse.upenn.edu">gse-sro@gse.upenn.edu</a> to add TAs, official student auditors, and co-instructors 
+     to courses. For additional Canvas questions, please open a GSE-IT <a href="https://tickets.gse.upenn.edu/support/login">help request</a>.
+  </p>
+  {% endif %}
 
 
 </fieldset>
