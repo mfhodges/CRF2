@@ -180,6 +180,10 @@
             <a onClick="removeElement('additional_enrollments', 'addEnroll-1');" style="padding-left:5px;"> Delete <i class="fas fa-times"></i></a>
           </div>
       {% endif %}
+    </fieldset>
+    <div onclick="addrow()"> <a>
+      <i class="fas fa-plus"></i> add another </a>
+    </div>
     {% else %} 
     <p>
        <b>Students, TAs, Instructors and Co-Instructors</b> are added to GSE Canvas courses through the University's Student Record System (SRS).
@@ -188,10 +192,7 @@
        to courses. For additional Canvas questions, please open a GSE-IT <a href="https://tickets.gse.upenn.edu/support/login">help request</a>.
     </p>
     {% endif %}
-    </fieldset>
-    <div onclick="addrow()"> <a>
-      <i class="fas fa-plus"></i> add another </a>
-    </div>
+    
 
 
 
