@@ -460,6 +460,8 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         if 'view_type' in request.data:
             if request.data['view_type'] == 'UI-course-list':
                 return redirect('UI-course-list')
+            if request.data['view_type'] == 'home':
+                return redirect('home')
             if request.data['view_type'] == 'UI-request-detail':
                 #return Response({'course':course},template_name='request_success.html')
                 return redirect('UI-request-detail-success', pk=course.course_code, )
@@ -1300,6 +1302,24 @@ def userinfo(request):
             form.save()
             return redirect('userinfo') # this should redirect to success page
     return render(request, "user_info.html", {'form':form,'form2':form2})
+
+
+
+# -------------- DWHSE Proxies ----------------
+def DWHSE_Proxy(request):
+    if request.method=='GET':
+        print(request.GET) # should be query dict of the form <QueryDict: {'pennkey': [''], 'firstName': [''], 'lastName': [''], 'email': ['']}>
+        pennkey = request.GET.get('pennkey','')
+        firstName = request.GET.get('firstName','')
+        lastName = request.GET.get('lastName','')
+        email = request.GET.get('email','')
+        print(pennkey)
+        staffResults = None 
+        studentResults = None
+    
+    else:
+        print("we have an error here")
+    return django.http.JsonResponse({})
 
 # -------------- Canvas Proxies ----------------
 def myproxy(request,username):

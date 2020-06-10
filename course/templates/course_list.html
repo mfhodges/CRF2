@@ -87,37 +87,7 @@
   <!-- Modal -->
   <!-- simplify with this https://getbootstrap.com/docs/4.0/components/modal/#varying-modal-content -->
 
-  <div class="modal fade" id="CourseModal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Quick Request For </h5>
-          <div class="close" data-dismiss="modal" aria-label="Close">
-            <i class="fas fa-times"></i>
-          </div>
-        </div>
-        <form action="{% url 'UI-request-list' %}" method="post">
-          {% csrf_token %}
-            <div class="modal-body">
-               <p style="margin: .5rem 0 0.5rem 0;">If you would like the full form please click 'Custom Request'.</p>
-              <label for="inputCanvasID">Copy From Canvas Site (OPTIONAL) </label>
-              <input type="number" id="inputCanvasID" name="copy_from_course" class="form-control" placeholder="Canvas Site ID (number)" aria-describedby="textHelpInline">
-              <small id="passwordHelpInline" class="text-muted">
-                Canvas Site ID is the terminal number in the URL of the Canvas site.
-              </small>
-              <p style="margin: .5rem 0 0 0;"> If you would like to specify more customizations (add Reserves, additional Users, etc.) please click 'Custom Request'.</p>
-            </div>
-            <div class="modal-footer">
-              <input name="course_requested" type="hidden"class="form-control" type="text" value="">
-              <input name="status" class="form-control" type="hidden" value="SUBMITTED">
-              <input name="view_type" class="form-control" type="hidden" value="UI-course-list">
-              <a href='' type="button" class="button accent-button" style="font-weight: 600;">Custom Request</a> <!-- Custom Request takes you to the full page form -->
-              <button type="submit" value="save" style="font-weight: 600;">Submit Request</button>
-            </div>
-        </form>
-      </div>
-    </div>
-  </div>
+{% include "bits/quick_request_modal.html" with view_type="UI-course-list" %}
 <!-- END COURSE REQUEST MODAL -->
 
 
