@@ -188,8 +188,8 @@ def create_canvas_site():
                 name = name_code + request_obj.title_override[:45]
                 section_name = section_name_code + request_obj.title_override[:45]
             else:
-                name = name_code + course_requested.course_name
-                section_name = section_name_code + course_requested.course_name
+                name = name_code +" "+ course_requested.course_name
+                section_name = section_name_code + " " + course_requested.course_name
             sis_course_id = 'SRS_'+ course_requested.srs_format_primary()
             print("sis_course_id",sis_course_id)
             print("section_name",section_name)
