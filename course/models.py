@@ -356,9 +356,17 @@ class Course(models.Model):
 
     def srs_format_primary(self):
         term = self.year + self.course_term
-        #print(course['course_section'])
-        return("%s-%s-%s %s" % (self.course_primary_subject.abbreviation, self.course_number,self.course_section, term ))
-
+        pc = self.primary_crosslist
+        if pc:
+            term =pc[-5:]
+            section = pc[:-5][-3:]
+            number = pc[:-5][:-3][-3:]
+            subj = pc[:-5][:-6]
+            srs_pc ="%s %s-%s %s " % (subj,number,section,term)
+            #print(course['course_section'])
+            return(srs_pc)
+        else:
+            return self.srs_format()
 
     def __str__(self):
         return "_".join([self.course_subject.abbreviation, self.course_number, self.course_section, self.year+self.course_term])
