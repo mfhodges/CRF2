@@ -173,7 +173,7 @@ def create_canvas_site():
                     section = pc[:-5][-3:]
                     number = pc[:-5][:-3][-3:]
                     subj = pc[:-5][:-6]
-                    section_name_code ="%s %s-%s %s " % (subj,number,section,term)
+                    section_name_code ="%s %s-%s %s" % (subj,number,section,term)
                 else:
                     # it seems that we have a problem .primary_crosslist must be filled out
                     request_obj.process_notes += "primary_crosslist not set,"
@@ -181,7 +181,7 @@ def create_canvas_site():
                     return
 
             else:
-                section_name_code ="%s %s-%s %s " % (course_requested.course_subject.abbreviation, course_requested.course_number,course_requested.course_section, course_requested.year+course_requested.course_term)
+                section_name_code ="%s %s-%s %s" % (course_requested.course_subject.abbreviation, course_requested.course_number,course_requested.course_section, course_requested.year+course_requested.course_term)
             name_code = section_name_code
             # check if there is a title override
             if request_obj.title_override:
@@ -327,7 +327,7 @@ def create_canvas_site():
                     pass
         #enroll_user(user.id ,'DesignerEnrollment' ,enrollment={'role_id':1383,'enrollment_state':'active'})
         #input("STEP 3 DONE...\n")
-        ######## Step 4. Configure reserves ########
+        ######## Step 4. Configure reserves/libguide ########
         if serialized.data['reserves']:
             try:
                 tab = canvas_api.Tab(canvas_course._requester, {"course_id":canvas_course.id, "id":'context_external_tool_139969'})

@@ -362,7 +362,7 @@ class Course(models.Model):
             section = pc[:-5][-3:]
             number = pc[:-5][:-3][-3:]
             subj = pc[:-5][:-6]
-            srs_pc ="%s %s-%s %s " % (subj,number,section,term)
+            srs_pc ="%s %s-%s %s" % (subj,number,section,term)
             #print(course['course_section'])
             return(srs_pc)
         else:
