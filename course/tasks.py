@@ -255,8 +255,8 @@ def create_canvas_site():
             try:
 
                 additional_section = {'course_section':'','instructors':''}
-                print({'name':section_course.srs_format_primary() +' '+ namebit,'sis_section_id':sis_section})
-                additional_section['course_section'] = canvas_course.create_course_section(course_section={'name':section_course.srs_format_primary() +' '+ namebit,'sis_section_id':sis_section},enable_sis_reactivation=True)
+                print({'name':section_course.srs_format_primary(sis_id=False) +' '+ namebit,'sis_section_id':sis_section})
+                additional_section['course_section'] = canvas_course.create_course_section(course_section={'name':section_course.srs_format_primary(sis_id=False) +' '+ namebit,'sis_section_id':sis_section},enable_sis_reactivation=True)
                 additional_section['instructors'] = section_course.instructors.all()
                 additional_sections += [additional_section]
                 print("2",{"additional_section":additional_section,"additional_sections":additional_sections})

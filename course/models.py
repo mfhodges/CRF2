@@ -354,7 +354,7 @@ class Course(models.Model):
         #print(course['course_section'])
         return("%s-%s-%s %s" % (self.course_subject.abbreviation, self.course_number,self.course_section, term ))
 
-    def srs_format_primary(self):
+    def srs_format_primary(self,sis_id=True):
         term = self.year + self.course_term
         pc = self.primary_crosslist
         if pc:
@@ -362,9 +362,13 @@ class Course(models.Model):
             section = pc[:-5][-3:]
             number = pc[:-5][:-3][-3:]
             subj = pc[:-5][:-6]
-            srs_pc ="%s %s-%s %s" % (subj,number,section,term)
-            #print(course['course_section'])
-            return(srs_pc)
+            if sis_id:
+                srs_pc ="%s-%s-%s %s" % (subj,number,section,term)
+                return(srs_pc)
+            else:
+                srs_pc ="%s %s-%s %s" % (subj,number,section,term)
+                return(srs_pc)
+
         else:
             return self.srs_format()
 
