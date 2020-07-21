@@ -24,7 +24,11 @@
   <legend>Canvas Site</legend>
   <center><p> No Canvas Site on File.</p></center>
   {% if staff %}
-  <a target="_blank" href="https://canvas.upenn.edu/api/v1/sections/sis_section_id:SRS_{{course|asrepr}}"> CHECK FOR CANVAS SITE  </a>
+    {% if course.primary_crosslist %}
+      <a target="_blank" href="https://canvas.upenn.edu/api/v1/sections/sis_section_id:SRS_{{course.primary_crosslist|coursecodetoString}}"> CHECK FOR CANVAS SITE ({{course.primary_crosslist|coursecodetoString}}) </a>
+    {% else %}
+      <a target="_blank" href="https://canvas.upenn.edu/api/v1/sections/sis_section_id:SRS_{{course|asrepr}}"> CHECK FOR CANVAS SITE ({{course|asrepr}})</a>
+    {% endif %}
   {% endif %}
   {% endif %}
 </fieldset>
