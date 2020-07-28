@@ -292,10 +292,16 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 this_form = ''#RequestSerializer()
 
 
-            else:
-                # course detail needs to get form
-                # URGENT is this creating many copies of the ob?
-                this_form = RequestSerializer(data={'course_requested':self.get_object()})
+            else: # no request has been created yet
+                #######
+                ##  Here is a hack that will allow SAS, SEAS, Design, BGS, SP2, Nursing & PSOM to have Reserves already toggled 
+                ######
+                print("course_instance.course_schools.abbreviation",course_instance.course_schools.abbreviation)
+                if course_instance.course_schools.abbreviation in ["SAS", "SEAS", "FA", "PSOM", "SP2"]:
+                    print("we would enable here")
+                    this_form = RequestSerializer(data={'course_requested':self.get_object(),'reserves':True})
+                else:
+                    this_form = RequestSerializer(data={'course_requested':self.get_object()})
                 #print("ok")
                 this_form.is_valid()
                 print("this_form",this_form.data)
@@ -632,8 +638,10 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
 
                 ##print(here.title_override)
                 ##print("RequestSerializer(response.data)",here)
-                #print("request_form", here,here.data)
+                print("request_form", here,here.data)
                 return Response({'request_instance': response.data,'permissions':permissions,'request_form':here,'autocompleteCanvasSite': CanvasSiteForm(),'style':{'template_pack': 'rest_framework/vertical/'}}, template_name='request_detail_edit.html') #data={'course_requested':response.data['course_requested']},partial_update=True
+            # else we are creating the object?
+            
             return Response({'request_instance': response.data, 'permissions':permissions}, template_name='request_detail.html')
         return response
 
