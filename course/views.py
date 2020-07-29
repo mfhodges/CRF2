@@ -308,6 +308,7 @@ class CourseViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
                 request_instance =''
                 print ("Stop Execution : ",end="")
                 print (time.ctime())
+            print("I DIDNT THINK WE'D GET HERE")
             return Response({'course': response.data, 'request_instance':request_instance,'request_form':this_form ,'autocompleteCanvasSite': CanvasSiteForm(),'is_staff':request.user.is_staff,'style':{'template_pack': 'rest_framework/vertical/'}}, template_name='course_detail.html')
         print ("Stop Execution : ",end="")
         print (time.ctime())
@@ -408,7 +409,6 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
         permission = self.custom_permissions(None,masquerade,instructors)
         print("permission, ", permission)
 
-
         additional_enrollments_partial = html.parse_html_list(request.data, prefix ='additional_enrollments')
         additional_sections_partial = html.parse_html_list(request.data, prefix ='additional_sections')
 
@@ -439,6 +439,15 @@ class RequestViewSet(MixedPermissionModelViewSet,viewsets.ModelViewSet):
             print("data",data)
             data['additional_enrollments'] = []
             data['additional_sections'] = []
+            ####### THIS IS THE RESERVES HACK #########
+            if 'view_type' in request.data:
+                if request.data['view_type'] == 'UI-course-list':
+                    ##  Here is a hack that will allow SAS, SEAS, Design, BGS, SP2, Nursing & PSOM to have Reserves already toggled 
+                    print("course_instance.course_schools.abbreviation",course.course_schools.abbreviation)
+                    if course.course_schools.abbreviation in ["SAS", "SEAS", "FA", "PSOM", "SP2"]:
+                        print("we would enable here")
+                        data['reserves'] = True
+                    
             print('data',data)
             serializer = self.get_serializer(data=data)
 
