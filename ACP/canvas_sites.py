@@ -84,6 +84,7 @@ def create_requests(inputfile='notUsedSIS.txt',copy_site=''):
 	for line in dataFile:
 		#FIND IN CRF	
 		id = line.replace('\n',"").replace(" ","").replace("-","")
+		print("found id: ", id)
 		course = get_or_none(Course,course_code=id)
 		if course: 
 			# create request
@@ -106,7 +107,7 @@ def create_requests(inputfile='notUsedSIS.txt',copy_site=''):
 
 		else:
 			#LOG
-			print("course not in CRF")
+			print("course not in CRF: %s", line")
 			crf_logger.info("Not in CRF : %s", line)
 	print("-> Finished Creating Requests in CRF")
 	print("-> Please check `ACP/logs/crf.log` for a list of failed Request creations")
