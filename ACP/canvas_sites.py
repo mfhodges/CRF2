@@ -265,13 +265,29 @@ def enable_lti(file,tool):
 		try:
 			course_site = canvas.get_course(canvas_id)
 		except:
+			print('(enable tool) failed to find site %s' % canvas_id)
 			canvas_logger.info('(enable tool) failed to find site %s' % canvas_id)
 			course_site =None
 		if course_site:
 			print(course_site)
-
-			course_site.update_tab( tool, {'hidden':'false','position':3})
-	pass
+			tabs = course_site.get_tabs()
+			for tab in tabs:
+				# CONFIGURING TOOL
+				if tab.id == tool:
+					print("\tfound tool")
+					try:
+						if tab.visibility != "public":
+							tab.update(hidden=False,position=3)
+							print("\t enabled tool")                        
+						else:
+							print("\t already enabled tool ")
+					except:
+						print("\tfailed tool %s" % canvas_id)
+				else:
+					#skip this tab
+					pass
+					#course_site.update_tab( tool, {'hidden':'false','position':3})
+			pass
 
 
 
