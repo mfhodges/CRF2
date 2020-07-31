@@ -260,7 +260,7 @@ def enable_lti(file,tool):
 	print("file path", file_path)
 	dataFile = open(file_path, "r") # # test6660002020A,1500426
 	for line in dataFile:
-		canvas_id = line.replace("\n","").split(",")[-1]
+		canvas_id = line.replace("\n","").strip()#.split(",")[-1]
 		#check that the site exists
 		try:
 			course_site = canvas.get_course(canvas_id)
