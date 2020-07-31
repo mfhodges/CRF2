@@ -150,8 +150,6 @@ def gather_request_process_notes(inputfile='notUsedSIS.txt'):
 			crf_logger.info("couldnt find request for %s", id)
 
 
-Course.objects.get(course_code=c)_
-
 def process_requests(file='notUsedSIS.txt'):
 
 	# THERE IS A BUG IN THE FOLLOWING FUNCTION THAT DOES NOT ALLOW A CREATION TO FAIL SILENTLY
