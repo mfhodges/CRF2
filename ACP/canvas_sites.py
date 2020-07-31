@@ -98,12 +98,15 @@ def create_requests(inputfile='notUsedSIS.txt',copy_site=''):
 				r.status = 'APPROVED' # mark request as approved
 				r.save()
 				course.save() ## you have to save the course to update its request status !
+				print("Created request for: %s", line)
 			except:
+				print("\t Failed to create request for: %s", line)
 				# report that this was failed to be created
 				crf_logger.info("Failed to create request for: %s", line)
 
 		else:
 			#LOG
+			print("course not in CRF")
 			crf_logger.info("Not in CRF : %s", line)
 	print("-> Finished Creating Requests in CRF")
 	print("-> Please check `ACP/logs/crf.log` for a list of failed Request creations")
