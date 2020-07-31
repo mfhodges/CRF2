@@ -84,6 +84,7 @@ def create_requests(inputfile='notUsedSIS.txt',copy_site=''):
 	for line in dataFile:
 		#FIND IN CRF	
 		id = line.replace('\n',"").replace(" ","").replace("-","")
+		id = id.strip()
 		print("found id: '", id,"'")
 		course = get_or_none(Course,course_code=id)
 		if course: 
