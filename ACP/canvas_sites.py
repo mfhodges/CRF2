@@ -74,7 +74,7 @@ def get_FA_canvas_ids():
 	for r in reqs:
 		try:
 			print(Request.objects.get(course_requested=r).canvas_instance.canvas_id)
-		else:
+		except:
 			print("error with :", r)
 
 
