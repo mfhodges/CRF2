@@ -185,7 +185,7 @@ def create_canvas_site():
             name_code = section_name_code
             # check if there is a title override
             if request_obj.title_override:
-                name = name_code + request_obj.title_override[:45]
+                name = name_code + " " +request_obj.title_override[:45]
                 section_name = section_name_code + request_obj.title_override[:45]
             else:
                 name = name_code +" "+ course_requested.course_name
